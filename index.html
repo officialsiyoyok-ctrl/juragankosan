@@ -4,40 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juragankosan.id — Solusi Modern Kelola Kos & Kontrakan Tanpa Pusing</title>
-    <meta name="description" content="Aplikasi pencatatan sewa kos, tagihan otomatis WhatsApp, dan laporan keuangan real-time untuk pemilik kos modern. Sekali bayar seumur hidup.">
+    <meta name="description" content="Aplikasi pencatatan sewa kos, tagihan otomatis WhatsApp, dan laporan keuangan real-time untuk pemilik kos modern. Sekali bayar seumur hidup tanpa biaya bulanan.">
     <link rel="canonical" href="https://juragankosan.id/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-emerald-500 selection:text-white">
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80">
+
+    <!-- HEADER / NAVBAR -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <a href="#" class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center text-white font-bold shadow-lg">JK</div>
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center text-white font-bold shadow-md shadow-emerald-600/20">JK</div>
                 <div>
-                    <span class="text-xl font-extrabold text-slate-900">Juragan<span class="text-emerald-600">kosan</span></span>
-                    <span class="block text-[10px] font-semibold uppercase text-emerald-700">Platform Kelola Kos Modern</span>
+                    <span class="text-xl font-extrabold tracking-tight text-slate-900">Juragan<span class="text-emerald-600">kosan</span></span>
+                    <span class="block text-[10px] font-semibold uppercase tracking-wider text-emerald-700">Platform Kelola Kos Modern</span>
                 </div>
             </a>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+                <a href="#fitur" class="hover:text-emerald-600 transition">Fitur Unggulan</a>
+                <a href="#keunggulan" class="hover:text-emerald-600 transition">Kenapa Kami</a>
+                <a href="#harga" class="hover:text-emerald-600 transition">Harga</a>
+            </nav>
             <div class="flex items-center gap-3">
-                <a href="https://app.juragankosan.id" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200">Buka Aplikasi</a>
+                <a href="https://app.juragankosan.id" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition">Buka Aplikasi</a>
             </div>
         </div>
     </header>
-    <section class="py-20 bg-gradient-to-b from-emerald-50/50 to-white text-center">
-        <div class="max-w-4xl mx-auto px-4">
-            <h1 class="text-4xl sm:text-6xl font-extrabold text-slate-900 mb-6">
+
+    <!-- HERO SECTION -->
+    <section class="relative pt-20 pb-28 overflow-hidden bg-gradient-to-b from-emerald-50/60 via-white to-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100/80 text-emerald-800 text-xs font-semibold mb-6">
+                <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                Solusi #1 Pemilik Kos & Kontrakan Indonesia
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 max-w-4xl mx-auto leading-[1.15]">
                 Kelola Puluhan Pintu Kos <span class="text-emerald-600">Tanpa Pusing.</span>
             </h1>
-            <p class="text-lg text-slate-600 mb-8">
-                Ganti buku kas manual dengan aplikasi modern yang ringan, cepat, dan aman 100% di perangkat Anda.
+            <p class="text-lg sm:text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Ganti buku kas manual dan catatan kertas yang berantakan dengan aplikasi modern yang ringan, cepat, tagihan otomatis WhatsApp, dan laporan keuangan akurat.
             </p>
-            <a href="https://app.juragankosan.id" class="px-8 py-4 rounded-2xl text-base font-bold text-white bg-amber-500 hover:bg-amber-600 shadow-xl inline-block">
-                🚀 Coba Gratis Sekarang
-            </a>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+                <a href="https://app.juragankosan.id" class="w-full sm:w-auto px-8 py-4 rounded-2xl text-base font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xl shadow-emerald-600/25 transition transform hover:-translate-y-0.5">
+                    🚀 Coba Aplikasi Gratis Sekarang
+                </a>
+                <a href="#fitur" class="w-full sm:w-auto px-8 py-4 rounded-2xl text-base font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition">
+                    Pelajari Fiturnya
+                </a>
+            </div>
+
+            <!-- Preview Card Mockup -->
+            <div class="max-w-5xl mx-auto rounded-3xl p-3 bg-slate-900/5 border border-slate-200 shadow-2xl backdrop-blur-sm">
+                <div class="rounded-2xl bg-white p-6 sm:p-10 border border-slate-100 text-left grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-emerald-50 rounded-2xl p-6 border border-emerald-100">
+                        <div class="text-emerald-600 font-semibold text-sm mb-1">Total Pintu Kos</div>
+                        <div class="text-3xl font-extrabold text-slate-900">24 Unit</div>
+                        <div class="text-xs text-emerald-700 mt-2 font-medium">🟢 22 Terisi | 2 Kosong</div>
+                    </div>
+                    <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+                        <div class="text-blue-600 font-semibold text-sm mb-1">Pemasukan Bulan Ini</div>
+                        <div class="text-3xl font-extrabold text-slate-900">Rp 36.5 Juta</div>
+                        <div class="text-xs text-blue-700 mt-2 font-medium">📈 100% Tagihan Terkonfirmasi</div>
+                    </div>
+                    <div class="bg-amber-50 rounded-2xl p-6 border border-amber-100">
+                        <div class="text-amber-600 font-semibold text-sm mb-1">Jatuh Tempo Minggu Ini</div>
+                        <div class="text-3xl font-extrabold text-slate-900">3 Penghuni</div>
+                        <div class="text-xs text-amber-700 mt-2 font-medium">💬 Siap Kirim WhatsApp Otomatis</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+
+    <!-- FITUR UTAMA SECTION -->
+    <section id="fitur" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">Fitur Lengkap & Profesional</h2>
+                <h3 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Semua yang Anda Butuhkan untuk Mengatur Kos dalam Satu Genggaman</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Fitur 1 -->
+                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-emerald-200 transition group">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mb-6 group-hover:bg-emerald-600 group-hover:text-white transition">
+                        🏠
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Manajemen Kamar & Penghuni</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Pantau status kamar kosong atau terisi, data diri penyewa, tanggal masuk, hingga riwayat pembayaran secara rapi dan real-time.
+                    </p>
+                </div>
+                <!-- Fitur 2 -->
+                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-emerald-200 transition group">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mb-6 group-hover:bg-emerald-600 group-hover:text-white transition">
+                        💬
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Tagihan Otomatis WhatsApp</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Kirim pengingat tagihan bulanan, nominal sewa, dan konfirmasi pembayaran langsung ke WhatsApp penyewa hanya dengan sekali klik.
+                    </p>
+                </div>
+                <!-- Fitur 3 -->
+                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-emerald-200 transition group">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mb-6 group-hover:bg-emerald-600 group-hover:text-white transition">
+                        📊
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Laporan Keuangan Real-Time</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Rekap pemasukan sewa kos dan pencatatan pengeluaran operasional (perbaikan, listrik, air) tersusun otomatis dalam grafik laporan bersih.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section id="harga" class="py-24 bg-slate-50 border-t border-slate-200/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-xs font-bold uppercase tracking-widest text-emerald-600 mb-3">Investasi Terbaik Pemilik Kos</h2>
+            <h3 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">Sekali Bayar, Pakai Selamanya</h3>
+            <p class="text-slate-600 max-w-xl mx-auto mb-16">Tanpa biaya langganan bulanan yang memberatkan. Nikmati akses penuh selamanya untuk mempermudah bisnis properti Anda.</p>
+            
+            <div class="max-w-md mx-auto bg-white rounded-3xl p-8 sm:p-10 border-2 border-emerald-500 shadow-2xl relative">
+                <div class="absolute -top-4 left-1/2 -transform -translate-x-1/2 bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full shadow-md">
+                    Akses Seumur Hidup
+                </div>
+                <div class="text-slate-500 font-medium text-sm mb-2">Paket Juragan Pro</div>
+                <div class="flex items-baseline justify-center gap-1 mb-6">
+                    <span class="text-4xl sm:text-5xl font-extrabold text-slate-900">Rp 199.000</span>
+                </div>
+                <ul class="space-y-4 text-left text-sm text-slate-700 mb-8">
+                    <li class="flex items-center gap-3">✅ Kelola Tanpa Batas Jumlah Kamar</li>
+                    <li class="flex items-center gap-3">✅ Fitur Tagihan WhatsApp Otomatis</li>
+                    <li class="flex items-center gap-3">✅ Laporan Keuangan & Kas Lengkap</li>
+                    <li class="flex items-center gap-3">✅ Keamanan PIN & Backup Data</li>
+                    <li class="flex items-center gap-3">✅ Tanpa Biaya Bulanan / Langganan</li>
+                </ul>
+                <a href="https://app.juragankosan.id" class="w-full block py-4 rounded-2xl text-center text-white font-bold bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/30 transition">
+                    Mulai Kelola Kos Sekarang
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">JK</div>
+                <span class="text-lg font-bold text-slate-900">Juragankosan.id</span>
+            </div>
+            <p class="text-sm text-slate-500 text-center sm:text-right">
+                &copy; 2026 Juragankosan.id. Hak Cipta Dilindungi. Solusi Pintar Bisnis Properti Anda.
+            </p>
+        </div>
+    </footer>
+
 </body>
 </html>
