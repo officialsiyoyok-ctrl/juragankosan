@@ -37,33 +37,33 @@ export const SOLD_COUNT_STORAGE_KEY = 'juragankos_sold_count';
 export const PRICING_TIERS = {
   BATCH_1: {
     tierId: 1,
-    name: 'Batch 1 (100 Pembeli Pertama)',
+    name: 'Batch 1 (50 Pembeli Pertama)',
     shortTierName: 'Batch 1',
     crownBadge: '👑 PRO LIFETIME BATCH 1',
     price: 149000,
     strikePrice: 299000,
-    maxSlots: 100,
-    badgeText: '🔥 PROMO BATCH 1 TERBATAS'
+    maxSlots: 50,
+    badgeText: '🔥 PROMO BATCH 1 (50 PEMBELI PERTAMA)'
   },
   BATCH_2: {
     tierId: 2,
-    name: 'Batch 2 (Pembeli ke-101 – 300)',
+    name: 'Batch 2 (Pembeli ke 51 – 100)',
     shortTierName: 'Batch 2',
     crownBadge: '⚡ PRO LIFETIME BATCH 2',
     price: 199000,
     strikePrice: 299000,
-    maxSlots: 300,
-    badgeText: '⚡ PROMO BATCH 2 SEDANG AKTIF'
+    maxSlots: 100,
+    badgeText: '⚡ PROMO BATCH 2 SEDANG AKTIF (SLOT 51 – 100)'
   },
   BATCH_3: {
     tierId: 3,
-    name: 'Harga Normal Lifetime',
-    shortTierName: 'Normal',
+    name: 'Batch 3 / Reguler (Pembeli ke 101+)',
+    shortTierName: 'Batch 3 / Reguler',
     crownBadge: '⭐ PRO LIFETIME RESMI',
     price: 299000,
     strikePrice: null,
     maxSlots: null,
-    badgeText: '🏷️ HARGA RESMI TETAP'
+    badgeText: '🏷️ HARGA STANDAR SELAMANYA'
   }
 };
 
@@ -101,38 +101,38 @@ export function setSoldCount(count) {
  * Hitung tier aktif, harga, sisa kuota, dan status tangga harga otomatis
  */
 export function getCurrentPricingTier(soldCount = getSoldCount()) {
-  if (soldCount < 100) {
-    const remaining = 100 - soldCount;
+  if (soldCount < 50) {
+    const remaining = 50 - soldCount;
     return {
       tierId: 1,
-      tierName: 'Batch 1 (100 Pembeli Pertama)',
+      tierName: 'Batch 1 (50 Pembeli Pertama)',
       shortTierName: 'Batch 1',
       crownBadge: '👑 PRO LIFETIME BATCH 1',
       price: 149000,
       strikePrice: 299000,
       soldCount,
-      targetQuota: 100,
+      targetQuota: 50,
       remainingSlots: remaining,
-      progressPercent: Math.min(100, Math.max(5, Math.round((soldCount / 100) * 100))),
-      progressText: 'Promo Peluncuran: Kuota Terbatas 100 Pembeli Pertama',
+      progressPercent: Math.min(100, Math.max(5, Math.round((soldCount / 50) * 100))),
+      progressText: 'Promo Peluncuran: Kuota Terbatas 50 Pembeli Pertama',
       statusBatch1: 'active',
       statusBatch2: 'upcoming',
       statusBatch3: 'normal'
     };
-  } else if (soldCount < 300) {
-    const remaining = 300 - soldCount;
+  } else if (soldCount < 100) {
+    const remaining = 100 - soldCount;
     return {
       tierId: 2,
-      tierName: 'Batch 2 (Pembeli ke-101 – 300)',
+      tierName: 'Batch 2 (Pembeli ke 51 – 100)',
       shortTierName: 'Batch 2',
       crownBadge: '⚡ PRO LIFETIME BATCH 2',
       price: 199000,
       strikePrice: 299000,
       soldCount,
-      targetQuota: 300,
+      targetQuota: 100,
       remainingSlots: remaining,
-      progressPercent: Math.min(100, Math.max(5, Math.round(((soldCount - 100) / 200) * 100))),
-      progressText: 'Promo Batch 2: Kuota Terbatas 200 Pembeli',
+      progressPercent: Math.min(100, Math.max(5, Math.round(((soldCount - 50) / 50) * 100))),
+      progressText: 'Promo Batch 2: Kuota 50 Pembeli (ke 51 – 100)',
       statusBatch1: 'soldout',
       statusBatch2: 'active',
       statusBatch3: 'normal'
@@ -140,8 +140,8 @@ export function getCurrentPricingTier(soldCount = getSoldCount()) {
   } else {
     return {
       tierId: 3,
-      tierName: 'Harga Normal Lifetime',
-      shortTierName: 'Normal',
+      tierName: 'Batch 3 / Reguler (Pembeli ke 101+)',
+      shortTierName: 'Batch 3 / Reguler',
       crownBadge: '⭐ PRO LIFETIME RESMI',
       price: 299000,
       strikePrice: null,
@@ -149,7 +149,7 @@ export function getCurrentPricingTier(soldCount = getSoldCount()) {
       targetQuota: null,
       remainingSlots: 0,
       progressPercent: 100,
-      progressText: 'Harga Normal Resmi',
+      progressText: 'Harga Standar Selamanya (Pembeli ke 101+)',
       statusBatch1: 'soldout',
       statusBatch2: 'soldout',
       statusBatch3: 'active'
@@ -422,8 +422,8 @@ export function openUpgradeModal(initialStep = 'info') {
               <div class="quota-official-badge">
                 <span class="quota-official-icon">💎</span>
                 <div class="quota-official-info">
-                  <span class="quota-official-title">Promo Peluncuran: Kuota Terbatas 100 Pembeli Pertama</span>
-                  <p class="quota-official-desc">Harga diskon 50% khusus pembeli Batch 1. Setelah kuota 100 lisensi perdana terpenuhi, harga otomatis naik ke Batch 2 (Rp 199.000) dan bertahap menuju harga normal Rp 299.000.</p>
+                  <span class="quota-official-title">Promo Peluncuran: Kuota Terbatas 50 Pembeli Pertama</span>
+                  <p class="quota-official-desc">Harga diskon 50% khusus pembeli Batch 1 (Rp 149.000). Setelah kuota 50 pembeli pertama terpenuhi, harga naik bertahap ke Batch 2 Rp 199.000 (pembeli ke 51 – 100), dan selanjutnya harga standar Batch 3 / Reguler Rp 299.000 untuk pembeli ke 101+.</p>
                 </div>
               </div>
             </div>
@@ -434,17 +434,17 @@ export function openUpgradeModal(initialStep = 'info') {
               <div class="ladder-steps-list">
                 <div class="ladder-step-item ${pricing.statusBatch1}">
                   <span class="step-badge">${pricing.statusBatch1 === 'soldout' ? '❌' : (pricing.statusBatch1 === 'active' ? '👉' : '⏳')}</span>
-                  <span class="step-name ${pricing.statusBatch1 === 'soldout' ? 'line-through text-muted' : ''}">Batch 1: <strong>Rp 149.000</strong></span>
+                  <span class="step-name ${pricing.statusBatch1 === 'soldout' ? 'line-through text-muted' : ''}">Batch 1 (50 Pembeli Pertama): <strong>Rp 149.000</strong> <small class="text-emerald font-bold">(Diskon 50%)</small></span>
                   <span class="step-status">${pricing.statusBatch1 === 'soldout' ? '<span class="badge badge-soldout">HABIS TERJUAL</span>' : '<span class="badge badge-active-tier">SEDANG BERLAKU</span>'}</span>
                 </div>
                 <div class="ladder-step-item ${pricing.statusBatch2}">
                   <span class="step-badge">${pricing.statusBatch2 === 'soldout' ? '❌' : (pricing.statusBatch2 === 'active' ? '👉' : '⏳')}</span>
-                  <span class="step-name ${pricing.statusBatch2 === 'soldout' ? 'line-through text-muted' : ''}">Batch 2: <strong>Rp 199.000</strong></span>
+                  <span class="step-name ${pricing.statusBatch2 === 'soldout' ? 'line-through text-muted' : ''}">Batch 2 (Pembeli ke 51 – 100): <strong>Rp 199.000</strong></span>
                   <span class="step-status">${pricing.statusBatch2 === 'soldout' ? '<span class="badge badge-soldout">HABIS TERJUAL</span>' : (pricing.statusBatch2 === 'active' ? '<span class="badge badge-active-tier">SEDANG BERLAKU</span>' : '<span class="badge badge-upcoming">BERIKUTNYA</span>')}</span>
                 </div>
                 <div class="ladder-step-item ${pricing.statusBatch3}">
                   <span class="step-badge">${pricing.statusBatch3 === 'active' ? '👉' : '🏷️'}</span>
-                  <span class="step-name">Harga Normal: <strong>Rp 299.000</strong></span>
+                  <span class="step-name">Batch 3 / Reguler (Pembeli ke 101+): <strong>Rp 299.000</strong></span>
                   <span class="step-status">${pricing.statusBatch3 === 'active' ? '<span class="badge badge-active-tier">SEDANG BERLAKU</span>' : '<span class="badge badge-normal-tier">HARGA TETAP NANTI</span>'}</span>
                 </div>
               </div>
@@ -899,11 +899,11 @@ export function openAdminGeneratorModal() {
             <button type="button" class="btn btn-outline btn-xs btn-set-tier" data-count="0">
               🟢 Set Batch 1 (Awal Bersih 0 - Rp 149rb)
             </button>
-            <button type="button" class="btn btn-outline btn-xs btn-set-tier" data-count="105">
-              🟡 Simulasi Kuota 100 Terpenuhi → Naik ke Batch 2 (Rp 199rb)
+            <button type="button" class="btn btn-outline btn-xs btn-set-tier" data-count="55">
+              🟡 Simulasi Kuota 50 Terpenuhi → Naik ke Batch 2 (Rp 199rb)
             </button>
-            <button type="button" class="btn btn-outline btn-xs btn-set-tier" data-count="305">
-              🔴 Simulasi Batch 3 Normal (Terjual 305 - Rp 299rb)
+            <button type="button" class="btn btn-outline btn-xs btn-set-tier" data-count="105">
+              🔴 Simulasi Batch 3 Reguler (Terjual 105 - Rp 299rb)
             </button>
           </div>
           <div class="custom-count-row mt-2 flex-items-center gap-2">
