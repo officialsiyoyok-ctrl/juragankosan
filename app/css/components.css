@@ -1999,7 +1999,23 @@ textarea::placeholder {
   opacity: 0.85 !important;
 }
 
-/* Placeholder Default pada Select Option (-- Pilih ... --) */
+/* Placeholder Default pada Select Option (-- Pilih ... --) & Optgroup Styling */
+select.form-control {
+  font-size: 0.8125rem !important;
+}
+
+select.form-control option {
+  font-size: 0.8125rem !important;
+  color: var(--text-main);
+}
+
+select.form-control optgroup {
+  font-size: 0.76rem !important;
+  font-weight: 700;
+  color: #64748b;
+  background-color: var(--bg-surface-subtle);
+}
+
 select.form-control option[value=""],
 select.form-control option[disabled] {
   color: #94a3b8 !important;
@@ -2008,11 +2024,22 @@ select.form-control option[disabled] {
 
 select.form-control option:not([value=""]) {
   color: var(--text-main);
-  font-size: 0.875rem;
 }
 
 /* Penyesuaian Ekstra Responsif Layar HP (< 480px) */
 @media (max-width: 480px) {
+  select.form-control {
+    font-size: 0.775rem !important;
+  }
+
+  select.form-control option {
+    font-size: 0.775rem !important;
+  }
+
+  select.form-control optgroup {
+    font-size: 0.72rem !important;
+  }
+
   .form-control::-webkit-input-placeholder,
   input::-webkit-input-placeholder,
   textarea::-webkit-input-placeholder,

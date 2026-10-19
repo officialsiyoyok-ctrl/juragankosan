@@ -355,14 +355,8 @@ export function renderTenants(container, options = {}) {
               <div class="form-group flex-1" id="group-select-room">
                 <label for="tenant-room-id" class="form-label">Pilih Kamar Kosong <span class="text-danger">*</span></label>
                 <select id="tenant-room-id" class="form-control" required>
-                  <option value="">-- Pilih Kamar --</option>
-                  ${vacantRooms
-                    .map(
-                      (r) => `
-                    <option value="${r.id}">${escapeHtml(r.number)} (${escapeHtml(r.type)}) - ${formatRupiah(r.price)}/bln</option>
-                  `
-                    )
-                    .join('')}
+                  <option value="">-- Pilih Kamar Kosong --</option>
+                  ${renderVacantRoomOptions(vacantRooms)}
                 </select>
                 <span class="form-error" id="error-tenant-room"></span>
               </div>
@@ -564,6 +558,52 @@ function setupTenantsEvents(container) {
   }
 }
 
+function renderVacantRoomOptions(vacantRooms, preselectedId = null) {
+  if (!vacantRooms || vacantRooms.length === 0) {
+    return '<option value="" disabled>-- Tidak Ada Kamar Kosong --</option>';
+  }
+
+  // Cek apakah ada informasi lantai
+  const hasFloors = vacantRooms.some((r) => r.floor && r.floor.trim());
+
+  if (hasFloors) {
+    const grouped = {};
+    vacantRooms.forEach((r) => {
+      const fl = (r.floor || 'Lainnya').trim();
+      if (!grouped[fl]) grouped[fl] = [];
+      grouped[fl].push(r);
+    });
+
+    return Object.keys(grouped)
+      .map(
+        (floorName) => `
+        <optgroup label="🏢 ${escapeHtml(floorName)} (${grouped[floorName].length} Kamar Kosong)">
+          ${grouped[floorName]
+            .map(
+              (r) => `
+            <option value="${r.id}" ${preselectedId === r.id ? 'selected' : ''}>
+              ${escapeHtml(r.number)} • ${escapeHtml(r.type)} • ${formatRupiah(r.price)}/bln
+            </option>
+          `
+            )
+            .join('')}
+        </optgroup>
+      `
+      )
+      .join('');
+  }
+
+  return vacantRooms
+    .map(
+      (r) => `
+    <option value="${r.id}" ${preselectedId === r.id ? 'selected' : ''}>
+      ${escapeHtml(r.number)} • ${escapeHtml(r.type)} • ${formatRupiah(r.price)}/bln
+    </option>
+  `
+    )
+    .join('');
+}
+
 function openAddTenantModal(preselectedRoomId = null) {
   const vacantRooms = store.getVacantRooms();
   const alertEl = document.getElementById('tenant-modal-alert');
@@ -607,15 +647,7 @@ function openAddTenantModal(preselectedRoomId = null) {
   // Populate vacant rooms
   roomSelect.innerHTML = `
     <option value="">-- Pilih Kamar Kosong --</option>
-    ${vacantRooms
-      .map(
-        (r) => `
-      <option value="${r.id}" ${preselectedRoomId === r.id ? 'selected' : ''}>
-        ${escapeHtml(r.number)} (${escapeHtml(r.type)}) - ${formatRupiah(r.price)}/bln
-      </option>
-    `
-      )
-      .join('')}
+    ${renderVacantRoomOptions(vacantRooms, preselectedRoomId)}
   `;
 
   clearTenantFormErrors();
