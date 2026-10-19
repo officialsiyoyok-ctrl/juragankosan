@@ -21,18 +21,19 @@
   <link rel="canonical" href="https://app.juragankosan.id/" />
 
   <!-- Application Stylesheets -->
-  <link rel="stylesheet" href="./css/main.css?v=5.2" />
-  <link rel="stylesheet" href="./css/components.css?v=5.2" />
-  <link rel="stylesheet" href="./css/print.css?v=5.2" />
+  <link rel="stylesheet" href="./css/main.css?v=6.0" />
+  <link rel="stylesheet" href="./css/components.css?v=6.0" />
+  <link rel="stylesheet" href="./css/print.css?v=6.0" />
   <script>
     try {
       const sp = new URLSearchParams(window.location.search);
       if (sp.has('reset_sample')) {
+        localStorage.removeItem('juragankos_data_v1');
         localStorage.removeItem('juragankos_data');
         localStorage.removeItem('juragankos_onboarded');
       }
-      const hasData = localStorage.getItem('juragankos_data');
-      const isOnboarded = localStorage.getItem('juragankos_onboarded') === 'true' || Boolean(hasData && hasData.length > 200);
+      const hasData = localStorage.getItem('juragankos_data_v1') || localStorage.getItem('juragankos_data');
+      const isOnboarded = localStorage.getItem('juragankos_onboarded') === 'true' || Boolean(hasData && hasData.length > 100);
       // Jika pengguna baru (belum onboarding) ATAU sesi aplikasi sudah dibuka, bypass layar kunci PIN
       if (!isOnboarded || sessionStorage.getItem('juragankos_app_unlocked') === 'true') {
         document.documentElement.classList.add('app-unlocked');
@@ -407,9 +408,12 @@
         </button>
       </div>
 
-      <!-- Informasi PIN Standar -->
+      <!-- Informasi PIN Standar & Bantuan Reset -->
       <p class="app-lock-default-note" id="app-lock-default-note">
-        PIN Standar: <strong>1234</strong>. Segera ubah PIN Anda di halaman Pengaturan.
+        PIN Standar: <strong>1234</strong>.
+        <button type="button" class="btn-link-reset-pin" id="btn-reset-pin-default" style="display:inline-block;background:none;border:none;color:#059669;font-size:0.75rem;font-weight:700;text-decoration:underline;cursor:pointer;margin-left:4px;padding:2px 4px;">
+          Lupa PIN? Reset ke 1234
+        </button>
       </p>
     </div>
   </div>
@@ -418,7 +422,7 @@
   <div id="toast-container" class="toast-container no-print" aria-live="polite"></div>
 
   <!-- Main JavaScript App Loader -->
-  <script type="module" src="./js/app.js?v=5.2"></script>
+  <script type="module" src="./js/app.js?v=6.0"></script>
 </body>
 </html>
 <!-- Vercel Deploy Trigger v1.0 -->

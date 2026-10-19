@@ -1495,12 +1495,12 @@ class Store {
 
   verifySecurityPin(pin) {
     if (!pin) return false;
-    return String(pin).trim() === this.getSecurityPin();
+    return String(pin).trim() === String(this.getSecurityPin()).trim();
   }
 
   updateSecurityPin(oldPin, newPin) {
     const current = this.getSecurityPin();
-    if (String(oldPin).trim() !== current) {
+    if (String(oldPin).trim() !== String(current).trim()) {
       return { success: false, message: 'PIN Lama salah!' };
     }
     const cleanNew = String(newPin).trim();
@@ -1509,6 +1509,11 @@ class Store {
     }
     this.updateSettings({ securityPin: cleanNew });
     return { success: true, message: 'PIN Keamanan berhasil diperbarui!' };
+  }
+
+  resetSecurityPin() {
+    this.updateSettings({ securityPin: '1234' });
+    return '1234';
   }
 
   // --- APP LOCK (LOGIN PIN KEAMANAN) ---

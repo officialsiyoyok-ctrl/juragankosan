@@ -20,7 +20,7 @@ export function isOnboarded() {
     }
 
     // Kompatibilitas mundur: jika data kos sudah pernah diisi sebelumnya, anggap sudah onboarded
-    const stored = localStorage.getItem('juragankos_data');
+    const stored = localStorage.getItem('juragankos_data_v1') || localStorage.getItem('juragankos_data');
     if (stored) {
       const parsed = JSON.parse(stored);
       if (

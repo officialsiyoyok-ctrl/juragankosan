@@ -1,8 +1,8 @@
 /**
  * Juragankosan Main Application Orchestrator
  */
-import { store } from './state.js?v=2.5';
-import { initModalListeners, openModal, closeModal, showToast, bindCustomPicker } from './utils/modal.js?v=2.5';
+import { store } from './state.js?v=6.0';
+import { initModalListeners, openModal, closeModal, showToast, bindCustomPicker } from './utils/modal.js?v=6.0';
 import {
   formatRupiah,
   formatDateIndo,
@@ -12,7 +12,7 @@ import {
   terbilangRupiah,
   formatDisplayPhone,
   escapeHtml
-} from './utils/formatter.js?v=2.5';
+} from './utils/formatter.js?v=6.0';
 import {
   generateWhatsAppMessage,
   generateKwitansiWhatsAppText,
@@ -20,19 +20,19 @@ import {
   DEFAULT_RECEIPT_WA_TEMPLATE,
   DEFAULT_RECEIPT_PARTIAL_WA_TEMPLATE,
   DEFAULT_RECEIPT_ADVANCE_WA_TEMPLATE
-} from './utils/whatsapp.js?v=3.5';
+} from './utils/whatsapp.js?v=6.0';
 
-import { renderDashboard } from './views/dashboardView.js?v=5.2';
-import { renderRooms } from './views/roomsView.js?v=5.2';
-import { renderTenants } from './views/tenantsView.js?v=5.2';
-import { renderBills, openReceiptModal as renderReceiptModal } from './views/billsView.js?v=5.2';
-import { renderFinances } from './views/financialView.js?v=5.2';
-import { renderExpenses } from './views/expensesView.js?v=5.2';
-import { renderSettings } from './views/settingsView.js?v=5.2';
-import { renderBackup } from './views/backupView.js?v=5.2';
-import { isPro, openUpgradeModal, openAdminGeneratorModal, MAX_FREE_ROOMS } from './utils/license.js?v=5.2';
-import { initAppLock, lockApp } from './utils/appLock.js?v=5.2';
-import { initOnboarding } from './utils/onboarding.js?v=5.2';
+import { renderDashboard } from './views/dashboardView.js?v=6.0';
+import { renderRooms } from './views/roomsView.js?v=6.0';
+import { renderTenants } from './views/tenantsView.js?v=6.0';
+import { renderBills, openReceiptModal as renderReceiptModal } from './views/billsView.js?v=6.0';
+import { renderFinances } from './views/financialView.js?v=6.0';
+import { renderExpenses } from './views/expensesView.js?v=6.0';
+import { renderSettings } from './views/settingsView.js?v=6.0';
+import { renderBackup } from './views/backupView.js?v=6.0';
+import { isPro, openUpgradeModal, openAdminGeneratorModal, MAX_FREE_ROOMS } from './utils/license.js?v=6.0';
+import { initAppLock, lockApp } from './utils/appLock.js?v=6.0';
+import { initOnboarding } from './utils/onboarding.js?v=6.0';
 
 class JuragankosanApp {
   constructor() {
@@ -74,15 +74,30 @@ class JuragankosanApp {
       }
     } catch (e) {}
 
-    initModalListeners();
-    this.setupTheme();
-    this.setupNavigation();
-    this.setupGlobalEvents();
-    this.setupAdminGeneratorTrigger();
-    this.updateKosHeader();
-    this.updateSidebarLicense();
-    initAppLock();
-    initOnboarding();
+    try {
+      initModalListeners();
+      this.setupTheme();
+      this.setupNavigation();
+      this.setupGlobalEvents();
+      this.setupAdminGeneratorTrigger();
+      this.updateKosHeader();
+      this.updateSidebarLicense();
+    } catch (e) {
+      console.warn('Juragankosan setup partial error:', e);
+    }
+
+    try {
+      initAppLock();
+    } catch (e) {
+      console.error('Juragankosan initAppLock error:', e);
+    }
+
+    try {
+      initOnboarding();
+    } catch (e) {
+      console.error('Juragankosan initOnboarding error:', e);
+    }
+
     this.lockApp = lockApp;
 
     // Check if coming from a full reset reload
@@ -804,7 +819,15 @@ class JuragankosanApp {
   }
 }
 
-// Bootstrapping
-document.addEventListener('DOMContentLoaded', () => {
-  window.juraganApp = new JuragankosanApp();
-});
+// Resilient Bootstrapping: Handles both early and late script execution
+function bootstrapJuraganApp() {
+  if (!window.juraganApp) {
+    window.juraganApp = new JuragankosanApp();
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrapJuraganApp);
+} else {
+  bootstrapJuraganApp();
+}

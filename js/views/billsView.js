@@ -1,7 +1,7 @@
 /**
  * Juragankosan Bills View (Tab 4: Tracking Tagihan Sewa & Pengingat WhatsApp 1-Klik)
  */
-import { store } from '../state.js?v=3.4';
+import { store } from '../state.js?v=6.0';
 import {
   formatRupiah,
   formatDateIndo,
@@ -12,16 +12,16 @@ import {
   formatDisplayPhone,
   terbilangRupiah,
   addMonthsToPeriod
-} from '../utils/formatter.js?v=3.4';
+} from '../utils/formatter.js?v=6.0';
 import {
   generateBillWhatsAppText,
   generateKwitansiWhatsAppText,
   generateWhatsAppMessage,
   openWhatsAppLink,
   DEFAULT_PARTIAL_REMINDER_WA_TEMPLATE
-} from '../utils/whatsapp.js?v=3.5';
-import { openModal, closeModal, showToast, showConfirmModal } from '../utils/modal.js?v=3.4';
-import { isPro } from '../utils/license.js?v=3.4';
+} from '../utils/whatsapp.js?v=6.0';
+import { openModal, closeModal, showToast, showConfirmModal } from '../utils/modal.js?v=6.0';
+import { isPro } from '../utils/license.js?v=6.0';
 
 let selectedPeriod = getCurrentYearMonth();
 let currentFilter = 'all'; // 'all' | 'belum_bayar' | 'sebagian' | 'lunas' | 'terlambat'
