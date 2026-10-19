@@ -4,6 +4,7 @@
  */
 import { store } from '../state.js?v=2.5';
 import { showToast } from './modal.js?v=2.5';
+import { isOnboarded } from './onboarding.js?v=5.2';
 
 let pinBuffer = '';
 
@@ -27,6 +28,10 @@ export function renderPinDots() {
 }
 
 export function isAppLocked() {
+  // Jika pengguna baru (belum melewati onboarding), jangan kunci aplikasi
+  if (!isOnboarded()) {
+    return false;
+  }
   return store.isAppLocked();
 }
 

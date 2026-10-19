@@ -29,8 +29,12 @@
       const sp = new URLSearchParams(window.location.search);
       if (sp.has('reset_sample')) {
         localStorage.removeItem('juragankos_data');
+        localStorage.removeItem('juragankos_onboarded');
       }
-      if (sessionStorage.getItem('juragankos_app_unlocked') === 'true') {
+      const hasData = localStorage.getItem('juragankos_data');
+      const isOnboarded = localStorage.getItem('juragankos_onboarded') === 'true' || Boolean(hasData && hasData.length > 200);
+      // Jika pengguna baru (belum onboarding) ATAU sesi aplikasi sudah dibuka, bypass layar kunci PIN
+      if (!isOnboarded || sessionStorage.getItem('juragankos_app_unlocked') === 'true') {
         document.documentElement.classList.add('app-unlocked');
       }
     } catch (e) {}
@@ -234,6 +238,106 @@
         <span>Setelan</span>
       </a>
     </nav>
+  </div>
+
+  <!-- Welcome Onboarding Screen (Layar Sambutan & Setup Akun Calon Konsumen) -->
+  <div id="welcome-onboarding-overlay" class="welcome-onboarding-overlay hidden" aria-modal="true" role="dialog" aria-labelledby="onboarding-heading">
+    <div class="welcome-onboarding-card">
+      <div class="onboarding-brand">
+        <div class="onboarding-logo-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="onboarding-home-icon">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <div class="onboarding-pill-badge">
+          <span class="badge-dot"></span>
+          <span>Aktivasi Coba Gratis</span>
+        </div>
+        <h1 class="onboarding-brand-name" id="onboarding-heading">Selamat Datang di Juragankosan 👋</h1>
+        <p class="onboarding-brand-tagline">Kelola kamar kos, catat pembukuan, &amp; kirim tagihan WhatsApp otomatis.</p>
+      </div>
+
+      <form id="onboarding-form" class="onboarding-form">
+        <div class="form-group mb-3 text-left">
+          <label for="onboarding-owner-name" class="form-label font-bold">
+            Nama Anda (Pemilik / Pengelola) <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="onboarding-owner-name" 
+            class="form-control form-control-lg" 
+            placeholder="Contoh: Pak Budi / Ibu Maya" 
+            required 
+            autocomplete="name"
+          />
+        </div>
+
+        <div class="form-group mb-3 text-left">
+          <label for="onboarding-kos-name" class="form-label font-bold">
+            Nama Kos / Properti Anda <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="onboarding-kos-name" 
+            class="form-control form-control-lg" 
+            placeholder="Contoh: Kost Griya Melati" 
+            required 
+          />
+        </div>
+
+        <div class="form-group mb-3 text-left">
+          <label for="onboarding-owner-phone" class="form-label font-bold">
+            Nomor WhatsApp Aktif <span class="text-danger">*</span>
+          </label>
+          <input 
+            type="tel" 
+            id="onboarding-owner-phone" 
+            class="form-control form-control-lg" 
+            placeholder="Contoh: 0812-3456-7890" 
+            required 
+            inputmode="numeric"
+            autocomplete="tel"
+          />
+          <p class="onboarding-field-hint">
+            📲 Digunakan untuk kirim panduan, backup data, &amp; aktivasi tagihan WA.
+          </p>
+        </div>
+
+        <div class="form-group mb-4 text-left">
+          <div class="flex-between align-center mb-1">
+            <label for="onboarding-pin" class="form-label font-bold mb-0">
+              Buat PIN Keamanan Anda (4 Angka)
+            </label>
+            <span class="text-xs text-muted font-mono">Bawaan: 1234</span>
+          </div>
+          <input 
+            type="password" 
+            id="onboarding-pin" 
+            class="form-control form-control-lg text-center font-mono letter-spacing-wide" 
+            placeholder="1234" 
+            maxlength="4" 
+            inputmode="numeric"
+            value="1234"
+          />
+          <p class="onboarding-field-hint">
+            🔒 PIN ini untuk melindungi privasi data kos Anda saat mengunci aplikasi.
+          </p>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg btn-onboarding-submit" id="btn-onboarding-submit">
+          <span>🚀 Mulai Kelola Kos Saya Gratis</span>
+        </button>
+
+        <div class="onboarding-footer-guarantee">
+          <span>✓ 100% Gratis s/d 3 kamar</span>
+          <span class="dot-sep">•</span>
+          <span>Tanpa Kartu Kredit</span>
+          <span class="dot-sep">•</span>
+          <span>Data Aman di HP</span>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- App Lock Screen (Layar Kunci PIN Keamanan) -->

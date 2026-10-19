@@ -32,6 +32,7 @@ import { renderSettings } from './views/settingsView.js?v=5.2';
 import { renderBackup } from './views/backupView.js?v=5.2';
 import { isPro, openUpgradeModal, openAdminGeneratorModal, MAX_FREE_ROOMS } from './utils/license.js?v=5.2';
 import { initAppLock, lockApp } from './utils/appLock.js?v=5.2';
+import { initOnboarding } from './utils/onboarding.js?v=5.2';
 
 class JuragankosanApp {
   constructor() {
@@ -81,6 +82,7 @@ class JuragankosanApp {
     this.updateKosHeader();
     this.updateSidebarLicense();
     initAppLock();
+    initOnboarding();
     this.lockApp = lockApp;
 
     // Check if coming from a full reset reload

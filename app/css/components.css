@@ -5206,6 +5206,188 @@
 }
 
 /* ==========================================================================
+   Welcome Onboarding Screen (Layar Sambutan Calon Konsumen)
+   ========================================================================== */
+.welcome-onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: radial-gradient(circle at 50% 15%, rgba(248, 250, 252, 0.97), rgba(226, 232, 240, 0.98));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow-y: auto;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] .welcome-onboarding-overlay {
+  background: radial-gradient(circle at 50% 15%, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.99));
+}
+
+.welcome-onboarding-overlay.hidden {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.welcome-onboarding-overlay.onboarding-fade-out {
+  opacity: 0;
+  transform: scale(0.98);
+  pointer-events: none;
+}
+
+.welcome-onboarding-card {
+  width: 100%;
+  max-width: 440px;
+  margin: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 2rem 1.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  position: relative;
+  animation: onboardingPopIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+[data-theme="dark"] .welcome-onboarding-card {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+@keyframes onboardingPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.onboarding-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.onboarding-logo-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px rgba(5, 150, 105, 0.35);
+  margin-bottom: 0.75rem;
+}
+
+.onboarding-home-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.onboarding-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 0.625rem;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+[data-theme="dark"] .onboarding-pill-badge {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.onboarding-pill-badge .badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+.onboarding-brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.onboarding-brand-tagline {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.onboarding-form {
+  margin-top: 0.5rem;
+}
+
+.onboarding-field-hint {
+  font-size: 0.72rem;
+  color: var(--text-secondary, #64748b);
+  margin-top: 4px;
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+.letter-spacing-wide {
+  letter-spacing: 0.25em;
+}
+
+.btn-onboarding-submit {
+  height: 48px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(5, 150, 105, 0.32);
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-onboarding-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(5, 150, 105, 0.42);
+}
+
+.onboarding-footer-guarantee {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  font-size: 0.72rem;
+  color: var(--text-secondary, #64748b);
+}
+
+.onboarding-footer-guarantee .dot-sep {
+  color: var(--border-color, #cbd5e1);
+}
+
+/* ==========================================================================
    App Lock Screen (Layar Kunci Keamanan PIN)
    ========================================================================== */
 .app-lock-overlay {

@@ -408,6 +408,7 @@ function setupBackupEvents(container) {
     closeModal('modal-reset-data-pin');
 
     try {
+      localStorage.removeItem('juragankos_onboarded');
       sessionStorage.setItem('jk_reset_toast', 'Semua data kos berhasil dibersihkan.');
     } catch (e) {}
 
