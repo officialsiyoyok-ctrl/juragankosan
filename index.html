@@ -173,10 +173,13 @@
         <!-- Left Column: Copywriting Hero -->
         <div class="lg:col-span-7 text-center lg:text-left">
           
-          <!-- Sleek Single-Line Pill Badge -->
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100/80 text-emerald-900 border border-emerald-300/60 mb-5 shadow-xs whitespace-nowrap">
-            <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Aplikasi Pengelola Kos Praktis Tanpa Perlu Install PlayStore</span>
+          <!-- Symmetrical Centered Pill Badge (Sama Rata Kiri & Kanan di HP) -->
+          <div class="flex justify-center lg:justify-start w-full mb-5">
+            <div class="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-100/90 text-emerald-900 border border-emerald-300/70 shadow-xs max-w-full text-center">
+              <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0"></span>
+              <span class="sm:hidden">Aplikasi Kos Praktis • Tanpa Install PlayStore</span>
+              <span class="hidden sm:inline">Aplikasi Pengelola Kos Praktis Tanpa Perlu Install PlayStore</span>
+            </div>
           </div>
 
           <!-- Headline: Proporsional, Tegas & Elegan (Tidak Balon/Gendut) -->
@@ -244,12 +247,6 @@
               <!-- Subtle Dark Vignette Gradient -->
               <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/15 to-slate-950/40 pointer-events-none"></div>
 
-              <!-- Top Left Tag: Kisah Nyata -->
-              <div class="absolute top-3 left-3 px-3 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold flex items-center gap-1.5 shadow-md">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Kisah Nyata Pemilik Kos</span>
-              </div>
-
               <!-- Top Right Tag: Zoom Hint -->
               <div class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium flex items-center gap-1 shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
                 <span>🔍</span>
@@ -259,42 +256,36 @@
               <!-- Bottom Overlay Caption inside photo -->
               <div class="absolute bottom-2.5 left-3.5 right-3.5 text-white">
                 <div class="text-[10px] font-semibold tracking-wider uppercase text-emerald-300">
-                  📍 Kost Putri Muslimah
+                  📍 Kos Putri Muslimah
                 </div>
                 <div class="text-xs sm:text-sm font-bold text-white leading-tight">
-                  Gedung 2 Lantai • 24 Pintu Kamar Aktif
+                  Gedung 2 Lantai • 24 Pintu Kamar
                 </div>
               </div>
             </div>
 
           </div>
 
-          <!-- Floating Badges Outside the Frame (Elegan & Bernilai Tinggi) -->
-          <!-- 1. Floating Badge Kanan Atas: Kapasitas & Status -->
+          <!-- Floating Badges Outside the Frame (Elegan & Faktual) -->
+          <!-- 1. Floating Badge Kanan Atas: Kapasitas Unit -->
           <div class="hidden sm:flex absolute -top-3 -right-2 sm:-right-4 z-20 items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur-md shadow-xl border border-emerald-200/90 animate-float">
             <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-base font-bold shadow-xs">
               🏡
             </div>
             <div>
-              <div class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Investasi Berjalan</div>
+              <div class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Unit Kamar</div>
               <div class="text-xs sm:text-sm font-extrabold text-slate-900">2 Lantai • 24 Pintu Kos</div>
             </div>
           </div>
 
-          <!-- 2. Floating Card Kiri Bawah: Testimoni Kepuasan -->
-          <div class="absolute -bottom-4 -left-2 sm:-left-5 z-20 bg-white/95 backdrop-blur-md p-3 sm:p-3.5 rounded-2xl shadow-2xl border border-emerald-200/90 max-w-[250px] sm:max-w-[280px] animate-float-delayed">
-            <div class="flex items-center justify-between mb-1">
-              <div class="flex items-center text-amber-500 text-xs">
-                ★★★★★
-              </div>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">100% Penuh</span>
+          <!-- 2. Floating Badge Kiri Bawah: Fleksibilitas Kapasitas -->
+          <div class="hidden sm:flex absolute -bottom-3 -left-2 sm:-left-4 z-20 items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-white/95 backdrop-blur-md shadow-xl border border-emerald-200/90 animate-float-delayed">
+            <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-base font-bold shadow-xs">
+              ⚡
             </div>
-            <p class="text-[11px] sm:text-xs text-slate-800 font-semibold leading-snug">
-              "Dulu rekap manual bikin pusing. Sekarang 24 kamar & uang sewa rapi terkontrol dari HP."
-            </p>
-            <div class="mt-1.5 flex items-center justify-between text-[10px] pt-1.5 border-t border-slate-100 text-slate-500">
-              <span class="font-bold text-slate-700">Bp. H. Yoyok & Ibu</span>
-              <span class="text-emerald-700 font-medium">Pemilik Kos</span>
+            <div>
+              <div class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Kapasitas Fleksibel</div>
+              <div class="text-xs sm:text-sm font-extrabold text-slate-900">1 s/d 100+ Pintu Kos</div>
             </div>
           </div>
 
