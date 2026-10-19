@@ -93,10 +93,13 @@ export function initModalListeners() {
   // Close modal when pressing ESC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      const activeModal = document.querySelector('.modal-backdrop.active');
-      if (activeModal) {
-        activeModal.classList.remove('active');
-        document.body.classList.remove('modal-open');
+      const activeModals = document.querySelectorAll('.modal-backdrop.active');
+      if (activeModals.length > 0) {
+        const topModal = activeModals[activeModals.length - 1];
+        topModal.classList.remove('active');
+        if (!document.querySelector('.modal-backdrop.active')) {
+          document.body.classList.remove('modal-open');
+        }
       }
     }
   });

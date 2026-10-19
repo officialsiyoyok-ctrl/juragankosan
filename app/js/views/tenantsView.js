@@ -353,11 +353,18 @@ export function renderTenants(container, options = {}) {
 
             <div class="form-row">
               <div class="form-group flex-1" id="group-select-room">
-                <label for="tenant-room-id" class="form-label">Pilih Kamar Kosong <span class="text-danger">*</span></label>
-                <select id="tenant-room-id" class="form-control" required>
-                  <option value="">-- Pilih Kamar Kosong --</option>
-                  ${renderVacantRoomOptions(vacantRooms)}
-                </select>
+                <label for="tenant-room-trigger" class="form-label">Pilih Kamar Kosong <span class="text-danger">*</span></label>
+                <div class="custom-room-select-trigger" id="tenant-room-trigger" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false">
+                  <div class="room-trigger-body">
+                    <span class="room-trigger-icon">🚪</span>
+                    <div class="room-trigger-text">
+                      <div class="room-trigger-title" id="room-trigger-title">-- Pilih Kamar Kosong --</div>
+                      <div class="room-trigger-subtitle" id="room-trigger-subtitle" style="display: none;"></div>
+                    </div>
+                  </div>
+                  <span class="room-trigger-chevron">▾</span>
+                </div>
+                <input type="hidden" id="tenant-room-id" value="" />
                 <span class="form-error" id="error-tenant-room"></span>
               </div>
 
@@ -468,6 +475,38 @@ export function renderTenants(container, options = {}) {
         </form>
       </div>
     </div>
+
+    <!-- Custom Room Picker Modal (Menggantikan dialog native select Android yang kaku/gemuk) -->
+    <div id="modal-room-picker" class="modal-backdrop room-picker-backdrop">
+      <div class="modal-dialog modal-sm room-picker-dialog">
+        <div class="modal-header room-picker-header">
+          <div class="room-picker-title-group">
+            <h3 class="modal-title room-picker-title">Pilih Kamar Kosong</h3>
+            <span class="room-picker-badge" id="room-picker-count-badge">0 Kamar Siap Huni</span>
+          </div>
+          <button type="button" class="modal-close" data-close-modal="modal-room-picker" aria-label="Tutup">&times;</button>
+        </div>
+        <div class="room-picker-search-container">
+          <div class="room-picker-search-box">
+            <span class="room-picker-search-icon">🔍</span>
+            <input 
+              type="text" 
+              id="room-picker-search-input" 
+              class="room-picker-search-input" 
+              placeholder="Cari nomor, tipe, atau lantai..." 
+              autocomplete="off"
+            />
+            <button type="button" id="room-picker-search-clear" class="room-picker-search-clear" style="display: none;" aria-label="Hapus pencarian">&times;</button>
+          </div>
+        </div>
+        <div class="room-picker-body" id="room-picker-list">
+          <!-- Rendered dynamically -->
+        </div>
+        <div class="modal-footer room-picker-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-close-modal="modal-room-picker">Tutup</button>
+        </div>
+      </div>
+    </div>
   `;
 
   setupTenantsEvents(container);
@@ -556,59 +595,194 @@ function setupTenantsEvents(container) {
       saveCheckoutForm(container);
     });
   }
+
+  // Room Picker Trigger & Search Events
+  const roomTrigger = container.querySelector('#tenant-room-trigger');
+  if (roomTrigger) {
+    roomTrigger.addEventListener('click', () => {
+      openRoomPickerModal();
+    });
+    roomTrigger.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openRoomPickerModal();
+      }
+    });
+  }
+
+  const roomSearchInput = container.querySelector('#room-picker-search-input');
+  const roomSearchClear = container.querySelector('#room-picker-search-clear');
+  if (roomSearchInput) {
+    roomSearchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      if (roomSearchClear) roomSearchClear.style.display = q ? 'flex' : 'none';
+      renderRoomPickerItems(q);
+    });
+  }
+  if (roomSearchClear) {
+    roomSearchClear.addEventListener('click', () => {
+      if (roomSearchInput) {
+        roomSearchInput.value = '';
+        roomSearchInput.focus();
+      }
+      roomSearchClear.style.display = 'none';
+      renderRoomPickerItems('');
+    });
+  }
 }
 
-function renderVacantRoomOptions(vacantRooms, preselectedId = null) {
-  if (!vacantRooms || vacantRooms.length === 0) {
-    return '<option value="" disabled>-- Tidak Ada Kamar Kosong --</option>';
+function updateTenantRoomTrigger(roomId) {
+  const hiddenInput = document.getElementById('tenant-room-id');
+  const trigger = document.getElementById('tenant-room-trigger');
+  const titleEl = document.getElementById('room-trigger-title');
+  const subtitleEl = document.getElementById('room-trigger-subtitle');
+  if (!hiddenInput || !trigger || !titleEl || !subtitleEl) return;
+
+  const vacantRooms = store.getVacantRooms();
+
+  if (vacantRooms.length === 0) {
+    hiddenInput.value = '';
+    titleEl.textContent = '-- Semua Kamar Sedang Terisi --';
+    subtitleEl.style.display = 'none';
+    trigger.classList.remove('has-value', 'input-invalid');
+    trigger.style.pointerEvents = 'none';
+    trigger.style.opacity = '0.6';
+    return;
   }
 
-  // Cek apakah ada informasi lantai
-  const hasFloors = vacantRooms.some((r) => r.floor && r.floor.trim());
+  trigger.style.pointerEvents = 'auto';
+  trigger.style.opacity = '1';
 
-  if (hasFloors) {
-    const grouped = {};
-    vacantRooms.forEach((r) => {
-      const fl = (r.floor || 'Lainnya').trim();
-      if (!grouped[fl]) grouped[fl] = [];
-      grouped[fl].push(r);
+  if (!roomId) {
+    hiddenInput.value = '';
+    titleEl.textContent = '-- Pilih Kamar Kosong --';
+    subtitleEl.style.display = 'none';
+    trigger.classList.remove('has-value', 'input-invalid');
+    return;
+  }
+
+  const room = store.getRoomById(roomId);
+  if (!room) {
+    hiddenInput.value = '';
+    titleEl.textContent = '-- Pilih Kamar Kosong --';
+    subtitleEl.style.display = 'none';
+    trigger.classList.remove('has-value', 'input-invalid');
+    return;
+  }
+
+  hiddenInput.value = room.id;
+  titleEl.textContent = `Kamar ${room.number} • ${room.type}`;
+  subtitleEl.textContent = `${room.floor ? room.floor + ' • ' : ''}${formatRupiah(room.price)}/bln`;
+  subtitleEl.style.display = 'block';
+  trigger.classList.add('has-value');
+  trigger.classList.remove('input-invalid');
+}
+
+function openRoomPickerModal() {
+  const vacantRooms = store.getVacantRooms();
+  if (vacantRooms.length === 0) return;
+
+  const countBadge = document.getElementById('room-picker-count-badge');
+  if (countBadge) {
+    countBadge.textContent = `${vacantRooms.length} Kamar Siap Huni`;
+  }
+
+  const searchInput = document.getElementById('room-picker-search-input');
+  const clearBtn = document.getElementById('room-picker-search-clear');
+  if (searchInput) searchInput.value = '';
+  if (clearBtn) clearBtn.style.display = 'none';
+
+  renderRoomPickerItems('');
+  openModal('modal-room-picker');
+}
+
+function renderRoomPickerItems(filterText = '') {
+  const listContainer = document.getElementById('room-picker-list');
+  if (!listContainer) return;
+
+  const vacantRooms = store.getVacantRooms();
+  const currentSelectedId = document.getElementById('tenant-room-id')?.value || '';
+
+  let filtered = vacantRooms;
+  if (filterText) {
+    const q = filterText.toLowerCase();
+    filtered = vacantRooms.filter((r) => {
+      const num = String(r.number || '').toLowerCase();
+      const type = String(r.type || '').toLowerCase();
+      const floor = String(r.floor || '').toLowerCase();
+      const priceStr = String(r.price || '');
+      return num.includes(q) || type.includes(q) || floor.includes(q) || priceStr.includes(q);
     });
-
-    return Object.keys(grouped)
-      .map(
-        (floorName) => `
-        <optgroup label="🏢 ${escapeHtml(floorName)} (${grouped[floorName].length} Kamar Kosong)">
-          ${grouped[floorName]
-            .map(
-              (r) => `
-            <option value="${r.id}" ${preselectedId === r.id ? 'selected' : ''}>
-              ${escapeHtml(r.number)} • ${escapeHtml(r.type)} • ${formatRupiah(r.price)}/bln
-            </option>
-          `
-            )
-            .join('')}
-        </optgroup>
-      `
-      )
-      .join('');
   }
 
-  return vacantRooms
-    .map(
-      (r) => `
-    <option value="${r.id}" ${preselectedId === r.id ? 'selected' : ''}>
-      ${escapeHtml(r.number)} • ${escapeHtml(r.type)} • ${formatRupiah(r.price)}/bln
-    </option>
-  `
-    )
+  if (filtered.length === 0) {
+    listContainer.innerHTML = `
+      <div class="room-picker-empty">
+        <div class="room-picker-empty-icon">🔍</div>
+        <div class="room-picker-empty-text">
+          ${filterText ? `Tidak ada kamar cocok dengan <strong>"${escapeHtml(filterText)}"</strong>` : 'Tidak ada kamar kosong yang tersedia'}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Group by floor
+  const grouped = {};
+  filtered.forEach((r) => {
+    const fl = (r.floor || 'Lantai 1').trim();
+    if (!grouped[fl]) grouped[fl] = [];
+    grouped[fl].push(r);
+  });
+
+  listContainer.innerHTML = Object.keys(grouped)
+    .map((floorName) => {
+      const rooms = grouped[floorName];
+      return `
+        <div class="room-picker-group">
+          <div class="room-picker-floor-header">
+            <span class="room-picker-floor-title">🏢 ${escapeHtml(floorName)}</span>
+            <span class="room-picker-floor-count">${rooms.length} Kamar</span>
+          </div>
+          <div class="room-picker-items">
+            ${rooms.map((r) => {
+              const isSelected = r.id === currentSelectedId;
+              return `
+                <div class="room-picker-item ${isSelected ? 'selected' : ''}" data-room-id="${r.id}" role="button" tabindex="0">
+                  <div class="room-picker-item-main">
+                    <div class="room-picker-item-num">Kamar ${escapeHtml(r.number)}</div>
+                    <div class="room-picker-item-type">${escapeHtml(r.type)}</div>
+                  </div>
+                  <div class="room-picker-item-aside">
+                    <div class="room-picker-item-price">${formatRupiah(r.price)}<span class="room-picker-unit">/bln</span></div>
+                    <div class="room-picker-radio ${isSelected ? 'checked' : ''}">
+                      ${isSelected ? '✓' : ''}
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    })
     .join('');
+
+  // Attach click listeners to room items
+  listContainer.querySelectorAll('.room-picker-item').forEach((item) => {
+    item.addEventListener('click', () => {
+      const roomId = item.getAttribute('data-room-id');
+      updateTenantRoomTrigger(roomId);
+      clearTenantFormErrors();
+      closeModal('modal-room-picker');
+    });
+  });
 }
 
 function openAddTenantModal(preselectedRoomId = null) {
   const vacantRooms = store.getVacantRooms();
   const alertEl = document.getElementById('tenant-modal-alert');
   const saveBtn = document.getElementById('btn-save-tenant');
-  const roomSelect = document.getElementById('tenant-room-id');
 
   alertEl.innerHTML = '';
 
@@ -644,11 +818,8 @@ function openAddTenantModal(preselectedRoomId = null) {
   // Room Select visibility
   document.getElementById('group-select-room').style.display = 'block';
 
-  // Populate vacant rooms
-  roomSelect.innerHTML = `
-    <option value="">-- Pilih Kamar Kosong --</option>
-    ${renderVacantRoomOptions(vacantRooms, preselectedRoomId)}
-  `;
+  // Update room selection in custom picker
+  updateTenantRoomTrigger(preselectedRoomId);
 
   clearTenantFormErrors();
   openModal('tenant-form-modal');
@@ -686,6 +857,8 @@ function clearTenantFormErrors() {
   document.getElementById('error-tenant-phone').textContent = '';
   const errorRoom = document.getElementById('error-tenant-room');
   if (errorRoom) errorRoom.textContent = '';
+  const triggerEl = document.getElementById('tenant-room-trigger');
+  if (triggerEl) triggerEl.classList.remove('input-invalid');
   document.getElementById('tenant-name').classList.remove('input-invalid');
   document.getElementById('tenant-phone').classList.remove('input-invalid');
 }
@@ -724,9 +897,13 @@ function saveTenantForm(container) {
 
   if (!id) {
     const roomId = document.getElementById('tenant-room-id').value;
+    const triggerEl = document.getElementById('tenant-room-trigger');
     if (!roomId) {
       document.getElementById('error-tenant-room').textContent = 'Pilih salah satu kamar yang kosong!';
+      if (triggerEl) triggerEl.classList.add('input-invalid');
       hasError = true;
+    } else {
+      if (triggerEl) triggerEl.classList.remove('input-invalid');
     }
     if (hasError) return;
 
