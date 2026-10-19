@@ -1930,6 +1930,7 @@
   border: 1px solid var(--border-color);
   background-color: var(--bg-surface);
   color: var(--text-main);
+  font-size: 0.875rem;
   outline: none;
   transition: all var(--transition-fast);
 }
@@ -1937,6 +1938,94 @@
 .form-control:focus {
   border-color: var(--primary-500);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* ==========================================================================
+   Global Placeholder & Contoh Field Styling (Semua Field Isian di Seluruh App)
+   Ukuran font lebih kecil dari judul field, warna cerah/soft agar jelas sebagai contoh
+   ========================================================================== */
+.form-control::-webkit-input-placeholder,
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  font-family: var(--font-family, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
+  font-size: 0.785rem !important;
+  font-weight: 400 !important;
+  letter-spacing: normal !important;
+  color: #94a3b8 !important;
+  opacity: 0.88 !important;
+}
+
+.form-control::-moz-placeholder,
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  font-family: var(--font-family, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
+  font-size: 0.785rem !important;
+  font-weight: 400 !important;
+  letter-spacing: normal !important;
+  color: #94a3b8 !important;
+  opacity: 0.88 !important;
+}
+
+.form-control::placeholder,
+input::placeholder,
+textarea::placeholder {
+  font-family: var(--font-family, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
+  font-size: 0.785rem !important;
+  font-weight: 400 !important;
+  letter-spacing: normal !important;
+  color: #94a3b8 !important;
+  opacity: 0.88 !important;
+}
+
+/* Dark Theme Placeholder */
+[data-theme="dark"] .form-control::-webkit-input-placeholder,
+[data-theme="dark"] input::-webkit-input-placeholder,
+[data-theme="dark"] textarea::-webkit-input-placeholder {
+  color: #64748b !important;
+  opacity: 0.85 !important;
+}
+
+[data-theme="dark"] .form-control::-moz-placeholder,
+[data-theme="dark"] input::-moz-placeholder,
+[data-theme="dark"] textarea::-moz-placeholder {
+  color: #64748b !important;
+  opacity: 0.85 !important;
+}
+
+[data-theme="dark"] .form-control::placeholder,
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #64748b !important;
+  opacity: 0.85 !important;
+}
+
+/* Placeholder Default pada Select Option (-- Pilih ... --) */
+select.form-control option[value=""],
+select.form-control option[disabled] {
+  color: #94a3b8 !important;
+  font-size: 0.785rem !important;
+}
+
+select.form-control option:not([value=""]) {
+  color: var(--text-main);
+  font-size: 0.875rem;
+}
+
+/* Penyesuaian Ekstra Responsif Layar HP (< 480px) */
+@media (max-width: 480px) {
+  .form-control::-webkit-input-placeholder,
+  input::-webkit-input-placeholder,
+  textarea::-webkit-input-placeholder,
+  .form-control::placeholder,
+  input::placeholder,
+  textarea::placeholder {
+    font-size: 0.74rem !important;
+  }
+
+  select.form-control option[value=""],
+  select.form-control option[disabled] {
+    font-size: 0.74rem !important;
+  }
 }
 
 .input-invalid {
@@ -5178,43 +5267,43 @@
 
 .input-pin-numeric::-webkit-input-placeholder {
   font-family: var(--font-sans, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
-  font-size: 0.8125rem !important;
+  font-size: 0.785rem !important;
   font-weight: 400 !important;
   letter-spacing: normal !important;
-  color: var(--text-muted, #94a3b8) !important;
-  opacity: 0.85 !important;
+  color: #94a3b8 !important;
+  opacity: 0.88 !important;
 }
 
 .input-pin-numeric::-moz-placeholder {
   font-family: var(--font-sans, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
-  font-size: 0.8125rem !important;
+  font-size: 0.785rem !important;
   font-weight: 400 !important;
   letter-spacing: normal !important;
-  color: var(--text-muted, #94a3b8) !important;
-  opacity: 0.85 !important;
+  color: #94a3b8 !important;
+  opacity: 0.88 !important;
 }
 
 .input-pin-numeric::placeholder {
   font-family: var(--font-sans, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
-  font-size: 0.8125rem !important;
+  font-size: 0.785rem !important;
   font-weight: 400 !important;
   letter-spacing: normal !important;
-  color: var(--text-muted, #94a3b8) !important;
-  opacity: 0.85 !important;
+  color: #94a3b8 !important;
+  opacity: 0.88 !important;
 }
 
 @media (max-width: 480px) {
   .input-pin-numeric:placeholder-shown {
-    font-size: 0.775rem !important;
+    font-size: 0.74rem !important;
   }
   .input-pin-numeric::-webkit-input-placeholder {
-    font-size: 0.775rem !important;
+    font-size: 0.74rem !important;
   }
   .input-pin-numeric::-moz-placeholder {
-    font-size: 0.775rem !important;
+    font-size: 0.74rem !important;
   }
   .input-pin-numeric::placeholder {
-    font-size: 0.775rem !important;
+    font-size: 0.74rem !important;
   }
 }
 
