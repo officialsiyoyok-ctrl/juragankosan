@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Juragankosan — Aplikasi Manajemen Kos &amp; Kontrakan Simpel</title>
+  <meta name="description" content="Aplikasi pencatatan kos dan kontrakan praktis. Kelola kamar, data penyewa, tracking tagihan sewa jatuh tempo, dan kirim pengingat WhatsApp 1-klik." />
+  <meta name="theme-color" content="#059669" />
+
+  <!-- Favicon & PWA Manifest -->
+  <link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg" />
+  <link rel="apple-touch-icon" href="./assets/icons/favicon.svg" />
+  <link rel="manifest" href="./manifest.json" />
+
+  <!-- Google Fonts: Plus Jakarta Sans for a crisp, premium modern feel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+
+  <!-- Canonical URL for App Subdomain -->
+  <link rel="canonical" href="https://app.juragankosan.id/" />
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="./css/main.css?v=5.2" />
+  <link rel="stylesheet" href="./css/components.css?v=5.2" />
+  <link rel="stylesheet" href="./css/print.css?v=5.2" />
+  <script>
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.has('reset_sample')) {
+        localStorage.removeItem('juragankos_data');
+      }
+      if (sessionStorage.getItem('juragankos_app_unlocked') === 'true') {
+        document.documentElement.classList.add('app-unlocked');
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <!-- App Layout Container -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation (Desktop & Tablet) -->
+    <aside class="sidebar no-print" id="sidebar-nav">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <img src="./assets/icons/favicon.svg" alt="Juragankosan Logo" class="brand-icon" />
+          <div class="brand-text">
+            <span class="brand-title">Juragankosan</span>
+            <span class="brand-subtitle" id="brand-kos-name">Griya Asri Kost</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <div class="nav-section-title">MENU UTAMA</div>
+        
+        <a href="#dashboard" class="nav-item active" data-tab-target="dashboard" id="nav-link-dashboard">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9" rx="1.5"/>
+            <rect x="14" y="3" width="7" height="5" rx="1.5"/>
+            <rect x="14" y="12" width="7" height="9" rx="1.5"/>
+            <rect x="3" y="16" width="7" height="5" rx="1.5"/>
+          </svg>
+          <span class="nav-label">Dashboard Ringkasan</span>
+        </a>
+
+        <a href="#rooms" class="nav-item" data-tab-target="rooms" id="nav-link-rooms">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+          <span class="nav-label">Data Kamar</span>
+          <span class="nav-badge badge-emerald" id="nav-badge-vacant"></span>
+        </a>
+
+        <a href="#tenants" class="nav-item" data-tab-target="tenants" id="nav-link-tenants">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          <span class="nav-label">Database Penyewa</span>
+        </a>
+
+        <a href="#bills" class="nav-item" data-tab-target="bills" id="nav-link-bills">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+          </svg>
+          <span class="nav-label">Tagihan &amp; Sewa</span>
+          <span class="nav-badge badge-amber" id="nav-badge-unpaid"></span>
+        </a>
+
+        <div class="nav-section-title">KEUANGAN &amp; SISTEM</div>
+
+        <a href="#finances" class="nav-item" data-tab-target="finances" id="nav-link-finances">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="nav-label">Keuangan &amp; Arus Kas</span>
+        </a>
+
+        <a href="#settings" class="nav-item" data-tab-target="settings" id="nav-link-settings">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span class="nav-label">Pengaturan Kos</span>
+        </a>
+
+        <a href="#backup" class="nav-item" data-tab-target="backup" id="nav-link-backup">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4H8z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 20V12H8v8m0-16v4h6"/>
+          </svg>
+          <span class="nav-label">Backup &amp; Data</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar License Status & Quota Widget (Freemium) -->
+      <div class="sidebar-license-widget" id="sidebar-license-widget"></div>
+
+      <!-- Tombol Kunci Aplikasi di Sidebar -->
+      <div class="sidebar-lock-wrapper">
+        <button type="button" class="btn-sidebar-lock" id="btn-sidebar-lock-app" title="Kunci Aplikasi Sekarang">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sidebar-lock-icon">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0110 0v4"></path>
+          </svg>
+          <span>Kunci Aplikasi</span>
+        </button>
+      </div>
+
+      <!-- Sidebar Footer / Offline indicator -->
+      <div class="sidebar-footer">
+        <div class="app-status-indicator">
+          <span class="status-pulse-dot"></span>
+          <span>Aplikasi Offline Siap</span>
+        </div>
+        <div class="version-tag" id="sidebar-version-tag" title="Klik 5x untuk Secret Admin Generator">v1.0 (MVP)</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Topbar Header -->
+      <header class="topbar no-print" id="topbar">
+        <div class="topbar-left">
+          <img src="./assets/icons/favicon.svg" alt="Juragankosan Logo" class="topbar-mobile-logo" />
+          <div class="topbar-breadcrumb">
+            <span class="breadcrumb-item">Juragankosan</span>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current topbar-title" id="topbar-current-page" data-topbar-page-title>Dashboard</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Tombol Kunci Aplikasi Cepat -->
+          <button class="topbar-action-btn" id="btn-topbar-lock-app" title="Kunci Aplikasi (Lock Screen)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 17px; height: 17px;">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0110 0v4"></path>
+            </svg>
+          </button>
+          <!-- WhatsApp Quick Help or Direct Link -->
+          <button class="topbar-action-btn" id="theme-toggle-btn" title="Ganti Tema Gelap / Terang">
+            <span id="theme-toggle-icon">🌙</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Page View Container -->
+      <main class="page-content" id="main-content" role="main">
+        <!-- Rendered by JavaScript dynamically -->
+      </main>
+
+      <!-- Footer -->
+      <footer class="app-footer no-print">
+        <div class="footer-container">
+          <p>© 2026 <strong>Juragankosan</strong> — Aplikasi Manajemen Kos &amp; Kontrakan Simpel.</p>
+          <p class="text-xs text-muted">Dirancang khusus untuk Juragan Kos Indonesia &bull; Cepat, Aman &amp; 100% Offline-First</p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Mobile Bottom Navigation Bar (Gojek / Tokopedia Style) -->
+    <nav class="mobile-bottom-nav no-print" id="mobile-bottom-nav">
+      <a href="#dashboard" class="mobile-nav-item active" data-tab-target="dashboard">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        <span>Home</span>
+      </a>
+
+      <a href="#rooms" class="mobile-nav-item" data-tab-target="rooms">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="4" y="4" width="16" height="16" rx="2"/>
+          <path d="M9 4v16M4 12h16"/>
+        </svg>
+        <span>Kamar</span>
+      </a>
+
+      <a href="#tenants" class="mobile-nav-item" data-tab-target="tenants">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+        <span>Penyewa</span>
+      </a>
+
+      <a href="#bills" class="mobile-nav-item" data-tab-target="bills">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+        </svg>
+        <span>Tagihan</span>
+      </a>
+
+      <a href="#finances" class="mobile-nav-item" data-tab-target="finances">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>Keuangan</span>
+      </a>
+
+      <a href="#backup" class="mobile-nav-item" data-tab-target="backup">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-4-4H8z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 20V12H8v8m0-16v4h6"/>
+        </svg>
+        <span>Backup</span>
+      </a>
+
+      <a href="#settings" class="mobile-nav-item" data-tab-target="settings">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span>Setelan</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- App Lock Screen (Layar Kunci PIN Keamanan) -->
+  <div id="app-lock-overlay" class="app-lock-overlay" aria-modal="true" role="dialog" aria-labelledby="lock-heading">
+    <div class="app-lock-card" id="app-lock-card">
+      <div class="app-lock-brand">
+        <div class="app-lock-logo-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="app-lock-home-icon">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <h1 class="app-lock-brand-name">Juragankosan</h1>
+        <p class="app-lock-brand-tagline">Aplikasi Manajemen Kos &amp; Kontrakan Simpel</p>
+      </div>
+
+      <div class="app-lock-badge">
+        <span class="lock-badge-icon">🔒</span>
+        <span>Aplikasi Terkunci</span>
+      </div>
+
+      <h2 class="app-lock-heading" id="lock-heading">Layar Kunci Aplikasi</h2>
+      <p class="app-lock-desc">Masukkan PIN Keamanan Anda untuk Membuka Aplikasi</p>
+
+      <!-- PIN Indicator Dots (Dinamis: Default 4 Titik Sesuai PIN Standar) -->
+      <div class="app-lock-dots" id="app-lock-dots" aria-hidden="true">
+        <span class="lock-dot pin-dot" data-idx="0"></span>
+        <span class="lock-dot pin-dot" data-idx="1"></span>
+        <span class="lock-dot pin-dot" data-idx="2"></span>
+        <span class="lock-dot pin-dot" data-idx="3"></span>
+      </div>
+
+      <!-- Error Alert Message -->
+      <div class="app-lock-error hidden" id="app-lock-error" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="error-alert-icon">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span id="app-lock-error-text">PIN salah! Silakan coba lagi.</span>
+      </div>
+
+      <!-- Interactive Numeric Keypad -->
+      <div class="app-lock-keypad" id="app-lock-keypad">
+        <button type="button" class="lock-key-btn" data-key="1">1</button>
+        <button type="button" class="lock-key-btn" data-key="2">2</button>
+        <button type="button" class="lock-key-btn" data-key="3">3</button>
+        <button type="button" class="lock-key-btn" data-key="4">4</button>
+        <button type="button" class="lock-key-btn" data-key="5">5</button>
+        <button type="button" class="lock-key-btn" data-key="6">6</button>
+        <button type="button" class="lock-key-btn" data-key="7">7</button>
+        <button type="button" class="lock-key-btn" data-key="8">8</button>
+        <button type="button" class="lock-key-btn" data-key="9">9</button>
+        <button type="button" class="lock-key-btn lock-key-action" data-action="clear" title="Hapus Semua">C</button>
+        <button type="button" class="lock-key-btn" data-key="0">0</button>
+        <button type="button" class="lock-key-btn lock-key-action" data-action="backspace" title="Hapus Satu Digit">⌫</button>
+      </div>
+
+      <!-- Centered Action Button -->
+      <div class="app-lock-actions">
+        <button type="button" class="btn btn-primary btn-app-unlock" id="btn-app-unlock">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="unlock-btn-icon">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0110 0v4"></path>
+          </svg>
+          <span>Masuk</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container no-print" aria-live="polite"></div>
+
+  <!-- Main JavaScript App Loader -->
+  <script type="module" src="./js/app.js?v=5.2"></script>
+</body>
+</html>
+<!-- Vercel Deploy Trigger v1.0 -->

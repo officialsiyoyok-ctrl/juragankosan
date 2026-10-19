@@ -1,0 +1,17 @@
+{
+  "name": "Juragankosan — Manajemen Kos & Kontrakan",
+  "short_name": "Juragankosan",
+  "description": "Aplikasi manajemen kos, kontrakan, okupansi kamar, dan pengingat tagihan sewa WhatsApp 1-klik.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#059669",
+  "icons": [
+    {
+      "src": "./assets/icons/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

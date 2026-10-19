@@ -1,0 +1,6 @@
+# Robots.txt for Juragankosan Web Application
+# App Subdomain: https://app.juragankosan.id/
+# Official Website / Landing Page: https://juragankosan.id/
+
+User-agent: *
+Allow: /
