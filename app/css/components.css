@@ -5467,6 +5467,24 @@ html.app-unlocked .app-lock-overlay,
   height: 18px;
 }
 
+/* Note Hint Di Bawah Tombol Masuk */
+.app-lock-default-note {
+  margin-top: 14px;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-secondary, #64748b);
+  text-align: center;
+}
+
+.app-lock-default-note strong {
+  color: var(--primary-color, #059669);
+  font-weight: 700;
+}
+
+[data-theme="dark"] .app-lock-default-note {
+  color: var(--text-muted, #94a3b8);
+}
+
 /* Shake Animation */
 .lock-card-shake {
   animation: lockCardShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
