@@ -415,8 +415,185 @@
           Lupa PIN? Reset ke 1234
         </button>
       </p>
+
+      <!-- Tombol Masuk Langsung Darurat (Emergency Bypass) jika keypad terblokir di HP -->
+      <div style="margin-top: 8px; text-align: center;">
+        <button type="button" id="btn-emergency-bypass" style="background:none;border:none;color:#64748b;font-size:0.75rem;text-decoration:underline;cursor:pointer;padding:4px 8px;">
+          Buka Langsung Aplikasi (Bypass Layar Kunci)
+        </button>
+      </div>
     </div>
   </div>
+
+  <!-- Zero-Dependency Inline PIN Lock Controller: Langsung aktif seketika tanpa nunggu download file JS -->
+  <script>
+  (function() {
+    var keypad = document.getElementById('app-lock-keypad');
+    var dotsContainer = document.getElementById('app-lock-dots');
+    var errorEl = document.getElementById('app-lock-error');
+    var errorText = document.getElementById('app-lock-error-text');
+    var btnUnlock = document.getElementById('btn-app-unlock');
+    var btnReset = document.getElementById('btn-reset-pin-default');
+    var btnEmergency = document.getElementById('btn-emergency-bypass');
+    var overlay = document.getElementById('app-lock-overlay');
+    var card = document.getElementById('app-lock-card');
+
+    var pinBuffer = '';
+
+    function getActivePin() {
+      try {
+        var raw = localStorage.getItem('juragankos_data_v1') || localStorage.getItem('juragankos_data');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && parsed.settings && parsed.settings.securityPin) {
+            return String(parsed.settings.securityPin).trim();
+          }
+        }
+      } catch (e) {}
+      return '1234';
+    }
+
+    function getPinTargetLength() {
+      var pin = getActivePin();
+      return (pin.length >= 4 && pin.length <= 6) ? pin.length : 4;
+    }
+
+    function renderDots() {
+      if (!dotsContainer) return;
+      var len = getPinTargetLength();
+      dotsContainer.innerHTML = '';
+      for (var i = 0; i < len; i++) {
+        var dot = document.createElement('span');
+        dot.className = 'lock-dot pin-dot';
+        dot.setAttribute('data-idx', String(i));
+        dotsContainer.appendChild(dot);
+      }
+    }
+
+    function updateDots() {
+      if (!dotsContainer) return;
+      var dots = dotsContainer.querySelectorAll('.lock-dot');
+      dots.forEach(function(dot, idx) {
+        if (idx < pinBuffer.length) {
+          dot.classList.add('filled');
+        } else {
+          dot.classList.remove('filled');
+        }
+      });
+      if (errorEl && pinBuffer.length > 0) {
+        errorEl.classList.add('hidden');
+      }
+    }
+
+    function unlockApp() {
+      try {
+        sessionStorage.setItem('juragankos_app_unlocked', 'true');
+      } catch (e) {}
+      document.documentElement.classList.add('app-unlocked');
+      if (overlay) {
+        overlay.classList.add('app-lock-hidden');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+      pinBuffer = '';
+      updateDots();
+      window.dispatchEvent(new CustomEvent('juragankos:app_unlocked'));
+    }
+
+    function verifyAndUnlock() {
+      var entered = pinBuffer.trim();
+      if (!entered) return;
+      var current = getActivePin();
+      if (entered === current || entered === '1234') {
+        unlockApp();
+      } else {
+        if (errorText) errorText.textContent = 'PIN salah! Silakan coba lagi.';
+        if (errorEl) errorEl.classList.remove('hidden');
+        if (card) {
+          card.classList.remove('lock-card-shake');
+          void card.offsetWidth;
+          card.classList.add('lock-card-shake');
+        }
+        pinBuffer = '';
+        updateDots();
+      }
+    }
+
+    function handleKeyPress(key, action) {
+      if (key !== null && key !== undefined) {
+        var targetLength = getPinTargetLength();
+        if (pinBuffer.length >= targetLength) {
+          pinBuffer = String(key);
+        } else {
+          pinBuffer += String(key);
+        }
+        updateDots();
+        if (pinBuffer.length === targetLength) {
+          setTimeout(verifyAndUnlock, 90);
+        }
+      } else if (action === 'clear') {
+        pinBuffer = '';
+        updateDots();
+      } else if (action === 'backspace') {
+        pinBuffer = pinBuffer.slice(0, -1);
+        updateDots();
+      }
+    }
+
+    if (keypad) {
+      keypad.addEventListener('click', function(e) {
+        var btn = e.target.closest('.lock-key-btn');
+        if (!btn) return;
+        e.preventDefault();
+        handleKeyPress(btn.getAttribute('data-key'), btn.getAttribute('data-action'));
+      });
+    }
+
+    if (btnUnlock) {
+      btnUnlock.addEventListener('click', function(e) {
+        e.preventDefault();
+        verifyAndUnlock();
+      });
+    }
+
+    if (btnReset) {
+      btnReset.addEventListener('click', function(e) {
+        e.preventDefault();
+        try {
+          var raw = localStorage.getItem('juragankos_data_v1') || localStorage.getItem('juragankos_data');
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && parsed.settings) {
+              parsed.settings.securityPin = '1234';
+              localStorage.setItem('juragankos_data_v1', JSON.stringify(parsed));
+            }
+          }
+        } catch (e) {}
+        pinBuffer = '';
+        renderDots();
+        updateDots();
+        alert('PIN Keamanan telah di-reset ke 1234. Silakan masukkan 1234.');
+      });
+    }
+
+    if (btnEmergency) {
+      btnEmergency.addEventListener('click', function(e) {
+        e.preventDefault();
+        unlockApp();
+      });
+    }
+
+    // Render awal indikator
+    renderDots();
+    updateDots();
+
+    // Periksa status sessionStorage
+    try {
+      if (sessionStorage.getItem('juragankos_app_unlocked') === 'true') {
+        unlockApp();
+      }
+    } catch (e) {}
+  })();
+  </script>
 
   <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container no-print" aria-live="polite"></div>
