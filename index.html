@@ -12,7 +12,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://juragankosan.id/" />
   <meta property="og:title" content="Juragankosan.id — Solusi Modern Kelola Kos & Kontrakan Tanpa Pusing" />
-  <meta property="og:description" content="Aplikasi pengelola kos berbasis PWA. Tanpa unduh PlayStore, tagihan WhatsApp 1-klik, kwitansi resmi, 100% data aman di HP, sekali bayar untuk selamanya." />
+  <meta property="og:description" content="Aplikasi pengelola kos praktis & ringan. Buka langsung di browser tanpa unduh PlayStore, tagihan WhatsApp 1-klik, kwitansi resmi, 100% data aman di HP, sekali bayar untuk selamanya." />
   <meta property="og:image" content="https://app.juragankosan.id/assets/icons/favicon.svg" />
 
   <!-- Twitter Card -->
@@ -97,18 +97,18 @@
   </style>
 </head>
 
-<body class="bg-[#fcfdfd] text-slate-800 font-sans antialiased selection:bg-emerald-600 selection:text-white">
+<body class="bg-[#fcfdfd] text-slate-800 font-sans antialiased selection:bg-emerald-600 selection:text-white pb-20 md:pb-0">
 
   <!-- ========================================================================
-       TOPBAR NAVIGATION (SLIM, CLEAN, ELEGAN)
+       TOPBAR NAVIGATION (SLIM, CLEAN, ELEGAN, SINGLE-LINE)
        ======================================================================== -->
-  <header class="sticky top-0 z-50 glass-nav border-b border-slate-200/70 transition-all duration-200">
+  <header class="sticky top-0 z-40 glass-nav border-b border-slate-200/70 transition-all duration-200">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-[68px] flex items-center justify-between">
       
       <!-- Brand Logo -->
-      <a href="#" class="flex items-center gap-2.5 group">
+      <a href="#" class="flex items-center gap-2 sm:gap-2.5 group">
         <!-- SVG Icon Rumah Hijau & Koin Rp -->
-        <svg class="w-8 h-8 sm:w-9 sm:h-9 shadow-sm rounded-xl transition-transform group-hover:scale-105" viewBox="0 0 100 100" fill="none">
+        <svg class="w-8 h-8 sm:w-9 sm:h-9 shadow-sm rounded-xl transition-transform group-hover:scale-105 flex-shrink-0" viewBox="0 0 100 100" fill="none">
           <defs>
             <linearGradient id="navLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#10B981" />
@@ -130,8 +130,8 @@
         </svg>
         <div>
           <div class="flex items-center gap-1.5">
-            <span class="text-lg font-extrabold text-slate-900 tracking-tight">Juragan<span class="text-emerald-700">kosan</span></span>
-            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">PWA</span>
+            <span class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">Juragan<span class="text-emerald-700">kosan</span></span>
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Web App</span>
           </div>
           <span class="hidden sm:block text-[11px] font-medium text-slate-500 font-body -mt-0.5">Kelola Kos & Kontrakan</span>
         </div>
@@ -147,29 +147,14 @@
         <a href="#faq" class="hover:text-emerald-700 transition-colors">FAQ</a>
       </nav>
 
-      <!-- Right Action CTA -->
-      <div class="flex items-center gap-2.5">
-        <a href="https://app.juragankosan.id" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 transition-all shadow-sm">
+      <!-- Right Action CTA (Slim, Single-Line, Never Wraps) -->
+      <div class="flex items-center">
+        <a href="https://app.juragankosan.id" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-emerald-800 hover:bg-emerald-700 shadow-sm whitespace-nowrap transition-all">
           <span>Buka Aplikasi</span>
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
         </a>
-
-        <!-- Mobile Menu Toggle Button -->
-        <button id="mobileNavBtn" class="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100" aria-label="Buka Menu Navigasi">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-        </button>
       </div>
 
-    </div>
-
-    <!-- Mobile Dropdown Menu -->
-    <div id="mobileNavMenu" class="hidden md:hidden border-b border-slate-200 bg-white/95 px-4 py-3 space-y-2 text-sm font-semibold text-slate-700">
-      <a href="#masalah" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Masalah Pengelola Kos</a>
-      <a href="#solusi" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Keunggulan & Solusi</a>
-      <a href="#tour" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Tampilan Dashboard</a>
-      <a href="#kwitansi" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Kwitansi Digital Resmi</a>
-      <a href="#harga" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Harga Paket PRO</a>
-      <a href="#faq" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Pertanyaan Umum (FAQ)</a>
     </div>
   </header>
 
@@ -191,7 +176,7 @@
           <!-- Sleek Single-Line Pill Badge -->
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100/80 text-emerald-900 border border-emerald-300/60 mb-5 shadow-xs whitespace-nowrap">
             <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Aplikasi Pengelola Kos & Kontrakan Berbasis PWA</span>
+            <span>Aplikasi Pengelola Kos Praktis Tanpa Perlu Install PlayStore</span>
           </div>
 
           <!-- Headline: Proporsional, Tegas & Elegan (Tidak Balon/Gendut) -->
@@ -331,7 +316,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       
       <!-- Section Header: Kompak & Elegan -->
-      <div class="max-w-2xl mx-auto text-center mb-10 sm:mb-14">
+      <div class="max-w-2xl mx-auto text-center mb-10 sm:mb-12">
         <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-red-700 bg-red-50 border border-red-200 mb-3">
           Keresahan Pengelola Kos
         </span>
@@ -339,44 +324,93 @@
           Masih Mengelola Kos dengan <span class="text-red-600">Cara Lama?</span>
         </h2>
         <p class="text-xs sm:text-sm text-slate-600 font-body mt-2 leading-relaxed">
-          Catatan tercecer, canggung saat menagih, dan pusing menghitung laba bersih tiap akhir bulan sudah bukan jamannya lagi.
+          Catatan tercecer, antrean bayar tunai, dan pusing menghitung sisa cicilan tiap akhir bulan sudah bukan jamannya lagi.
         </p>
       </div>
 
-      <!-- 3 Problem Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+      <!-- Real Photo Showcase + 3 Pain Points Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
         
-        <!-- Card 1 -->
-        <div class="p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-red-200 hover:bg-white hover:shadow-md transition-all group">
-          <div class="w-11 h-11 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
-            📖
+        <!-- Left: Real Photo Card (Problem Pain in Action) -->
+        <div class="lg:col-span-5 flex flex-col justify-center">
+          <div class="relative group rounded-2xl sm:rounded-3xl overflow-hidden border border-red-200/90 bg-slate-950 shadow-xl">
+            <!-- Problem Photo with Zoom Capability -->
+            <div class="relative cursor-zoom-in overflow-hidden">
+              <img 
+                src="./assets/images/masalah-kelola-kos-manual.jpg" 
+                alt="Potret Nyata Antrean Bayar Kos dan Pusing Rekap Buku Kas Manual" 
+                class="zoomable-img w-full h-[260px] sm:h-[320px] lg:h-[360px] object-cover object-center group-hover:scale-105 transition-transform duration-500" 
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent"></div>
+              
+              <!-- Zoom Indicator Badge -->
+              <div class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium flex items-center gap-1 shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
+                <span>🔍</span>
+                <span>Klik Perbesar</span>
+              </div>
+
+              <!-- Top Left Tag -->
+              <div class="absolute top-3 left-3 px-3 py-1 rounded-lg bg-red-600 text-white text-[11px] font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5">
+                <span>⚠️</span>
+                <span>Realita Cara Manual</span>
+              </div>
+            </div>
+
+            <!-- Bottom Floating Quote/Caption -->
+            <div class="p-4 sm:p-5 text-white bg-slate-950 border-t border-white/10">
+              <p class="text-xs sm:text-sm font-semibold text-red-200 mb-1 leading-snug">
+                "Meja penuh tumpukan kuitansi kertas, uang tunai campur aduk, dan penyewa antre bayar kos..."
+              </p>
+              <p class="text-[11px] text-slate-400 font-body">
+                Waktu Anda habis berjam-jam hanya untuk mencocokkan tanggal sewa dan cek siapa yang belum lunas.
+              </p>
+            </div>
           </div>
-          <h3 class="text-base font-bold text-slate-900 mb-2">Catatan Buku Kas Tercecer</h3>
-          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed">
-            Sering lupa siapa saja yang belum bayar, salah mencatat sisa cicilan bertahap, dan buku kas mudah kotor, basah, atau terselip entah di mana.
-          </p>
         </div>
 
-        <!-- Card 2 -->
-        <div class="p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-red-200 hover:bg-white hover:shadow-md transition-all group">
-          <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
-            ⏰
+        <!-- Right: 3 Problem Cards (Vertical Stack) -->
+        <div class="lg:col-span-7 space-y-4">
+          
+          <!-- Card 1 -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-red-300 hover:bg-white hover:shadow-md transition-all group flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+              📖
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900 mb-1">Catatan Buku Kas Tercecer & Kuitansi Rusak</h3>
+              <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed">
+                Sering lupa siapa saja yang menunggak, salah mencatat sisa cicilan bertahap, dan buku kas mudah kotor, basah, atau terselip entah di mana.
+              </p>
+            </div>
           </div>
-          <h3 class="text-base font-bold text-slate-900 mb-2">Repot Nagih Manual via WA</h3>
-          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed">
-            Harus merangkai kata-kata penagihan satu per satu setiap tanggal jatuh tempo tiba. Melelahkan, makan waktu, dan sering timbul rasa tidak enak hati.
-          </p>
-        </div>
 
-        <!-- Card 3 -->
-        <div class="p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-red-200 hover:bg-white hover:shadow-md transition-all group">
-          <div class="w-11 h-11 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
-            📉
+          <!-- Card 2 -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-red-300 hover:bg-white hover:shadow-md transition-all group flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+              ⏰
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900 mb-1">Repot Nagih Manual via WhatsApp Satu per Satu</h3>
+              <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed">
+                Harus merangkai kalimat penagihan satu per satu tiap tanggal jatuh tempo. Melelahkan, makan waktu, dan sering timbul rasa canggung atau tidak enak hati.
+              </p>
+            </div>
           </div>
-          <h3 class="text-base font-bold text-slate-900 mb-2">Buta Keuangan & Laba Bersih</h3>
-          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed">
-            Uang sewa kos bercampur dengan uang belanja pribadi. Biaya tukang, WiFi, dan operasional tidak tercatat sehingga tidak tahu apakah kos untung atau rugi.
-          </p>
+
+          <!-- Card 3 -->
+          <div class="p-5 sm:p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-red-300 hover:bg-white hover:shadow-md transition-all group flex items-start gap-4">
+            <div class="w-11 h-11 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+              📉
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900 mb-1">Buta Keuangan & Tidak Tahu Laba Bersih Kos</h3>
+              <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed">
+                Uang sewa kos bercampur baur dengan uang belanja pribadi. Biaya tukang, WiFi, dan tagihan listrik tidak tercatat sehingga tidak tahu berapa laba bersih riil kos Anda.
+              </p>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -412,7 +446,7 @@
           <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl mb-4 font-bold">
             ⚡
           </div>
-          <h3 class="text-base font-bold text-slate-900 mb-2">PWA Super Cepat & Ringan di HP</h3>
+          <h3 class="text-base font-bold text-slate-900 mb-2">Aplikasi Super Cepat & Ringan di HP</h3>
           <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed mb-4">
             Tanpa perlu instalasi PlayStore yang memakan memori ponsel. Cukup buka di browser, klik <strong>Add to Home Screen</strong>, dan aplikasi langsung siap dipakai kapan saja bahkan saat offline.
           </p>
@@ -550,13 +584,17 @@
 
         <!-- Panel 1: Data Kamar -->
         <div id="tour-panel-kamar" class="tour-panel block">
-          <div class="rounded-xl overflow-hidden border border-slate-200 bg-white">
+          <div class="rounded-xl overflow-hidden border border-slate-200 bg-white relative group cursor-zoom-in">
             <img 
               src="./assets/images/dashboard-kamar-okupansi.png" 
               alt="Dashboard Data Kamar dan Okupansi Juragankosan" 
-              class="w-full h-auto object-cover" 
+              class="zoomable-img w-full h-auto object-cover group-hover:scale-[1.01] transition-transform duration-300" 
               loading="lazy"
             />
+            <div class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-slate-900/75 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium flex items-center gap-1 shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
+              <span>🔍</span>
+              <span>Klik Perbesar</span>
+            </div>
           </div>
           <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs sm:text-sm">
             <div>
@@ -572,13 +610,17 @@
 
         <!-- Panel 2: Database Penyewa -->
         <div id="tour-panel-penyewa" class="tour-panel hidden">
-          <div class="rounded-xl overflow-hidden border border-slate-200 bg-white">
+          <div class="rounded-xl overflow-hidden border border-slate-200 bg-white relative group cursor-zoom-in">
             <img 
               src="./assets/images/database-penyewa-kos.png" 
               alt="Dashboard Database Penyewa Juragankosan" 
-              class="w-full h-auto object-cover" 
+              class="zoomable-img w-full h-auto object-cover group-hover:scale-[1.01] transition-transform duration-300" 
               loading="lazy"
             />
+            <div class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-slate-900/75 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium flex items-center gap-1 shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
+              <span>🔍</span>
+              <span>Klik Perbesar</span>
+            </div>
           </div>
           <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs sm:text-sm">
             <div>
@@ -594,13 +636,17 @@
 
         <!-- Panel 3: Tracking Tagihan -->
         <div id="tour-panel-tagihan" class="tour-panel hidden">
-          <div class="rounded-xl overflow-hidden border border-slate-200 bg-white">
+          <div class="rounded-xl overflow-hidden border border-slate-200 bg-white relative group cursor-zoom-in">
             <img 
               src="./assets/images/tracking-tagihan-sewa.png" 
               alt="Dashboard Tracking Tagihan Sewa Juragankosan" 
-              class="w-full h-auto object-cover" 
+              class="zoomable-img w-full h-auto object-cover group-hover:scale-[1.01] transition-transform duration-300" 
               loading="lazy"
             />
+            <div class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-slate-900/75 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium flex items-center gap-1 shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
+              <span>🔍</span>
+              <span>Klik Perbesar</span>
+            </div>
           </div>
           <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs sm:text-sm">
             <div>
@@ -616,13 +662,17 @@
 
         <!-- Panel 4: Pusat Keuangan -->
         <div id="tour-panel-keuangan" class="tour-panel hidden">
-          <div class="rounded-xl overflow-hidden border border-slate-200 bg-white">
+          <div class="rounded-xl overflow-hidden border border-slate-200 bg-white relative group cursor-zoom-in">
             <img 
               src="./assets/images/keuangan-arus-kas.png" 
               alt="Dashboard Pusat Keuangan dan Arus Kas Juragankosan" 
-              class="w-full h-auto object-cover" 
+              class="zoomable-img w-full h-auto object-cover group-hover:scale-[1.01] transition-transform duration-300" 
               loading="lazy"
             />
+            <div class="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-slate-900/75 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium flex items-center gap-1 shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
+              <span>🔍</span>
+              <span>Klik Perbesar</span>
+            </div>
           </div>
           <div class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs sm:text-sm">
             <div>
@@ -657,13 +707,17 @@
             <div class="absolute -inset-2 bg-gradient-to-r from-emerald-400/20 to-amber-400/15 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 transition duration-500"></div>
             
             <!-- Card Frame for the Receipt Image -->
-            <div class="relative rounded-2xl bg-white border border-slate-200/90 shadow-xl overflow-hidden p-2 sm:p-3 transition-transform duration-300 group-hover:-translate-y-1">
+            <div class="relative rounded-2xl bg-white border border-slate-200/90 shadow-xl overflow-hidden p-2 sm:p-3 transition-transform duration-300 group-hover:-translate-y-1 cursor-zoom-in">
               <img 
                 src="./assets/images/kwitansi-digital-resmi.png" 
                 alt="Kwitansi Digital Resmi Pembayaran Sewa Juragankosan" 
-                class="w-full h-auto rounded-xl shadow-xs object-cover border border-slate-100" 
+                class="zoomable-img w-full h-auto rounded-xl shadow-xs object-cover border border-slate-100" 
                 loading="lazy"
               />
+              <div class="absolute top-4 right-4 px-2.5 py-1 rounded-lg bg-slate-900/75 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium flex items-center gap-1 shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">
+                <span>🔍</span>
+                <span>Klik Perbesar</span>
+              </div>
             </div>
 
             <!-- Floating Badge: Stempel & Nomor Seri -->
@@ -1009,7 +1063,7 @@
             <span>🏠 Juragankosan</span>
           </div>
           <p class="text-xs text-slate-400 leading-relaxed mb-4">
-            Aplikasi manajemen kos & kontrakan simpel berbasis PWA. Cepat, aman, dan tanpa biaya bulanan untuk seluruh pemilik kos di Indonesia.
+            Aplikasi manajemen kos & kontrakan simpel yang langsung siap pakai di browser HP & laptop. Cepat, aman, dan tanpa biaya langganan bulanan.
           </p>
           <div class="inline-block px-2 py-1 rounded bg-slate-800 text-[11px] text-slate-300 font-medium">
             🇮🇩 Solusi Pemilik Kos Indonesia
@@ -1063,6 +1117,58 @@
 
 
   <!-- ========================================================================
+       MOBILE BOTTOM DOCK NAVIGATION (MENU APLIKASI DI BAWAH)
+       ======================================================================== -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-2xl px-2 py-1.5 flex items-center justify-around text-slate-500 safe-area-pb">
+    <a href="#" class="flex flex-col items-center py-1 px-2.5 rounded-xl text-slate-600 hover:text-emerald-700 active:text-emerald-800 transition-colors">
+      <span class="text-lg">🏠</span>
+      <span class="text-[10px] font-semibold mt-0.5">Beranda</span>
+    </a>
+    <a href="#masalah" class="flex flex-col items-center py-1 px-2.5 rounded-xl text-slate-600 hover:text-red-600 active:text-red-700 transition-colors">
+      <span class="text-lg">⚠️</span>
+      <span class="text-[10px] font-semibold mt-0.5">Masalah</span>
+    </a>
+    <a href="#tour" class="flex flex-col items-center py-1 px-2.5 rounded-xl text-emerald-800 font-bold transition-colors">
+      <span class="text-lg">📱</span>
+      <span class="text-[10px] mt-0.5">Dashboard</span>
+    </a>
+    <a href="#kwitansi" class="flex flex-col items-center py-1 px-2.5 rounded-xl text-slate-600 hover:text-emerald-700 active:text-emerald-800 transition-colors">
+      <span class="text-lg">🧾</span>
+      <span class="text-[10px] font-semibold mt-0.5">Kwitansi</span>
+    </a>
+    <a href="#harga" class="flex flex-col items-center py-1 px-2.5 rounded-xl text-amber-600 hover:text-amber-700 active:text-amber-800 transition-colors">
+      <span class="text-lg">⭐</span>
+      <span class="text-[10px] font-semibold mt-0.5">Paket PRO</span>
+    </a>
+  </nav>
+
+
+  <!-- ========================================================================
+       IMAGE LIGHTBOX MODAL (ZOOM & PERBESAR FOTO DASHBOARD / BUKTI)
+       ======================================================================== -->
+  <div id="imageLightboxModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-3 sm:p-6 transition-all duration-300">
+    <!-- Top Bar with title & close button -->
+    <div class="w-full max-w-5xl flex items-center justify-between text-white pb-3 px-2">
+      <div class="flex items-center gap-2 truncate pr-4">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span id="lightboxCaption" class="text-xs sm:text-sm font-bold truncate text-slate-100">Pratinjau Gambar</span>
+      </div>
+      <button id="closeLightboxBtn" type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition-colors cursor-pointer" aria-label="Tutup Pratinjau">
+        <span class="text-base leading-none">✕</span>
+        <span class="hidden sm:inline">Tutup (ESC)</span>
+      </button>
+    </div>
+    <!-- Image Box -->
+    <div class="relative w-full max-w-5xl max-h-[82vh] flex items-center justify-center overflow-auto rounded-2xl bg-black/60 border border-white/10 shadow-2xl p-1 sm:p-2">
+      <img id="lightboxImg" src="" alt="" class="max-w-full max-h-[80vh] w-auto h-auto object-contain rounded-xl shadow-lg transition-transform duration-200" />
+    </div>
+    <div class="text-slate-400 text-[11px] mt-2.5 flex items-center gap-2">
+      <span>💡 Ketuk di luar gambar atau tekan tombol ESC untuk menutup</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================
        MODAL LEGAL (PRIVASI & SYARAT KETENTUAN)
        ======================================================================== -->
   <div id="legalModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
@@ -1082,24 +1188,7 @@
        INTERACTIVE VANILLA JAVASCRIPT
        ======================================================================== -->
   <script>
-    // 1. Mobile Menu Toggle
-    const mobileNavBtn = document.getElementById('mobileNavBtn');
-    const mobileNavMenu = document.getElementById('mobileNavMenu');
-    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-
-    if (mobileNavBtn && mobileNavMenu) {
-      mobileNavBtn.addEventListener('click', () => {
-        mobileNavMenu.classList.toggle('hidden');
-      });
-
-      mobileNavLinks.forEach(link => {
-        link.addEventListener('click', () => {
-          mobileNavMenu.classList.add('hidden');
-        });
-      });
-    }
-
-    // 2. Tour Dashboard Tabs Switcher
+    // 1. Tour Dashboard Tabs Switcher
     const tourTabBtns = document.querySelectorAll('.tour-tab-btn');
     const tourPanels = document.querySelectorAll('.tour-panel');
 
@@ -1133,7 +1222,7 @@
       });
     }
 
-    // 3. FAQ Accordion Interaction
+    // 2. FAQ Accordion Interaction
     const faqToggles = document.querySelectorAll('.faq-toggle');
     faqToggles.forEach(toggle => {
       toggle.addEventListener('click', () => {
@@ -1207,6 +1296,65 @@
         if (e.target === legalModal) hideLegal();
       });
     }
+
+    // 4. Image Lightbox Zoom Logic (Perbesar Foto Saat Diklik)
+    const imageLightboxModal = document.getElementById('imageLightboxModal');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+    const closeLightboxBtn = document.getElementById('closeLightboxBtn');
+    const zoomableImages = document.querySelectorAll('.zoomable-img');
+
+    function openLightbox(src, alt) {
+      if (!imageLightboxModal || !lightboxImg) return;
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || 'Pratinjau Gambar';
+      if (lightboxCaption) {
+        lightboxCaption.textContent = alt || 'Pratinjau Gambar';
+      }
+      imageLightboxModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      if (!imageLightboxModal) return;
+      imageLightboxModal.classList.add('hidden');
+      if (lightboxImg) lightboxImg.src = '';
+      document.body.style.overflow = '';
+    }
+
+    zoomableImages.forEach(img => {
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openLightbox(img.src, img.alt);
+      });
+      // Also allow parent container click
+      const parent = img.closest('.cursor-zoom-in');
+      if (parent) {
+        parent.addEventListener('click', () => {
+          openLightbox(img.src, img.alt);
+        });
+      }
+    });
+
+    if (closeLightboxBtn) {
+      closeLightboxBtn.addEventListener('click', closeLightbox);
+    }
+
+    if (imageLightboxModal) {
+      imageLightboxModal.addEventListener('click', (e) => {
+        if (e.target === imageLightboxModal || e.target.id === 'imageLightboxModal') {
+          closeLightbox();
+        }
+      });
+    }
+
+    // Keyboard ESC listener
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+        hideLegal();
+      }
+    });
   </script>
 
 </body>
