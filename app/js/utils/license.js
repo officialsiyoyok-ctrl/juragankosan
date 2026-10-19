@@ -434,18 +434,27 @@ export function openUpgradeModal(initialStep = 'info') {
               <div class="ladder-steps-list">
                 <div class="ladder-step-item ${pricing.statusBatch1}">
                   <span class="step-badge">${pricing.statusBatch1 === 'soldout' ? '❌' : (pricing.statusBatch1 === 'active' ? '👉' : '⏳')}</span>
-                  <span class="step-name ${pricing.statusBatch1 === 'soldout' ? 'line-through text-muted' : ''}">Batch 1 (50 Pembeli Pertama): <strong>Rp 149.000</strong> <small class="text-emerald font-bold">(Diskon 50%)</small></span>
+                  <div class="step-name ${pricing.statusBatch1 === 'soldout' ? 'line-through text-muted' : ''}">
+                    <span class="step-title">Batch 1 (50 Pembeli Pertama)</span>
+                    <span class="step-price"><strong>Rp 149.000</strong> <small class="text-emerald font-bold">(Diskon 50%)</small></span>
+                  </div>
                   <span class="step-status">${pricing.statusBatch1 === 'soldout' ? '<span class="badge badge-soldout">HABIS TERJUAL</span>' : '<span class="badge badge-active-tier">SEDANG BERLAKU</span>'}</span>
                 </div>
                 <div class="ladder-step-item ${pricing.statusBatch2}">
                   <span class="step-badge">${pricing.statusBatch2 === 'soldout' ? '❌' : (pricing.statusBatch2 === 'active' ? '👉' : '⏳')}</span>
-                  <span class="step-name ${pricing.statusBatch2 === 'soldout' ? 'line-through text-muted' : ''}">Batch 2 (Pembeli ke 51 – 100): <strong>Rp 199.000</strong></span>
+                  <div class="step-name ${pricing.statusBatch2 === 'soldout' ? 'line-through text-muted' : ''}">
+                    <span class="step-title">Batch 2 (Pembeli 51 – 100)</span>
+                    <span class="step-price"><strong>Rp 199.000</strong></span>
+                  </div>
                   <span class="step-status">${pricing.statusBatch2 === 'soldout' ? '<span class="badge badge-soldout">HABIS TERJUAL</span>' : (pricing.statusBatch2 === 'active' ? '<span class="badge badge-active-tier">SEDANG BERLAKU</span>' : '<span class="badge badge-upcoming">BERIKUTNYA</span>')}</span>
                 </div>
                 <div class="ladder-step-item ${pricing.statusBatch3}">
                   <span class="step-badge">${pricing.statusBatch3 === 'active' ? '👉' : '🏷️'}</span>
-                  <span class="step-name">Batch 3 / Reguler (Pembeli ke 101+): <strong>Rp 299.000</strong></span>
-                  <span class="step-status">${pricing.statusBatch3 === 'active' ? '<span class="badge badge-active-tier">SEDANG BERLAKU</span>' : '<span class="badge badge-normal-tier">HARGA TETAP NANTI</span>'}</span>
+                  <div class="step-name">
+                    <span class="step-title">Batch 3 / Reguler (101+)</span>
+                    <span class="step-price"><strong>Rp 299.000</strong></span>
+                  </div>
+                  <span class="step-status">${pricing.statusBatch3 === 'active' ? '<span class="badge badge-active-tier">SEDANG BERLAKU</span>' : '<span class="badge badge-normal-tier">HARGA TETAP</span>'}</span>
                 </div>
               </div>
             </div>
