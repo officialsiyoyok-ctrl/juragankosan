@@ -190,7 +190,8 @@ export function renderBills(container, options = {}) {
         }</p>
         <button class="btn btn-outline" id="btn-generate-bills">🔄 Perbarui Tagihan Periode Ini</button>
       </div>
-         : `
+    `
+        : `
       <div class="bills-accordion-container">
         <div class="bills-accordion-toolbar mb-2 flex-between align-center">
           <span class="text-xs text-muted font-medium">Menampilkan <strong>${filteredBills.length}</strong> tagihan kamar</span>
