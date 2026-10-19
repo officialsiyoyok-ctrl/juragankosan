@@ -11,7 +11,7 @@ import {
   getTodayDateString,
   escapeHtml
 } from '../utils/formatter.js?v=2.5';
-import { openModal, closeModal, showToast, showConfirmModal } from '../utils/modal.js?v=2.5';
+import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js?v=2.5';
 
 // Master Categories
 export const EXPENSE_CATEGORIES = [
@@ -218,11 +218,11 @@ export function renderFinances(container, options = {}) {
 
             <div class="form-group mb-3">
               <label for="income-category" class="form-label font-semibold">Kategori Pemasukan</label>
-              <select id="income-category" class="form-control">
-                ${INCOME_CATEGORIES.filter(c => c.name !== 'Sewa Kamar').map(
-                  (c) => `<option value="${c.name}">${c.icon} ${c.name}</option>`
-                ).join('')}
-              </select>
+              <div class="custom-select-trigger" id="income-category-trigger" data-picker-for="income-category" tabindex="0" role="button">
+                <span class="custom-select-label" id="income-category-label">🅿️ Parkir Kendaraan</span>
+                <span class="custom-select-arrow">▾</span>
+              </div>
+              <input type="hidden" id="income-category" value="Parkir Kendaraan" />
             </div>
 
             <div class="form-group mb-3">
@@ -273,11 +273,11 @@ export function renderFinances(container, options = {}) {
 
             <div class="form-group mb-3">
               <label for="expense-category" class="form-label font-semibold">Kategori Biaya Operasional</label>
-              <select id="expense-category" class="form-control">
-                ${EXPENSE_CATEGORIES.map(
-                  (c) => `<option value="${c.name}">${c.icon} ${c.name}</option>`
-                ).join('')}
-              </select>
+              <div class="custom-select-trigger" id="expense-category-trigger" data-picker-for="expense-category" tabindex="0" role="button">
+                <span class="custom-select-label" id="expense-category-label">⚡ Listrik / Token PLN</span>
+                <span class="custom-select-arrow">▾</span>
+              </div>
+              <input type="hidden" id="expense-category" value="Listrik / Token PLN" />
             </div>
 
             <div class="form-group mb-3">
@@ -1210,6 +1210,33 @@ function setupFinancialEventListeners(container) {
       closeModal('expense-modal');
       editingExpenseId = null;
       renderFinances(container, { subTab: 'expenses', period: selectedPeriodYM });
+    });
+  }
+
+  // 14. Bind custom pickers for income & expense categories
+  const incomeCatTrigger = container.querySelector('#income-category-trigger');
+  const incomeCatInput = container.querySelector('#income-category');
+  if (incomeCatTrigger && incomeCatInput) {
+    bindCustomPicker(incomeCatTrigger, incomeCatInput, {
+      title: 'Pilih Kategori Pemasukan',
+      options: INCOME_CATEGORIES.filter((c) => c.name !== 'Sewa Kamar').map((c) => ({
+        value: c.name,
+        label: `${c.icon} ${c.name}`,
+        icon: c.icon
+      }))
+    });
+  }
+
+  const expCatTrigger = container.querySelector('#expense-category-trigger');
+  const expCatInput = container.querySelector('#expense-category');
+  if (expCatTrigger && expCatInput) {
+    bindCustomPicker(expCatTrigger, expCatInput, {
+      title: 'Pilih Kategori Biaya Operasional',
+      options: EXPENSE_CATEGORIES.map((c) => ({
+        value: c.name,
+        label: `${c.icon} ${c.name}`,
+        icon: c.icon
+      }))
     });
   }
 }

@@ -10,7 +10,13 @@ import {
   escapeHtml,
   getTodayDateString
 } from '../utils/formatter.js?v=2.5';
-import { openModal, closeModal, showToast, showConfirmModal } from '../utils/modal.js?v=2.5';
+import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js?v=2.5';
+
+const DEPOSIT_STATUS_OPTIONS = [
+  'Deposit dikembalikan penuh',
+  'Deposit dipotong untuk perbaikan/denda',
+  'Tidak ada deposit / sudah selesai'
+];
 
 let currentTab = 'aktif'; // 'aktif' | 'keluar'
 let currentSearch = '';
@@ -454,11 +460,11 @@ export function renderTenants(container, options = {}) {
             </div>
             <div class="form-group">
               <label for="checkout-deposit-status" class="form-label">Status Pengembalian Deposit</label>
-              <select id="checkout-deposit-status" class="form-control">
-                <option value="Deposit dikembalikan penuh">Deposit dikembalikan penuh</option>
-                <option value="Deposit dipotong untuk perbaikan/denda">Deposit dipotong untuk perbaikan/denda</option>
-                <option value="Tidak ada deposit / sudah selesai">Tidak ada deposit / sudah selesai</option>
-              </select>
+              <div class="custom-select-trigger" id="checkout-deposit-status-trigger" data-picker-for="checkout-deposit-status" tabindex="0" role="button">
+                <span class="custom-select-label" id="checkout-deposit-status-label">Deposit dikembalikan penuh</span>
+                <span class="custom-select-arrow">▾</span>
+              </div>
+              <input type="hidden" id="checkout-deposit-status" value="Deposit dikembalikan penuh" />
             </div>
             <div class="form-group">
               <label for="checkout-note" class="form-label">Catatan Saat Check-out</label>
@@ -627,6 +633,16 @@ function setupTenantsEvents(container) {
       }
       roomSearchClear.style.display = 'none';
       renderRoomPickerItems('');
+    });
+  }
+
+  // Bind custom picker for checkout deposit status
+  const depositTrigger = container.querySelector('#checkout-deposit-status-trigger');
+  const depositInput = container.querySelector('#checkout-deposit-status');
+  if (depositTrigger && depositInput) {
+    bindCustomPicker(depositTrigger, depositInput, {
+      title: 'Status Pengembalian Deposit',
+      options: DEPOSIT_STATUS_OPTIONS
     });
   }
 }

@@ -10,7 +10,7 @@ import {
   getTodayDateString,
   escapeHtml
 } from '../utils/formatter.js?v=2.5';
-import { openModal, closeModal, showToast, showConfirmModal } from '../utils/modal.js?v=2.5';
+import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js?v=2.5';
 
 let selectedPeriod = getCurrentYearMonth();
 
@@ -218,11 +218,11 @@ export function renderExpenses(container, options = {}) {
 
             <div class="form-group">
               <label for="expense-category" class="form-label">Kategori Biaya</label>
-              <select id="expense-category" class="form-control">
-                ${EXPENSE_CATEGORIES.map(
-                  (c) => `<option value="${c.name}">${c.icon} ${c.name}</option>`
-                ).join('')}
-              </select>
+              <div class="custom-select-trigger" id="expense-category-trigger" data-picker-for="expense-category" tabindex="0" role="button">
+                <span class="custom-select-label" id="expense-category-label">${EXPENSE_CATEGORIES[0]?.icon} ${EXPENSE_CATEGORIES[0]?.name}</span>
+                <span class="custom-select-arrow">▾</span>
+              </div>
+              <input type="hidden" id="expense-category" value="${EXPENSE_CATEGORIES[0]?.name || ''}" />
             </div>
 
             <div class="form-group">
@@ -314,11 +314,21 @@ function setupExpensesEvents(container) {
       saveExpenseForm(container);
     });
   }
+
+  // Bind custom picker for expense category
+  const catTrigger = container.querySelector('#expense-category-trigger');
+  const catInput = container.querySelector('#expense-category');
+  if (catTrigger && catInput) {
+    bindCustomPicker(catTrigger, catInput, {
+      title: 'Pilih Kategori Biaya',
+      options: EXPENSE_CATEGORIES.map((c) => ({ value: c.name, label: `${c.icon} ${c.name}`, icon: c.icon }))
+    });
+  }
 }
 
 function openAddExpenseModal() {
   document.getElementById('expense-date').value = getTodayDateString();
-  document.getElementById('expense-category').selectedIndex = 0;
+  document.getElementById('expense-category').value = EXPENSE_CATEGORIES[0]?.name || '';
   document.getElementById('expense-amount').value = '';
   document.getElementById('expense-desc').value = '';
 

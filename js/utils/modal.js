@@ -1,6 +1,7 @@
 /**
  * Juragankosan Modal & Toast Notification System
  */
+import { escapeHtml } from './formatter.js?v=2.5';
 
 export function showToast(message, type = 'info', duration = 3200) {
   let toastContainer = document.getElementById('toast-container');
@@ -193,3 +194,230 @@ export function showConfirmModal({
     document.body.classList.add('modal-open');
   });
 }
+
+/**
+ * Universal Custom Picker Modal (Ramping, font proporsional, pengganti dialog select bawaan OS)
+ */
+export function showPickerModal({
+  title = 'Pilih Opsi',
+  options = [],
+  value = '',
+  searchable = false,
+  onSelect = () => {}
+}) {
+  let pickerModal = document.getElementById('global-picker-modal');
+  if (!pickerModal) {
+    pickerModal = document.createElement('div');
+    pickerModal.id = 'global-picker-modal';
+    pickerModal.className = 'modal-backdrop global-picker-backdrop';
+    pickerModal.innerHTML = `
+      <div class="modal-dialog modal-sm global-picker-dialog">
+        <div class="modal-header global-picker-header">
+          <h3 class="modal-title global-picker-title" id="global-picker-title">Pilih Opsi</h3>
+          <button type="button" class="modal-close" id="global-picker-close" aria-label="Tutup">&times;</button>
+        </div>
+        <div class="global-picker-search-container" id="global-picker-search-container" style="display: none;">
+          <div class="global-picker-search-box">
+            <span class="global-picker-search-icon">🔍</span>
+            <input 
+              type="text" 
+              id="global-picker-search-input" 
+              class="global-picker-search-input" 
+              placeholder="Cari opsi..." 
+              autocomplete="off"
+            />
+            <button type="button" id="global-picker-search-clear" class="global-picker-search-clear" style="display: none;" aria-label="Hapus pencarian">&times;</button>
+          </div>
+        </div>
+        <div class="global-picker-body" id="global-picker-list"></div>
+        <div class="modal-footer global-picker-footer">
+          <button type="button" class="btn btn-secondary btn-sm" id="global-picker-cancel">Batal</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(pickerModal);
+  }
+
+  const titleEl = document.getElementById('global-picker-title');
+  const searchContainer = document.getElementById('global-picker-search-container');
+  const searchInput = document.getElementById('global-picker-search-input');
+  const searchClear = document.getElementById('global-picker-search-clear');
+  const listEl = document.getElementById('global-picker-list');
+  const closeBtn = document.getElementById('global-picker-close');
+  const cancelBtn = document.getElementById('global-picker-cancel');
+
+  titleEl.textContent = title;
+
+  const normalizedOpts = options.map((opt) => {
+    if (typeof opt === 'object' && opt !== null) {
+      return {
+        value: String(opt.value !== undefined ? opt.value : opt.label),
+        label: String(opt.label !== undefined ? opt.label : opt.value),
+        icon: opt.icon || '',
+        sublabel: opt.sublabel || ''
+      };
+    }
+    return {
+      value: String(opt),
+      label: String(opt),
+      icon: '',
+      sublabel: ''
+    };
+  });
+
+  const shouldSearch = searchable || normalizedOpts.length > 6;
+  searchContainer.style.display = shouldSearch ? 'block' : 'none';
+  if (searchInput) searchInput.value = '';
+  if (searchClear) searchClear.style.display = 'none';
+
+  const renderItems = (filter = '') => {
+    const q = filter.toLowerCase().trim();
+    const filtered = q
+      ? normalizedOpts.filter((o) => o.label.toLowerCase().includes(q) || o.value.toLowerCase().includes(q) || o.sublabel.toLowerCase().includes(q))
+      : normalizedOpts;
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `
+        <div class="global-picker-empty" style="text-align: center; padding: 1.25rem 0.5rem; color: var(--text-muted);">
+          <div style="font-size: 1.25rem; margin-bottom: 4px;">🔍</div>
+          <div style="font-size: 0.785rem;">Tidak ada opsi yang cocok dengan "${escapeHtml(filter)}"</div>
+        </div>
+      `;
+      return;
+    }
+
+    listEl.innerHTML = filtered
+      .map((opt) => {
+        const isSelected = String(opt.value) === String(value);
+        return `
+          <div class="global-picker-item ${isSelected ? 'selected' : ''}" data-value="${escapeHtml(opt.value)}" role="button" tabindex="0">
+            <div class="global-picker-item-left">
+              ${opt.icon ? `<span class="global-picker-item-icon">${opt.icon}</span>` : ''}
+              <div class="global-picker-item-text">
+                <span class="global-picker-item-label">${escapeHtml(opt.label)}</span>
+                ${opt.sublabel ? `<span class="global-picker-item-sub">${escapeHtml(opt.sublabel)}</span>` : ''}
+              </div>
+            </div>
+            <div class="global-picker-radio ${isSelected ? 'checked' : ''}">
+              ${isSelected ? '✓' : ''}
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+
+    listEl.querySelectorAll('.global-picker-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        const selectedVal = item.getAttribute('data-value');
+        cleanup();
+        onSelect(selectedVal);
+      });
+    });
+  };
+
+  const cleanup = () => {
+    pickerModal.classList.remove('active');
+    if (!document.querySelector('.modal-backdrop.active')) {
+      document.body.classList.remove('modal-open');
+    }
+    closeBtn.removeEventListener('click', onDismiss);
+    cancelBtn.removeEventListener('click', onDismiss);
+  };
+
+  const onDismiss = () => {
+    cleanup();
+  };
+
+  closeBtn.addEventListener('click', onDismiss);
+  cancelBtn.addEventListener('click', onDismiss);
+
+  if (searchInput) {
+    searchInput.oninput = (e) => {
+      const q = e.target.value;
+      if (searchClear) searchClear.style.display = q ? 'block' : 'none';
+      renderItems(q);
+    };
+  }
+
+  if (searchClear) {
+    searchClear.onclick = () => {
+      searchInput.value = '';
+      searchClear.style.display = 'none';
+      renderItems('');
+      searchInput.focus();
+    };
+  }
+
+  renderItems('');
+  pickerModal.classList.add('active');
+  document.body.classList.add('modal-open');
+}
+
+/**
+ * Mengikat Custom Select Trigger dengan Hidden Input & Global Picker
+ */
+export function bindCustomPicker(triggerEl, hiddenInputEl, { title = 'Pilih Opsi', options = [], getOptions = null, searchable = false, onChange = null }) {
+  if (!triggerEl || !hiddenInputEl) return;
+
+  const getActiveOptions = () => {
+    return typeof getOptions === 'function' ? getOptions() : options;
+  };
+
+  const updateLabel = (val) => {
+    const opts = getActiveOptions();
+    const normalized = opts.map((o) => (typeof o === 'object' && o !== null ? o : { value: String(o), label: String(o) }));
+    const found = normalized.find((o) => String(o.value) === String(val));
+    const labelEl = triggerEl.querySelector('.custom-select-label');
+    if (labelEl) {
+      labelEl.textContent = found ? found.label : (val || '-- Pilih --');
+    }
+    triggerEl.setAttribute('data-value', val || '');
+  };
+
+  // Intercept .value setter on hiddenInputEl agar sinkron real-time
+  const inputProto = HTMLInputElement.prototype;
+  const descriptor = Object.getOwnPropertyDescriptor(inputProto, 'value');
+  try {
+    Object.defineProperty(hiddenInputEl, 'value', {
+      get() {
+        return descriptor.get.call(this);
+      },
+      set(val) {
+        descriptor.set.call(this, val);
+        updateLabel(val);
+      },
+      configurable: true
+    });
+  } catch (e) {
+    // Fallback if property define is constrained
+  }
+
+  // Set initial label
+  updateLabel(hiddenInputEl.value);
+
+  const openPicker = () => {
+    showPickerModal({
+      title,
+      options: getActiveOptions(),
+      value: hiddenInputEl.value,
+      searchable,
+      onSelect: (selectedVal) => {
+        hiddenInputEl.value = selectedVal;
+        updateLabel(selectedVal);
+        hiddenInputEl.dispatchEvent(new Event('change', { bubbles: true }));
+        if (typeof onChange === 'function') {
+          onChange(selectedVal);
+        }
+      }
+    });
+  };
+
+  triggerEl.addEventListener('click', openPicker);
+  triggerEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openPicker();
+    }
+  });
+}
+

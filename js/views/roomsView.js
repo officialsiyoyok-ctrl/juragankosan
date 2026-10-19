@@ -3,8 +3,26 @@
  */
 import { store } from '../state.js?v=2.5';
 import { formatRupiah, escapeHtml } from '../utils/formatter.js?v=2.5';
-import { openModal, closeModal, showToast, showConfirmModal } from '../utils/modal.js?v=2.5';
+import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js?v=2.5';
 import { isPro, canAddRoom, openUpgradeModal, MAX_FREE_ROOMS } from '../utils/license.js?v=2.9';
+
+const FLOOR_OPTIONS = [
+  'Lantai 1',
+  'Lantai 2',
+  'Lantai 3',
+  'Lantai 4',
+  'Paviliun Depan',
+  'Paviliun Belakang'
+];
+
+const ROOM_TYPE_OPTIONS = [
+  'Standar Non-AC',
+  'Standar AC',
+  'VIP AC',
+  'VIP Balkon',
+  'Paviliun Rumah',
+  'Studio Eksekutif'
+];
 
 let currentFilter = 'all'; // 'all', 'kosong', 'terisi'
 let currentSearch = '';
@@ -235,28 +253,22 @@ export function renderRooms(container, options = {}) {
               </div>
               <div class="form-group flex-1">
                 <label for="room-floor" class="form-label">Lantai / Posisi</label>
-                <select id="room-floor" class="form-control">
-                  <option value="Lantai 1">Lantai 1</option>
-                  <option value="Lantai 2">Lantai 2</option>
-                  <option value="Lantai 3">Lantai 3</option>
-                  <option value="Lantai 4">Lantai 4</option>
-                  <option value="Paviliun Depan">Paviliun Depan</option>
-                  <option value="Paviliun Belakang">Paviliun Belakang</option>
-                </select>
+                <div class="custom-select-trigger" id="room-floor-trigger" data-picker-for="room-floor" tabindex="0" role="button">
+                  <span class="custom-select-label" id="room-floor-label">Lantai 1</span>
+                  <span class="custom-select-arrow">▾</span>
+                </div>
+                <input type="hidden" id="room-floor" value="Lantai 1" />
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group flex-1">
                 <label for="room-type" class="form-label">Tipe Unit</label>
-                <select id="room-type" class="form-control">
-                  <option value="Standar Non-AC">Standar Non-AC</option>
-                  <option value="Standar AC" selected>Standar AC</option>
-                  <option value="VIP AC">VIP AC</option>
-                  <option value="VIP Balkon">VIP Balkon</option>
-                  <option value="Paviliun Rumah">Paviliun Rumah</option>
-                  <option value="Studio Eksekutif">Studio Eksekutif</option>
-                </select>
+                <div class="custom-select-trigger" id="room-type-trigger" data-picker-for="room-type" tabindex="0" role="button">
+                  <span class="custom-select-label" id="room-type-label">Standar AC</span>
+                  <span class="custom-select-arrow">▾</span>
+                </div>
+                <input type="hidden" id="room-type" value="Standar AC" />
               </div>
               <div class="form-group flex-1">
                 <label for="room-price" class="form-label">Harga Sewa Bulanan (Rp) <span class="text-danger">*</span></label>
@@ -435,6 +447,25 @@ function setupRoomsEvents(container) {
     roomForm.addEventListener('submit', (e) => {
       e.preventDefault();
       saveRoomForm(container);
+    });
+  }
+
+  // Bind custom pickers for floor & room type
+  const floorTrigger = container.querySelector('#room-floor-trigger');
+  const floorInput = container.querySelector('#room-floor');
+  if (floorTrigger && floorInput) {
+    bindCustomPicker(floorTrigger, floorInput, {
+      title: 'Pilih Lantai / Posisi',
+      options: FLOOR_OPTIONS
+    });
+  }
+
+  const typeTrigger = container.querySelector('#room-type-trigger');
+  const typeInput = container.querySelector('#room-type');
+  if (typeTrigger && typeInput) {
+    bindCustomPicker(typeTrigger, typeInput, {
+      title: 'Pilih Tipe Unit',
+      options: ROOM_TYPE_OPTIONS
     });
   }
 }

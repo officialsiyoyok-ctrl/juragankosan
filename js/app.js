@@ -2,7 +2,7 @@
  * Juragankosan Main Application Orchestrator
  */
 import { store } from './state.js?v=2.5';
-import { initModalListeners, openModal, closeModal, showToast } from './utils/modal.js?v=2.5';
+import { initModalListeners, openModal, closeModal, showToast, bindCustomPicker } from './utils/modal.js?v=2.5';
 import {
   formatRupiah,
   formatDateIndo,
@@ -362,9 +362,10 @@ class JuragankosanApp {
       ? settings.bankAccounts
       : (settings.bankName ? [{ bankName: settings.bankName, accountNumber: settings.bankAccount || '', accountHolder: '' }] : []);
 
-    const bankOptionsHtml = rawAccounts
+    const paymentMethodOptions = [];
+    rawAccounts
       .filter((acc) => acc && acc.bankName && acc.bankName.trim())
-      .map((acc) => {
+      .forEach((acc) => {
         const rawName = acc.bankName.trim();
         const bankTitle = rawName.toLowerCase().startsWith('transfer') ? rawName : `Transfer ${rawName}`;
         const detailsParts = [];
@@ -375,12 +376,14 @@ class JuragankosanApp {
           detailsParts.push(`a.n ${acc.accountHolder.trim()}`);
         }
         const label = detailsParts.length > 0 ? `${bankTitle} (${detailsParts.join(' ')})` : bankTitle;
-        return `<option value="${escapeHtml(label)}">${escapeHtml(label)}</option>`;
-      }).join('');
+        paymentMethodOptions.push({ value: label, label });
+      });
 
-    const cashOptionHtml = (settings.acceptCash !== false || !bankOptionsHtml)
-      ? `<option value="💵 Tunai / Cash">💵 Tunai / Cash</option>`
-      : '';
+    if (settings.acceptCash !== false || paymentMethodOptions.length === 0) {
+      paymentMethodOptions.push({ value: '💵 Tunai / Cash', label: '💵 Tunai / Cash' });
+    }
+
+    const defaultPaymentMethod = paymentMethodOptions.length > 0 ? paymentMethodOptions[0].value : '💵 Tunai / Cash';
 
     const prevPaid = bill.paidAmount || 0;
     const remaining = bill.remainingAmount !== undefined ? bill.remainingAmount : Math.max(0, bill.amount - prevPaid);
@@ -533,10 +536,11 @@ class JuragankosanApp {
 
             <div class="form-group">
               <label for="pay-method" class="form-label">Metode Pembayaran</label>
-              <select id="pay-method" class="form-control">
-                ${bankOptionsHtml}
-                ${cashOptionHtml}
-              </select>
+              <div class="custom-select-trigger" id="pay-method-trigger" data-picker-for="pay-method">
+                <span class="custom-select-label" id="pay-method-label">${escapeHtml(defaultPaymentMethod)}</span>
+                <span class="custom-select-arrow">▾</span>
+              </div>
+              <input type="hidden" id="pay-method" value="${escapeHtml(defaultPaymentMethod)}" />
             </div>
 
             <div class="form-group">
@@ -571,6 +575,16 @@ class JuragankosanApp {
     const partialPreview = paymentModal.querySelector('#partial-calc-preview');
     const advancePreview = paymentModal.querySelector('#advance-calc-preview');
     const submitBtn = paymentModal.querySelector('#pay-submit-btn');
+
+    // Bind custom picker for payment method
+    const payMethodTrigger = paymentModal.querySelector('#pay-method-trigger');
+    const payMethodInput = paymentModal.querySelector('#pay-method');
+    if (payMethodTrigger && payMethodInput) {
+      bindCustomPicker(payMethodTrigger, payMethodInput, {
+        title: 'Pilih Metode Pembayaran',
+        options: paymentMethodOptions
+      });
+    }
 
     const updatePartialPreview = () => {
       const payNow = parseRupiahInput(partialInput.value);
