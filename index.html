@@ -11,8 +11,15 @@
   <link rel="canonical" href="https://juragankosan.id/" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://juragankosan.id/" />
-  <meta property="og:title" content="Juragankosan.id — Kelola Kos & Kontrakan Tanpa Pusing" />
-  <meta property="og:description" content="Aplikasi pengelola kos berbasis PWA. Tanpa unduh PlayStore, 100% data aman di HP, sekali bayar untuk selamanya." />
+  <meta property="og:title" content="Juragankosan.id — Solusi Modern Kelola Kos & Kontrakan Tanpa Pusing" />
+  <meta property="og:description" content="Aplikasi pengelola kos berbasis PWA. Tanpa unduh PlayStore, tagihan WhatsApp 1-klik, kwitansi resmi, 100% data aman di HP, sekali bayar untuk selamanya." />
+  <meta property="og:image" content="https://app.juragankosan.id/assets/icons/favicon.svg" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Juragankosan.id — Kelola Kos & Kontrakan Tanpa Pusing" />
+  <meta name="twitter:description" content="Aplikasi pencatatan sewa kos, tagihan otomatis WhatsApp 1-klik, kwitansi digital resmi, dan laporan keuangan real-time." />
+  <meta name="twitter:image" content="https://app.juragankosan.id/assets/icons/favicon.svg" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="https://app.juragankosan.id/assets/icons/favicon.svg" />
@@ -134,6 +141,7 @@
       <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-slate-600">
         <a href="#masalah" class="hover:text-emerald-700 transition-colors">Masalah</a>
         <a href="#solusi" class="hover:text-emerald-700 transition-colors">Keunggulan</a>
+        <a href="#kwitansi" class="hover:text-emerald-700 transition-colors">Kwitansi Resmi</a>
         <a href="#harga" class="hover:text-emerald-700 transition-colors">Paket PRO</a>
         <a href="#faq" class="hover:text-emerald-700 transition-colors">Tanya Jawab</a>
       </nav>
@@ -157,6 +165,7 @@
     <div id="mobileNavMenu" class="hidden md:hidden border-b border-slate-200 bg-white/95 px-4 py-3 space-y-2 text-sm font-semibold text-slate-700">
       <a href="#masalah" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Masalah Pengelola Kos</a>
       <a href="#solusi" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Keunggulan & Solusi</a>
+      <a href="#kwitansi" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Kwitansi Digital Resmi</a>
       <a href="#harga" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Harga Paket PRO</a>
       <a href="#faq" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Pertanyaan Umum (FAQ)</a>
     </div>
@@ -296,10 +305,13 @@
             </div>
 
             <!-- Mini Kwitansi Notification Bar -->
-            <div class="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] flex items-center justify-between">
-              <span class="text-emerald-900 font-semibold truncate">✓ Kwitansi KW/202610/201-03 Siap</span>
-              <span class="text-emerald-700 font-bold ml-2 underline text-[10px]">Kirim WA</span>
-            </div>
+            <a href="#kwitansi" class="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] flex items-center justify-between hover:bg-emerald-100/80 transition-colors cursor-pointer group block">
+              <span class="text-emerald-950 font-semibold truncate flex items-center gap-1.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span>Kwitansi Resmi KW/202610/101-01</span>
+              </span>
+              <span class="text-emerald-700 font-bold ml-2 underline text-[10px] group-hover:text-emerald-900 whitespace-nowrap">Lihat Struk →</span>
+            </a>
 
           </div>
 
@@ -479,6 +491,104 @@
 
       </div>
 
+    </div>
+  </section>
+
+
+  <!-- ========================================================================
+       FEATURE SPOTLIGHT: KWITANSI DIGITAL RESMI
+       ======================================================================== -->
+  <section id="kwitansi" class="py-14 sm:py-20 bg-gradient-to-b from-emerald-50/20 via-white to-white border-t border-slate-100 overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 items-center">
+        
+        <!-- Left Column: Kwitansi Image Card with Elegant Frame & Badges -->
+        <div class="lg:col-span-7 order-2 lg:order-1 flex justify-center">
+          <div class="relative w-full max-w-lg group">
+            
+            <!-- Soft Ambient Glow -->
+            <div class="absolute -inset-2 bg-gradient-to-r from-emerald-400/20 to-amber-400/15 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 transition duration-500"></div>
+            
+            <!-- Card Frame for the Receipt Image -->
+            <div class="relative rounded-2xl bg-white border border-slate-200/90 shadow-xl overflow-hidden p-2 sm:p-3 transition-transform duration-300 group-hover:-translate-y-1">
+              <img 
+                src="./assets/images/kwitansi-digital-resmi.png" 
+                alt="Kwitansi Digital Resmi Pembayaran Sewa Juragankosan" 
+                class="w-full h-auto rounded-xl shadow-xs object-cover border border-slate-100" 
+                loading="lazy"
+              />
+            </div>
+
+            <!-- Floating Badge: Stempel & Nomor Seri -->
+            <div class="absolute -bottom-3 -right-2 sm:-right-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-emerald-300/80 shadow-md flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-xs font-bold text-slate-800">✓ Stempel & No. Seri Sah</span>
+            </div>
+
+            <!-- Floating Badge: 100% Otomatis -->
+            <div class="hidden sm:flex absolute -top-3 -left-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 shadow-md items-center gap-1.5 text-xs font-bold text-slate-700">
+              <span>📄 Terbilang Otomatis</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right Column: Copywriting & Key Highlights -->
+        <div class="lg:col-span-5 order-1 lg:order-2 text-center lg:text-left">
+          
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 border border-emerald-300/50 mb-3">
+            Bukti Pembayaran Resmi
+          </span>
+          
+          <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug mb-3">
+            Kwitansi Digital Sah, <span class="text-emerald-700">Terbit Otomatis</span> Sekali Klik
+          </h2>
+          
+          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed mb-6">
+            Tinggalkan kwitansi kertas warung yang mudah robek atau hilang. Begitu sewa dibayar lunas atau dicil bertahap, Juragankosan langsung membuat kwitansi rapi berstandar resmi siap kirim ke WhatsApp penyewa atau disimpan sebagai PDF.
+          </p>
+
+          <!-- 4 Bullet Points -->
+          <div class="space-y-3.5 text-xs sm:text-sm font-body text-slate-700 text-left mb-6">
+            <div class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-md bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
+              <div>
+                <strong class="font-bold text-slate-900">Nomor Seri Akuntansi Unik</strong>: Format otomatis <code class="text-[11px] font-mono text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.5 rounded">KW/202610/101-01</code> sehingga pembukuan anti-dobel.
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-md bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
+              <div>
+                <strong class="font-bold text-slate-900">Teks Terbilang Otomatis</strong>: Konversi nominal angka ke kalimat Indonesia (<em class="italic text-slate-800">"Satu Juta Delapan Ratus Ribu Rupiah"</em>) tanpa repot ketik manual.
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-md bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
+              <div>
+                <strong class="font-bold text-slate-900">Stempel Lunas & Nama Kos</strong>: Dilengkapi cap stempel digital hijau resmi dan identitas pengelola untuk kredibilitas tinggi.
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-5 h-5 rounded-md bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">✓</div>
+              <div>
+                <strong class="font-bold text-slate-900">Kirim WhatsApp & Simpan PDF</strong>: Sekali ketuk langsung terkirim ke chat WhatsApp penyewa atau disimpan untuk arsip fisik.
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-center lg:justify-start">
+            <a href="https://app.juragankosan.id#bills" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-700 hover:text-emerald-800 hover:underline">
+              <span>Coba Generator Kwitansi di Aplikasi</span>
+              <span>→</span>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
     </div>
   </section>
 
