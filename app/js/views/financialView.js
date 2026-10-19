@@ -219,7 +219,7 @@ export function renderFinances(container, options = {}) {
             <div class="form-group mb-3">
               <label for="income-category" class="form-label font-semibold">Kategori Pemasukan</label>
               <div class="custom-select-trigger" id="income-category-trigger" data-picker-for="income-category" tabindex="0" role="button">
-                <span class="custom-select-label" id="income-category-label">🅿️ Parkir Kendaraan</span>
+                <span class="custom-select-label" id="income-category-label">🛵 Parkir Kendaraan</span>
                 <span class="custom-select-arrow">▾</span>
               </div>
               <input type="hidden" id="income-category" value="Parkir Kendaraan" />
@@ -1221,7 +1221,7 @@ function setupFinancialEventListeners(container) {
       title: 'Pilih Kategori Pemasukan',
       options: INCOME_CATEGORIES.filter((c) => c.name !== 'Sewa Kamar').map((c) => ({
         value: c.name,
-        label: `${c.icon} ${c.name}`,
+        label: c.name,
         icon: c.icon
       }))
     });
@@ -1234,7 +1234,7 @@ function setupFinancialEventListeners(container) {
       title: 'Pilih Kategori Biaya Operasional',
       options: EXPENSE_CATEGORIES.map((c) => ({
         value: c.name,
-        label: `${c.icon} ${c.name}`,
+        label: c.name,
         icon: c.icon
       }))
     });

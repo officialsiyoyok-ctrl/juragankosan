@@ -321,7 +321,7 @@ function setupExpensesEvents(container) {
   if (catTrigger && catInput) {
     bindCustomPicker(catTrigger, catInput, {
       title: 'Pilih Kategori Biaya',
-      options: EXPENSE_CATEGORIES.map((c) => ({ value: c.name, label: `${c.icon} ${c.name}`, icon: c.icon }))
+      options: EXPENSE_CATEGORIES.map((c) => ({ value: c.name, label: c.name, icon: c.icon }))
     });
   }
 }

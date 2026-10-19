@@ -250,16 +250,25 @@ export function showPickerModal({
 
   const normalizedOpts = options.map((opt) => {
     if (typeof opt === 'object' && opt !== null) {
+      const rawLabel = String(opt.label !== undefined ? opt.label : opt.value);
+      const icon = opt.icon || '';
+      let displayLabel = rawLabel;
+      // Strip leading icon from displayLabel if already present to avoid duplication with opt.icon
+      if (icon && displayLabel.startsWith(icon)) {
+        displayLabel = displayLabel.slice(icon.length).trim();
+      }
       return {
         value: String(opt.value !== undefined ? opt.value : opt.label),
-        label: String(opt.label !== undefined ? opt.label : opt.value),
-        icon: opt.icon || '',
+        label: rawLabel,
+        displayLabel,
+        icon,
         sublabel: opt.sublabel || ''
       };
     }
     return {
       value: String(opt),
       label: String(opt),
+      displayLabel: String(opt),
       icon: '',
       sublabel: ''
     };
@@ -273,7 +282,7 @@ export function showPickerModal({
   const renderItems = (filter = '') => {
     const q = filter.toLowerCase().trim();
     const filtered = q
-      ? normalizedOpts.filter((o) => o.label.toLowerCase().includes(q) || o.value.toLowerCase().includes(q) || o.sublabel.toLowerCase().includes(q))
+      ? normalizedOpts.filter((o) => o.label.toLowerCase().includes(q) || o.displayLabel.toLowerCase().includes(q) || o.value.toLowerCase().includes(q) || o.sublabel.toLowerCase().includes(q))
       : normalizedOpts;
 
     if (filtered.length === 0) {
@@ -294,7 +303,7 @@ export function showPickerModal({
             <div class="global-picker-item-left">
               ${opt.icon ? `<span class="global-picker-item-icon">${opt.icon}</span>` : ''}
               <div class="global-picker-item-text">
-                <span class="global-picker-item-label">${escapeHtml(opt.label)}</span>
+                <span class="global-picker-item-label">${escapeHtml(opt.displayLabel)}</span>
                 ${opt.sublabel ? `<span class="global-picker-item-sub">${escapeHtml(opt.sublabel)}</span>` : ''}
               </div>
             </div>
@@ -369,7 +378,17 @@ export function bindCustomPicker(triggerEl, hiddenInputEl, { title = 'Pilih Opsi
     const found = normalized.find((o) => String(o.value) === String(val));
     const labelEl = triggerEl.querySelector('.custom-select-label');
     if (labelEl) {
-      labelEl.textContent = found ? found.label : (val || '-- Pilih --');
+      if (found) {
+        const icon = found.icon || '';
+        const rawLabel = found.label || '';
+        if (icon && !rawLabel.startsWith(icon)) {
+          labelEl.textContent = `${icon} ${rawLabel}`;
+        } else {
+          labelEl.textContent = rawLabel;
+        }
+      } else {
+        labelEl.textContent = val || '-- Pilih --';
+      }
     }
     triggerEl.setAttribute('data-value', val || '');
   };
