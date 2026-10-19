@@ -5208,6 +5208,62 @@ select.form-control option:not([value=""]) {
   border-top: 2px solid var(--border-color);
 }
 
+/* Financial View Layout Components (Desktop Default) */
+.fin-toolbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.fin-toolbar-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fin-filter-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.fin-filter-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fin-period-grid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fin-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.fin-header-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Print Isolation Utility (Hidden on Screen) */
+.print-only {
+  display: none !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .fin-subnav-bar {
@@ -6522,6 +6578,174 @@ html.app-unlocked .app-lock-overlay,
     flex: 0 0 auto !important;
     padding: 8px 12px !important;
     font-size: 0.78rem !important;
+  }
+
+  /* Toolbar & Filter Cards di HP */
+  .fin-toolbar-card,
+  .fin-report-filter-bar {
+    padding: 14px !important;
+    border-radius: var(--radius-lg) !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .fin-toolbar-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .fin-toolbar-filters {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .fin-filter-label {
+    font-size: 0.75rem !important;
+    letter-spacing: 0.04em !important;
+    color: var(--text-muted) !important;
+    font-weight: 700 !important;
+  }
+
+  /* Filter Kategori: Scrollable Pills horizontal halus */
+  .fin-filter-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 6px !important;
+    width: 100% !important;
+    padding: 2px 0 4px !important;
+  }
+
+  .fin-filter-buttons::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .fin-filter-buttons .btn {
+    flex: 0 0 auto !important;
+    font-size: 0.8rem !important;
+    padding: 7px 13px !important;
+    border-radius: 9999px !important;
+    white-space: nowrap !important;
+    font-weight: 600 !important;
+    min-height: 36px !important;
+  }
+
+  /* Grid Tombol Periode 2x2 yang simetris & elegan */
+  .fin-period-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .fin-period-grid .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 0.8125rem !important;
+    padding: 9px 8px !important;
+    border-radius: var(--radius-md) !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    min-height: 38px !important;
+  }
+
+  .fin-toolbar-action {
+    width: 100% !important;
+  }
+
+  .fin-toolbar-action .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 10px 14px !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    border-radius: var(--radius-md) !important;
+    min-height: 40px !important;
+  }
+
+  /* Card Header Bebas Pemenggalan Kata di HP */
+  .fin-card-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 14px 16px !important;
+  }
+
+  .fin-header-title-box {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    width: 100% !important;
+  }
+
+  .fin-header-title-box .card-title {
+    font-size: 0.975rem !important;
+    font-weight: 800 !important;
+    line-height: 1.35 !important;
+    color: var(--text-main) !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    margin: 0 !important;
+  }
+
+  .fin-header-title-box span.text-muted,
+  .fin-header-title-box p.text-muted {
+    font-size: 0.75rem !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+  }
+
+  .fin-header-action-box {
+    width: 100% !important;
+  }
+
+  .fin-header-action-box .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 10px 14px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    border-radius: var(--radius-md) !important;
+    min-height: 40px !important;
+  }
+
+  /* Kartu Laba Bersih & Arus Kas di HP */
+  .pnl-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .pnl-card {
+    padding: 14px 16px !important;
+    border-radius: var(--radius-lg) !important;
+  }
+
+  .pnl-value {
+    font-size: 1.45rem !important;
+    font-weight: 800 !important;
+    margin: 4px 0 6px !important;
+    font-family: var(--font-family, inherit) !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .pnl-sub {
+    font-size: 0.75rem !important;
+    line-height: 1.45 !important;
+    color: var(--text-muted) !important;
+    padding-bottom: 2px !important;
   }
 
   /* 6. Halaman 6: Pengaturan Kos (settingsView.js) */

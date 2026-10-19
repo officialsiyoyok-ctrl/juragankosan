@@ -684,3 +684,7 @@ button, input, select, textarea {
 .hidden {
   display: none !important;
 }
+
+.print-only {
+  display: none !important;
+}

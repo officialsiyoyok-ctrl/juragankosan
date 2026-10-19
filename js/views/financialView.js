@@ -393,21 +393,23 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
 
     <!-- Filter & Toolbar -->
     <div class="card mb-4 fin-toolbar-card">
-      <div class="flex-between align-center flex-wrap gap-3">
-        <div class="flex align-center gap-2 flex-wrap">
-          <span class="text-xs font-bold text-muted uppercase">Filter Kategori:</span>
-          <button type="button" class="btn btn-sm ${incomeCategoryFilter === 'all' ? 'btn-primary' : 'btn-outline'} btn-filter-income-cat" data-cat="all">
-            Semua (${periodInflows.length})
-          </button>
-          <button type="button" class="btn btn-sm ${incomeCategoryFilter === 'rent_only' ? 'btn-primary' : 'btn-outline'} btn-filter-income-cat" data-cat="rent_only">
-            🏠 Sewa Kamar (${periodInflows.filter(i => i.isRent).length})
-          </button>
-          <button type="button" class="btn btn-sm ${incomeCategoryFilter === 'other_only' ? 'btn-primary' : 'btn-outline'} btn-filter-income-cat" data-cat="other_only">
-            ✨ Pemasukan Lain (${periodInflows.filter(i => !i.isRent).length})
-          </button>
+      <div class="fin-toolbar-inner">
+        <div class="fin-toolbar-filters">
+          <span class="text-xs font-bold text-muted uppercase fin-filter-label">Filter Kategori:</span>
+          <div class="fin-filter-buttons">
+            <button type="button" class="btn btn-sm ${incomeCategoryFilter === 'all' ? 'btn-primary' : 'btn-outline'} btn-filter-income-cat" data-cat="all">
+              Semua (${periodInflows.length})
+            </button>
+            <button type="button" class="btn btn-sm ${incomeCategoryFilter === 'rent_only' ? 'btn-primary' : 'btn-outline'} btn-filter-income-cat" data-cat="rent_only">
+              🏠 Sewa Kamar (${periodInflows.filter(i => i.isRent).length})
+            </button>
+            <button type="button" class="btn btn-sm ${incomeCategoryFilter === 'other_only' ? 'btn-primary' : 'btn-outline'} btn-filter-income-cat" data-cat="other_only">
+              ✨ Pemasukan Lain (${periodInflows.filter(i => !i.isRent).length})
+            </button>
+          </div>
         </div>
 
-        <div>
+        <div class="fin-toolbar-action">
           <button type="button" class="btn btn-primary btn-sm" id="btn-trigger-add-income-sub">
             <span>+</span> Tambah Pemasukan
           </button>
@@ -417,9 +419,11 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
 
     <!-- Incomes Table -->
     <div class="card p-0 overflow-hidden">
-      <div class="card-header flex-between align-center border-b px-4 py-3">
-        <h3 class="card-title text-base font-bold mb-0">Riwayat Arus Kas Masuk (${filteredInflows.length} Transaksi)</h3>
-        <span class="text-xs text-muted">Data sewa tersinkronisasi otomatis dari pembayaran tagihan</span>
+      <div class="card-header fin-card-header border-b px-4 py-3">
+        <div class="fin-header-title-box">
+          <h3 class="card-title text-base font-bold mb-0">Riwayat Arus Kas Masuk (${filteredInflows.length} Transaksi)</h3>
+          <span class="text-xs text-muted">Data sewa tersinkronisasi otomatis dari pembayaran tagihan</span>
+        </div>
       </div>
 
       ${filteredInflows.length === 0 ? `
@@ -618,18 +622,22 @@ function renderExpensesSubTab({ selectedPeriodYM, periodExpenses, totalMonthExpe
 
     <!-- Expenses Table -->
     <div class="card p-0 overflow-hidden">
-      <div class="card-header flex-between align-center border-b px-4 py-3">
-        <div class="flex align-center gap-2">
-          <h3 class="card-title text-base font-bold mb-0">Daftar Pengeluaran (${filteredExpenses.length} Transaksi)</h3>
-          ${expenseCategoryFilter !== 'all' ? `
-            <button type="button" class="btn btn-outline btn-xs" id="btn-reset-expense-filter">
-              Hapus Filter: ${expenseCategoryFilter} &times;
-            </button>
-          ` : ''}
+      <div class="card-header fin-card-header border-b px-4 py-3">
+        <div class="fin-header-title-box">
+          <div class="flex align-center gap-2 flex-wrap">
+            <h3 class="card-title text-base font-bold mb-0">Daftar Pengeluaran (${filteredExpenses.length} Transaksi)</h3>
+            ${expenseCategoryFilter !== 'all' ? `
+              <button type="button" class="btn btn-outline btn-xs" id="btn-reset-expense-filter">
+                Hapus Filter: ${expenseCategoryFilter} &times;
+              </button>
+            ` : ''}
+          </div>
         </div>
-        <button type="button" class="btn btn-danger btn-sm" id="btn-trigger-add-expense-sub">
-          <span>+</span> Catat Pengeluaran
-        </button>
+        <div class="fin-header-action-box">
+          <button type="button" class="btn btn-danger btn-sm" id="btn-trigger-add-expense-sub">
+            <span>+</span> Catat Pengeluaran
+          </button>
+        </div>
       </div>
 
       ${filteredExpenses.length === 0 ? `
@@ -796,24 +804,26 @@ function renderReportSubTab({ selectedPeriodYM }) {
 
     <!-- Filter Periode Bar (Interactive) -->
     <div class="card mb-4 fin-report-filter-bar no-print">
-      <div class="flex-between align-center flex-wrap gap-3">
-        <div class="flex align-center gap-2 flex-wrap">
-          <span class="text-xs font-bold text-muted uppercase">Pilih Periode Laporan:</span>
-          <button type="button" class="btn btn-sm ${reportFilterType === 'this_month' ? 'btn-primary' : 'btn-outline'} btn-set-report-filter" data-filter="this_month">
-            📅 Bulan Ini
-          </button>
-          <button type="button" class="btn btn-sm ${reportFilterType === 'last_month' ? 'btn-primary' : 'btn-outline'} btn-set-report-filter" data-filter="last_month">
-            ⏪ Bulan Lalu
-          </button>
-          <button type="button" class="btn btn-sm ${reportFilterType === 'this_year' ? 'btn-primary' : 'btn-outline'} btn-set-report-filter" data-filter="this_year">
-            🗓️ Tahun Ini (${new Date().getFullYear()})
-          </button>
-          <button type="button" class="btn btn-sm ${reportFilterType === 'custom' ? 'btn-primary' : 'btn-outline'} btn-set-report-filter" data-filter="custom">
-            ⚡ Rentang Tanggal Kustom
-          </button>
+      <div class="fin-toolbar-inner">
+        <div class="fin-toolbar-filters">
+          <span class="text-xs font-bold text-muted uppercase fin-filter-label">Pilih Periode Laporan:</span>
+          <div class="fin-period-grid">
+            <button type="button" class="btn btn-sm ${reportFilterType === 'this_month' ? 'btn-primary' : 'btn-outline'} btn-set-report-filter" data-filter="this_month">
+              📅 Bulan Ini
+            </button>
+            <button type="button" class="btn btn-sm ${reportFilterType === 'last_month' ? 'btn-primary' : 'btn-outline'} btn-set-report-filter" data-filter="last_month">
+              ⏪ Bulan Lalu
+            </button>
+            <button type="button" class="btn btn-sm ${reportFilterType === 'this_year' ? 'btn-primary' : 'btn-outline'} btn-set-report-filter" data-filter="this_year">
+              🗓️ Tahun Ini (${new Date().getFullYear()})
+            </button>
+            <button type="button" class="btn btn-sm ${reportFilterType === 'custom' ? 'btn-primary' : 'btn-outline'} btn-set-report-filter" data-filter="custom">
+              ⚡ Rentang Kustom
+            </button>
+          </div>
         </div>
 
-        <div>
+        <div class="fin-toolbar-action">
           <button type="button" class="btn btn-outline btn-sm font-semibold" id="btn-print-report-inner">
             🖨️ Cetak / Simpan PDF
           </button>
@@ -862,7 +872,7 @@ function renderReportSubTab({ selectedPeriodYM }) {
             ${isSurplus ? '✓ SURPLUS (PROFIT)' : '⚠️ DEFISIT (RUGI)'}
           </span>
         </div>
-        <div class="pnl-value font-mono ${isSurplus ? 'text-emerald' : 'text-danger'}">
+        <div class="pnl-value ${isSurplus ? 'text-emerald' : 'text-danger'}">
           ${isSurplus ? '+' : ''}${formatRupiah(netProfit)}
         </div>
         <div class="pnl-sub">
@@ -873,8 +883,8 @@ function renderReportSubTab({ selectedPeriodYM }) {
 
     <!-- Chronological Cash Flow Ledger Table (Buku Kas) -->
     <div class="card p-0 overflow-hidden mb-4">
-      <div class="card-header flex-between align-center border-b px-4 py-3">
-        <div>
+      <div class="card-header fin-card-header border-b px-4 py-3">
+        <div class="fin-header-title-box">
           <h3 class="card-title text-base font-bold mb-0">Buku Kas &amp; Arus Kas Kronologis</h3>
           <p class="text-xs text-muted mb-0">Rincian mutasi kas masuk, keluar, dan saldo berjalan (running balance)</p>
         </div>
