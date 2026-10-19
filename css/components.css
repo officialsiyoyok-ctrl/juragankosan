@@ -8183,6 +8183,287 @@ html.app-unlocked .app-lock-overlay,
   background-color: var(--bg-surface-subtle) !important;
 }
 
+/* =============================================================================
+   BILLS ACCORDION (MODE RINGKAS - MASTER DETAIL)
+   ============================================================================= */
+.bills-accordion-container {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.bills-accordion-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px 6px;
+}
+
+.btn-toggle-all-bills {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.btn-toggle-all-bills:hover {
+  background-color: var(--bg-surface-subtle);
+}
+
+.bills-accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.bill-accordion-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.bill-accordion-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .bill-accordion-card:hover {
+  border-color: #475569;
+}
+
+/* Status-based Left Border Accent */
+.bill-accordion-card.status-lunas {
+  border-left-color: #10b981;
+}
+
+.bill-accordion-card.status-overdue {
+  border-left-color: #ef4444;
+}
+
+.bill-accordion-card.status-partial {
+  border-left-color: #f59e0b;
+}
+
+.bill-accordion-card.status-unpaid {
+  border-left-color: #eab308;
+}
+
+/* Compact Card Header (Always Visible) */
+.bill-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 14px;
+  cursor: pointer;
+  user-select: none;
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.bill-card-header:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .bill-card-header:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.bill-accordion-card.is-expanded .bill-card-header {
+  background-color: rgba(0, 0, 0, 0.015);
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .bill-accordion-card.is-expanded .bill-card-header {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.bill-header-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.bill-header-tenant {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.bill-header-tenant .room-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  background-color: var(--bg-surface-subtle, #f1f5f9);
+  color: var(--text-main);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.bill-header-tenant .tenant-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bill-chevron {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  display: inline-block;
+  line-height: 1;
+}
+
+.bill-accordion-card.is-expanded .bill-chevron {
+  transform: rotate(180deg);
+  color: var(--primary-600);
+}
+
+.bill-header-row-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+}
+
+.bill-header-amount .nominal-text {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+}
+
+.bill-header-badge .badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Collapsible Card Body */
+.bill-card-body {
+  display: none;
+  padding: 12px 14px 14px;
+  background-color: var(--bg-surface-subtle, #f8fafc);
+  animation: billSlideDown 0.2s cubic-bezier(0, 0, 0.2, 1);
+}
+
+[data-theme="dark"] .bill-card-body {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.bill-accordion-card.is-expanded .bill-card-body {
+  display: block;
+}
+
+@keyframes billSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bill-details-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  font-size: 0.8125rem;
+}
+
+@media (min-width: 640px) {
+  .bill-details-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .bill-detail-full {
+    grid-column: span 2;
+  }
+}
+
+.bill-detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.bill-detail-item .detail-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  flex-shrink: 0;
+  min-width: 95px;
+}
+
+.bill-detail-item .detail-value {
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.payment-meta-inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pay-meta-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.bill-card-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.bill-card-actions .btn {
+  width: 100%;
+  min-height: 38px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.bill-card-actions .btn-wa {
+  background-color: #25d366;
+  color: #fff;
+  border-color: #25d366;
+}
+
+.bill-card-actions .btn-wa:hover {
+  background-color: #1ebe57;
+  color: #fff;
+}
+
 
 
 

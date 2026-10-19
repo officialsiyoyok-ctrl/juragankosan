@@ -190,159 +190,215 @@ export function renderBills(container, options = {}) {
         }</p>
         <button class="btn btn-outline" id="btn-generate-bills">🔄 Perbarui Tagihan Periode Ini</button>
       </div>
-    `
-        : `
-      <div class="table-responsive card-table bills-table-container">
-        <table class="data-table bills-table">
-          <thead>
-            <tr>
-              <th>Kamar</th>
-              <th>Nama Penyewa</th>
-              <th>Nominal Sewa</th>
-              <th>Jatuh Tempo</th>
-              <th>Status Tagihan</th>
-              <th>Pembayaran</th>
-              <th class="text-right">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${filteredBills
-              .map((bill) => {
-                const daysDiff = calculateDaysDiffFromToday(bill.dueDate);
-                const isLunas = bill.status === 'lunas';
-                const isPartial = bill.status === 'sebagian';
-                const isOverdue = !isLunas && daysDiff > 0;
+         : `
+      <div class="bills-accordion-container">
+        <div class="bills-accordion-toolbar mb-2 flex-between align-center">
+          <span class="text-xs text-muted font-medium">Menampilkan <strong>${filteredBills.length}</strong> tagihan kamar</span>
+          <button type="button" class="btn btn-ghost btn-xs text-primary font-semibold btn-toggle-all-bills" id="btn-toggle-all-bills" data-all-expanded="false">
+            <span class="btn-toggle-icon">⊞</span> <span class="btn-toggle-text">Buka Semua</span>
+          </button>
+        </div>
 
-                let statusBadge = '';
-                if (isLunas) {
-                  statusBadge = bill.isAdvance
-                    ? `<span class="badge badge-success">✓ Lunas (Maju ${bill.advanceMonths || 1} Bln)</span>`
-                    : `<span class="badge badge-success">✓ Lunas</span>`;
-                } else if (isPartial) {
-                  statusBadge = `<span class="badge badge-warning-soft">⚡ Dicicil (Sisa ${formatRupiah(bill.remainingAmount || 0)})</span>`;
-                } else if (isOverdue) {
-                  statusBadge = `<span class="badge badge-danger">⚠️ Telat ${daysDiff} Hari</span>`;
-                } else if (daysDiff === 0) {
-                  statusBadge = `<span class="badge badge-warning">⚡ Jatuh Tempo Hari Ini</span>`;
-                } else {
-                  statusBadge = `<span class="badge badge-warning">Belum Bayar</span>`;
-                }
+        <div class="bills-accordion-list">
+          ${filteredBills
+            .map((bill) => {
+              const daysDiff = calculateDaysDiffFromToday(bill.dueDate);
+              const isLunas = bill.status === 'lunas';
+              const isPartial = bill.status === 'sebagian';
+              const isOverdue = !isLunas && daysDiff > 0;
 
-                return `
-                  <tr class="bill-card ${isOverdue ? 'row-highlight-danger' : ''}">
-                    <td>
-                      <strong class="room-pill">${escapeHtml(bill.roomNumber)}</strong>
-                    </td>
-                    <td>
-                      <div class="tenant-name-cell">
+              let statusBadge = '';
+              let statusClass = 'status-unpaid';
+              if (isLunas) {
+                statusClass = 'status-lunas';
+                statusBadge = bill.isAdvance
+                  ? `<span class="badge badge-success">✓ Lunas (${bill.advanceMonths || 1} Bln)</span>`
+                  : `<span class="badge badge-success">✓ Lunas</span>`;
+              } else if (isPartial) {
+                statusClass = 'status-partial';
+                statusBadge = `<span class="badge badge-warning-soft">⚡ Dicicil</span>`;
+              } else if (isOverdue) {
+                statusClass = 'status-overdue';
+                statusBadge = `<span class="badge badge-danger">⚠️ Telat ${daysDiff} Hari</span>`;
+              } else if (daysDiff === 0) {
+                statusClass = 'status-overdue';
+                statusBadge = `<span class="badge badge-warning">⚡ Hari Ini</span>`;
+              } else {
+                statusClass = 'status-unpaid';
+                statusBadge = `<span class="badge badge-warning">Belum Bayar</span>`;
+              }
+
+              return `
+                <div class="bill-accordion-card ${statusClass}" data-bill-id="${bill.id}">
+                  <!-- Compact Header (Always Visible, tap to expand) -->
+                  <div class="bill-card-header" role="button" tabindex="0" aria-expanded="false">
+                    <div class="bill-header-row-top">
+                      <div class="bill-header-tenant">
+                        <strong class="room-pill">${escapeHtml(bill.roomNumber)}</strong>
                         <span class="tenant-name">${escapeHtml(bill.tenantName)}</span>
-                        <span class="tenant-phone-sub">${bill.tenantPhone}</span>
                       </div>
-                    </td>
-                    <td>
-                      <strong class="nominal-text">${formatRupiah(bill.amount)}</strong>
-                      ${
-                        isPartial
-                          ? `
-                        <div class="text-xs text-emerald font-semibold" style="margin-top: 2px;">Masuk: ${formatRupiah(bill.paidAmount || 0)}</div>
-                        <div class="text-xs text-danger font-medium">Sisa: ${formatRupiah(bill.remainingAmount || 0)}</div>
-                      `
-                          : ''
-                      }
-                    </td>
-                    <td>
-                      <div class="due-date-cell">
-                        <span class="${isOverdue ? 'text-danger font-medium' : 'text-body'}">${formatDateIndo(
-                  bill.dueDate
-                )}</span>
-                        ${
-                          !isLunas
-                            ? `<span class="text-muted text-xs">${
-                                daysDiff > 0
-                                  ? `Lewat ${daysDiff} hari`
-                                  : daysDiff === 0
-                                  ? 'Batas hari ini'
-                                  : `${Math.abs(daysDiff)} hari lagi`
-                              }</span>`
-                            : ''
-                        }
+                      <span class="bill-chevron" aria-hidden="true">▾</span>
+                    </div>
+
+                    <div class="bill-header-row-bottom">
+                      <div class="bill-header-amount">
+                        <strong class="nominal-text ${isLunas ? 'text-emerald' : isOverdue ? 'text-danger' : 'text-main'}">${formatRupiah(bill.amount)}</strong>
+                        ${isPartial ? `<span class="text-xs text-danger font-medium ml-1">(Sisa ${formatRupiah(bill.remainingAmount || 0)})</span>` : ''}
                       </div>
-                    </td>
-                    <td>${statusBadge}</td>
-                    <td>
-                      ${
-                        isLunas
-                          ? `
-                        <div class="payment-meta-cell">
-                          <span class="pay-method-pill">${escapeHtml(bill.paymentMethod || 'Transfer')}</span>
-                          <span class="pay-date-text">Tgl: ${formatDateIndo(bill.paidDate)}</span>
-                          <span class="pay-receipt-num font-mono text-xs">${bill.receiptNumber || ''}</span>
+                      <div class="bill-header-badge">
+                        ${statusBadge}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Collapsible Body (Details & Action Buttons) -->
+                  <div class="bill-card-body">
+                    <div class="bill-details-grid">
+                      <div class="bill-detail-item">
+                        <span class="detail-label">📞 Kontak:</span>
+                        <span class="detail-value font-mono">
+                          ${bill.tenantPhone ? `<a href="https://wa.me/${bill.tenantPhone.replace(/[^0-9]/g, '')}" target="_blank" class="text-emerald hover-underline font-semibold" onclick="event.stopPropagation();">${formatDisplayPhone(bill.tenantPhone)}</a>` : '<span class="text-muted">-</span>'}
+                        </span>
+                      </div>
+
+                      <div class="bill-detail-item">
+                        <span class="detail-label">📅 Jatuh Tempo:</span>
+                        <span class="detail-value ${isOverdue ? 'text-danger font-bold' : ''}">
+                          ${formatDateIndo(bill.dueDate)}
+                          ${!isLunas ? `<small class="text-xs ${isOverdue ? 'text-danger' : 'text-muted'}">(${daysDiff > 0 ? `Lewat ${daysDiff} hari` : daysDiff === 0 ? 'Hari ini' : `${Math.abs(daysDiff)} hari lagi`})</small>` : ''}
+                        </span>
+                      </div>
+
+                      <div class="bill-detail-item bill-detail-full">
+                        <span class="detail-label">💳 Pembayaran:</span>
+                        <div class="detail-value">
+                          ${isLunas ? `
+                            <div class="payment-meta-inline">
+                              <span class="pay-method-pill">${escapeHtml(bill.paymentMethod || 'Transfer')}</span>
+                              <span class="pay-meta-text">Tgl: ${formatDateIndo(bill.paidDate)}</span>
+                              ${bill.receiptNumber ? `<span class="pay-receipt-num font-mono text-xs">KW: ${escapeHtml(bill.receiptNumber)}</span>` : ''}
+                            </div>
+                          ` : isPartial ? `
+                            <div class="payment-meta-inline">
+                              <span class="pay-method-pill bg-amber-soft text-amber">${escapeHtml(bill.paymentMethod || 'Transfer')}</span>
+                              <span class="pay-meta-text">Masuk: <strong class="text-emerald">${formatRupiah(bill.paidAmount || 0)}</strong> tgl ${formatDateIndo(bill.paidDate)}</span>
+                              ${bill.receiptNumber ? `<span class="pay-receipt-num font-mono text-xs">KW: ${escapeHtml(bill.receiptNumber)}</span>` : ''}
+                            </div>
+                          ` : `
+                            <span class="text-muted text-xs">- Belum ada pembayaran diterima -</span>
+                          `}
                         </div>
-                      `
-                          : isPartial
-                          ? `
-                        <div class="payment-meta-cell">
-                          <span class="pay-method-pill" style="background-color: rgba(245, 158, 11, 0.15); color: #b45309;">${escapeHtml(bill.paymentMethod || 'Transfer')}</span>
-                          <span class="pay-date-text">Cicil: ${formatDateIndo(bill.paidDate)}</span>
-                          <span class="pay-receipt-num font-mono text-xs">${bill.receiptNumber || ''}</span>
-                        </div>
-                      `
-                          : `<span class="text-muted text-sm">- Belum diterima -</span>`
-                      }
-                    </td>
-                    <td class="text-right">
-                      <div class="action-btn-group bill-actions table-actions">
-                        ${
-                          !isLunas
-                            ? `
-                          <button class="btn btn-wa btn-sm btn-send-wa" data-bill-id="${bill.id}" title="${isPartial ? 'Kirim Pengingat Sisa Cicilan via WA' : 'Kirim Tagihan via WhatsApp'}">
-                            <svg class="wa-btn-icon" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                            </svg>
-                            ${isPartial ? 'Tagih Sisa' : 'Tagih WA'}
-                          </button>
-                          <button class="btn ${isPartial ? 'btn-warning' : 'btn-success'} btn-sm btn-mark-paid" data-bill-id="${bill.id}">
-                            ${isPartial ? '+ Bayar Sisa' : '✓ Tandai Lunas'}
-                          </button>
-                          ${
-                            isPartial
-                              ? `
-                            <button class="btn btn-outline btn-sm btn-show-receipt" data-bill-id="${bill.id}" title="Kwitansi Bukti Cicilan">
-                              📄 Kwitansi
-                            </button>
-                            <button class="btn btn-ghost btn-sm btn-revert-paid text-muted" data-bill-id="${bill.id}" title="Reset Status Cicilan">
-                              ↩️ Batal Cicil
-                            </button>
-                          `
-                              : ''
-                          }
-                        `
-                            : `
-                          <button class="btn btn-outline btn-sm btn-show-receipt" data-bill-id="${bill.id}">
+                      </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="bill-card-actions">
+                      ${!isLunas ? `
+                        <button type="button" class="btn btn-wa btn-sm btn-send-wa" data-bill-id="${bill.id}" title="${isPartial ? 'Kirim Pengingat Sisa Cicilan via WA' : 'Kirim Tagihan via WhatsApp'}">
+                          <svg class="wa-btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                          </svg>
+                          ${isPartial ? 'Tagih Sisa' : 'Tagih WA'}
+                        </button>
+                        <button type="button" class="btn ${isPartial ? 'btn-warning' : 'btn-success'} btn-sm btn-mark-paid" data-bill-id="${bill.id}">
+                          ${isPartial ? '+ Bayar Sisa' : '✓ Tandai Lunas'}
+                        </button>
+                        ${isPartial ? `
+                          <button type="button" class="btn btn-outline btn-sm btn-show-receipt" data-bill-id="${bill.id}" title="Kwitansi Bukti Cicilan">
                             📄 Kwitansi
                           </button>
-                          <button class="btn btn-ghost btn-sm btn-revert-paid text-muted" data-bill-id="${bill.id}" title="Batalkan status lunas (jika salah klik)">
-                            ↩️ Batal Lunas
+                          <button type="button" class="btn btn-ghost btn-sm btn-revert-paid text-muted" data-bill-id="${bill.id}" title="Reset Status Cicilan">
+                            ↩️ Batal Cicil
                           </button>
-                        `
-                        }
-                      </div>
-                    </td>
-                  </tr>
-                `;
-              })
-              .join('')}
-          </tbody>
-        </table>
+                        ` : ''}
+                      ` : `
+                        <button type="button" class="btn btn-outline btn-sm btn-show-receipt" data-bill-id="${bill.id}">
+                          📄 Kwitansi
+                        </button>
+                        <button type="button" class="btn btn-ghost btn-sm btn-revert-paid text-muted" data-bill-id="${bill.id}" title="Batalkan status lunas (jika salah klik)">
+                          ↩️ Batal Lunas
+                        </button>
+                      `}
+                    </div>
+                  </div>
+                </div>
+              `;
+            })
+            .join('')}
+        </div>
       </div>
     `
     }
   `;
 
-  setupBillsEvents(container);
+  setupBillsEvents(container, options);
 }
 
-function setupBillsEvents(container) {
+function setupBillsEvents(container, options = {}) {
+  // Accordion card expand/collapse toggle
+  container.querySelectorAll('.bill-card-header').forEach((header) => {
+    header.addEventListener('click', (e) => {
+      if (e.target.closest('button') || e.target.closest('a')) return;
+      const card = header.closest('.bill-accordion-card');
+      if (card) {
+        card.classList.toggle('is-expanded');
+        const isExpanded = card.classList.contains('is-expanded');
+        header.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+      }
+    });
+
+    header.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        header.click();
+      }
+    });
+  });
+
+  // Toggle All button
+  const btnToggleAll = container.querySelector('#btn-toggle-all-bills');
+  if (btnToggleAll) {
+    btnToggleAll.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const allCards = container.querySelectorAll('.bill-accordion-card');
+      const isAllExpanded = btnToggleAll.getAttribute('data-all-expanded') === 'true';
+      const targetState = !isAllExpanded;
+
+      allCards.forEach((card) => {
+        card.classList.toggle('is-expanded', targetState);
+        const header = card.querySelector('.bill-card-header');
+        if (header) header.setAttribute('aria-expanded', targetState ? 'true' : 'false');
+      });
+
+      btnToggleAll.setAttribute('data-all-expanded', targetState ? 'true' : 'false');
+      const iconEl = btnToggleAll.querySelector('.btn-toggle-icon');
+      const textEl = btnToggleAll.querySelector('.btn-toggle-text');
+      if (iconEl) iconEl.textContent = targetState ? '⊟' : '⊞';
+      if (textEl) textEl.textContent = targetState ? 'Tutup Semua' : 'Buka Semua';
+    });
+  }
+
+  // Auto-expand searched cards or highlightBillId
+  if (searchKeyword && searchKeyword.trim()) {
+    container.querySelectorAll('.bill-accordion-card').forEach((card) => {
+      card.classList.add('is-expanded');
+      const header = card.querySelector('.bill-card-header');
+      if (header) header.setAttribute('aria-expanded', 'true');
+    });
+  }
+
+  if (options && options.highlightBillId) {
+    const targetCard = container.querySelector(`.bill-accordion-card[data-bill-id="${options.highlightBillId}"]`);
+    if (targetCard) {
+      targetCard.classList.add('is-expanded');
+      const header = targetCard.querySelector('.bill-card-header');
+      if (header) header.setAttribute('aria-expanded', 'true');
+      setTimeout(() => {
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
+  }
+
   // Month Navigator
   container.querySelectorAll('.btn-nav-month').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -388,7 +444,8 @@ function setupBillsEvents(container) {
 
   // Send WhatsApp Reminder
   container.querySelectorAll('.btn-send-wa').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const billId = btn.getAttribute('data-bill-id');
       const bill = store.getBillById(billId);
       if (!bill) return;
@@ -401,7 +458,8 @@ function setupBillsEvents(container) {
 
   // Mark as Paid Button
   container.querySelectorAll('.btn-mark-paid').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const billId = btn.getAttribute('data-bill-id');
       window.juraganApp.openPaymentModal(billId);
     });
@@ -409,7 +467,8 @@ function setupBillsEvents(container) {
 
   // Show Digital Receipt
   container.querySelectorAll('.btn-show-receipt').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const billId = btn.getAttribute('data-bill-id');
       openReceiptModal(billId);
     });
@@ -417,7 +476,8 @@ function setupBillsEvents(container) {
 
   // Revert Paid
   container.querySelectorAll('.btn-revert-paid').forEach((btn) => {
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
       const billId = btn.getAttribute('data-bill-id');
       const bill = store.getBillById(billId);
       if (!bill) return;
