@@ -6,7 +6,6 @@ import { DEFAULT_WA_TEMPLATE } from '../utils/whatsapp.js?v=3.3';
 import { cleanWhatsAppNumber, escapeHtml, formatRupiah } from '../utils/formatter.js?v=2.5';
 import { showToast, showConfirmModal } from '../utils/modal.js?v=2.5';
 import { isPro, getLicense, deactivateLicense, openUpgradeModal, getCurrentPricingTier } from '../utils/license.js?v=4.1';
-import { getGoogleSheetWebhookUrl, setGoogleSheetWebhookUrl, sendLeadToGoogleSheet } from '../utils/leadCapture.js?v=5.2';
 
 export function renderSettings(container) {
   const settings = store.getSettings();
@@ -15,7 +14,6 @@ export function renderSettings(container) {
   const pricing = getCurrentPricingTier();
   const currentPin = store.getSecurityPin ? store.getSecurityPin() : '1234';
   const isDefaultPin = (currentPin === '1234');
-  const currentWebhook = getGoogleSheetWebhookUrl();
   const bankAccounts = (settings.bankAccounts && settings.bankAccounts.length > 0)
     ? settings.bankAccounts
     : [
@@ -422,50 +420,6 @@ export function renderSettings(container) {
               </div>
             </form>
           </div>
-
-          <!-- Card 4: Integrasi Google Sheets (Lead Calon Konsumen) -->
-          <div class="settings-card google-sheets-card mt-3">
-            <div class="settings-card-header">
-              <div class="settings-icon bg-emerald-subtle text-emerald">📊</div>
-              <div class="flex-1">
-                <div class="flex-between align-center">
-                  <h3 class="settings-card-title">Integrasi Google Sheets (Lead Capture)</h3>
-                  <span class="badge ${currentWebhook ? 'badge-emerald font-bold' : 'badge-warning font-bold'}" id="sheet-webhook-badge">
-                    ${currentWebhook ? '✓ Terhubung' : 'Belum Terhubung'}
-                  </span>
-                </div>
-                <p class="settings-card-desc">
-                  Data calon konsumen (Nama, Kos, No. WA) yang mencoba aplikasi otomatis terkirim langsung ke Google Sheets Anda secara gratis.
-                </p>
-              </div>
-            </div>
-
-            <form id="settings-webhook-form">
-              <div class="form-group mb-2">
-                <label for="set-sheet-webhook" class="form-label font-bold">URL Webhook Google Apps Script</label>
-                <input 
-                  type="url" 
-                  id="set-sheet-webhook" 
-                  class="form-control font-mono text-xs" 
-                  value="${escapeHtml(currentWebhook || '')}" 
-                  placeholder="https://script.google.com/macros/s/AKfycb.../exec" 
-                />
-              </div>
-
-              <div class="text-xs text-muted mb-3 leading-relaxed">
-                💡 <strong>Cara Pasang:</strong> Buat Google Sheet &gt; <em>Extensions</em> &gt; <em>Apps Script</em> &gt; Tempel script webhook &gt; <em>Deploy as Web App</em> (Access: Anyone). Salin URL deployment ke sini.
-              </div>
-
-              <div class="flex-between align-center">
-                <button type="button" class="btn btn-outline btn-sm" id="btn-test-sheet-webhook">
-                  🧪 Tes Kirim Uji Coba
-                </button>
-                <button type="submit" class="btn btn-primary btn-sm" id="btn-save-sheet-webhook">
-                  💾 Simpan Webhook
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       </div>
     </div>
@@ -762,49 +716,6 @@ function setupSettingsEvents(container) {
     btnLockNow.addEventListener('click', (e) => {
       e.preventDefault();
       store.lockApp();
-    });
-  }
-
-  // --- Google Sheets Webhook Form ---
-  const webhookForm = container.querySelector('#settings-webhook-form');
-  const btnTestWebhook = container.querySelector('#btn-test-sheet-webhook');
-  const inputWebhook = container.querySelector('#set-sheet-webhook');
-
-  if (webhookForm) {
-    webhookForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const url = inputWebhook ? inputWebhook.value.trim() : '';
-      setGoogleSheetWebhookUrl(url);
-      showToast('✓ Pengaturan Webhook Google Sheets berhasil disimpan!', 'success');
-      renderSettings(container);
-    });
-  }
-
-  if (btnTestWebhook) {
-    btnTestWebhook.addEventListener('click', async () => {
-      const url = inputWebhook ? inputWebhook.value.trim() : '';
-      if (!url || !url.startsWith('http')) {
-        showToast('Masukkan URL Webhook Google Apps Script terlebih dahulu!', 'warning');
-        if (inputWebhook) inputWebhook.focus();
-        return;
-      }
-      btnTestWebhook.disabled = true;
-      btnTestWebhook.textContent = 'Mengirim...';
-      try {
-        setGoogleSheetWebhookUrl(url);
-        await sendLeadToGoogleSheet({
-          ownerName: 'Uji Coba Sistem',
-          kosName: 'Kost Contoh (Tes Webhook)',
-          ownerPhone: '6281234567890',
-          source: 'Uji Coba Pengaturan Webhook'
-        });
-        showToast('🚀 Data uji coba terkirim! Silakan periksa Google Sheet Anda.', 'success', 4000);
-      } catch (err) {
-        showToast('Gagal mengirim data uji coba ke Webhook.', 'error');
-      } finally {
-        btnTestWebhook.disabled = false;
-        btnTestWebhook.textContent = '🧪 Tes Kirim Uji Coba';
-      }
     });
   }
 
