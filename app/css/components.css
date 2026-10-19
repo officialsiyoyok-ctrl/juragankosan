@@ -1003,6 +1003,7 @@
 .nominal-text {
   font-size: 0.95rem;
   color: var(--text-main);
+  font-family: var(--font-family, inherit);
 }
 
 .due-date-cell {
@@ -8353,7 +8354,8 @@ html.app-unlocked .app-lock-overlay,
 .bill-header-amount .nominal-text {
   font-size: 0.9375rem;
   font-weight: 700;
-  font-family: var(--font-mono, monospace);
+  font-family: var(--font-family, inherit);
+  letter-spacing: -0.01em;
 }
 
 .bill-header-badge .badge {
