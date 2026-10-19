@@ -1,564 +1,922 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juragankosan.id — Kelola Puluhan Pintu Kos Tanpa Pusing (Sekali Bayar Selamanya)</title>
-    <meta name="description" content="Aplikasi manajemen operasional kos & kontrakan simpel berbasis PWA. Hitung otomatis, tagih via WhatsApp 1-klik, cetak kwitansi digital resmi, dan pantau laba bersih real-time.">
-    <link rel="canonical" href="https://juragankosan.id/">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        emerald: {
-                            700: '#047857', // Deep Emerald Primary
-                        },
-                        orange: {
-                            600: '#ea580c', // Energetic Orange Accent
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-emerald-700 selection:text-white">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juragankosan.id — Solusi Modern Kelola Kos & Kontrakan Tanpa Pusing</title>
+  <meta name="description" content="Aplikasi pencatatan sewa kos, tagihan otomatis WhatsApp 1-klik, kwitansi digital resmi, dan laporan keuangan real-time. Sekali bayar seumur hidup." />
+  <meta name="keywords" content="aplikasi kos, software kos, kelola kontrakan, tagihan wa kos, pembukuan kos, juragankosan" />
 
-    <!-- TOP ANNOUNCEMENT BAR -->
-    <div class="bg-emerald-950 text-emerald-100 text-xs sm:text-sm py-2.5 px-4 text-center font-medium border-b border-emerald-800">
-        🔥 <span class="font-bold text-amber-400">PROMO BATCH 1 AKTIF:</span> Diskon 50% Lisensi PRO Lifetime (Hanya Rp 149.000 untuk 100 Pemilik Kos Pertama!) — <a href="#harga" class="underline font-bold text-white hover:text-amber-300 ml-1">Amankan Slot &rarr;</a>
+  <!-- Canonical & Social Meta -->
+  <link rel="canonical" href="https://juragankosan.id/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://juragankosan.id/" />
+  <meta property="og:title" content="Juragankosan.id — Kelola Kos & Kontrakan Tanpa Pusing" />
+  <meta property="og:description" content="Aplikasi pengelola kos berbasis PWA. Tanpa unduh PlayStore, 100% data aman di HP, sekali bayar untuk selamanya." />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="https://app.juragankosan.id/assets/icons/favicon.svg" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            body: ['"Inter"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            emerald: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#022c22',
+            },
+            amber: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+            },
+            brand: {
+              orange: '#ea580c',
+              orangeHover: '#c2410c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Halus & Elegan Custom Utilities */
+    body {
+      font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    }
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    @keyframes subtleFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float {
+      animation: subtleFloat 5s ease-in-out infinite;
+    }
+    .animate-float-delayed {
+      animation: subtleFloat 5s ease-in-out 2.5s infinite;
+    }
+  </style>
+</head>
+
+<body class="bg-[#fcfdfd] text-slate-800 font-sans antialiased selection:bg-emerald-600 selection:text-white">
+
+  <!-- ========================================================================
+       TOPBAR NAVIGATION (SLIM, CLEAN, ELEGAN)
+       ======================================================================== -->
+  <header class="sticky top-0 z-50 glass-nav border-b border-slate-200/70 transition-all duration-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-[68px] flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-2.5 group">
+        <!-- SVG Icon Rumah Hijau & Koin Rp -->
+        <svg class="w-8 h-8 sm:w-9 sm:h-9 shadow-sm rounded-xl transition-transform group-hover:scale-105" viewBox="0 0 100 100" fill="none">
+          <defs>
+            <linearGradient id="navLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#10B981" />
+              <stop offset="50%" stop-color="#059669" />
+              <stop offset="100%" stop-color="#047857" />
+            </linearGradient>
+            <linearGradient id="coinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FBBF24" />
+              <stop offset="100%" stop-color="#D97706" />
+            </linearGradient>
+          </defs>
+          <rect width="100" height="100" rx="22" fill="url(#navLogoGrad)"/>
+          <path d="M50 18L18 44H26V76C26 79.3137 28.6863 82 32 82H68C71.3137 82 74 79.3137 74 76V44H82L50 18Z" fill="white" fill-opacity="0.95"/>
+          <rect x="42" y="52" width="16" height="30" rx="4" fill="#047857"/>
+          <circle cx="50" cy="62" r="3" fill="white"/>
+          <rect x="49" y="62" width="2" height="6" fill="white"/>
+          <circle cx="70" cy="36" r="12" fill="url(#coinGrad)" stroke="white" stroke-width="2.5"/>
+          <text x="70" y="41" font-family="Arial, sans-serif" font-weight="900" font-size="12" fill="white" text-anchor="middle">Rp</text>
+        </svg>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="text-lg font-extrabold text-slate-900 tracking-tight">Juragan<span class="text-emerald-700">kosan</span></span>
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">PWA</span>
+          </div>
+          <span class="hidden sm:block text-[11px] font-medium text-slate-500 font-body -mt-0.5">Kelola Kos & Kontrakan</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Items -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-slate-600">
+        <a href="#masalah" class="hover:text-emerald-700 transition-colors">Masalah</a>
+        <a href="#solusi" class="hover:text-emerald-700 transition-colors">Keunggulan</a>
+        <a href="#harga" class="hover:text-emerald-700 transition-colors">Paket PRO</a>
+        <a href="#faq" class="hover:text-emerald-700 transition-colors">Tanya Jawab</a>
+      </nav>
+
+      <!-- Right Action CTA -->
+      <div class="flex items-center gap-2.5">
+        <a href="https://app.juragankosan.id" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 transition-all shadow-sm">
+          <span>Buka Aplikasi</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobileNavBtn" class="md:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100" aria-label="Buka Menu Navigasi">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
+
     </div>
 
-    <!-- HEADER / NAVBAR -->
-    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="#" class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-xl bg-emerald-700 flex items-center justify-center text-white font-extrabold text-lg shadow-md shadow-emerald-700/20">JK</div>
-                <div>
-                    <span class="text-xl font-extrabold tracking-tight text-slate-900">Juragan<span class="text-emerald-700">kosan</span></span>
-                    <span class="block text-[10px] font-bold uppercase tracking-wider text-emerald-700">Aplikasi Kelola Kos & Kontrakan</span>
-                </div>
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobileNavMenu" class="hidden md:hidden border-b border-slate-200 bg-white/95 px-4 py-3 space-y-2 text-sm font-semibold text-slate-700">
+      <a href="#masalah" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Masalah Pengelola Kos</a>
+      <a href="#solusi" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Keunggulan & Solusi</a>
+      <a href="#harga" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Harga Paket PRO</a>
+      <a href="#faq" class="block py-1.5 hover:text-emerald-700 mobile-nav-link">Pertanyaan Umum (FAQ)</a>
+    </div>
+  </header>
+
+
+  <!-- ========================================================================
+       HERO SECTION (PROPORSIONAL, ELEGAN, TIDAK GENDUT)
+       ======================================================================== -->
+  <section class="relative pt-10 sm:pt-14 pb-16 sm:pb-20 overflow-hidden bg-gradient-to-b from-emerald-50/40 via-white to-amber-50/20">
+    <!-- Subtle Background Glow -->
+    <div class="absolute top-0 right-1/4 w-96 h-96 bg-emerald-200/25 rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <div class="absolute bottom-10 left-10 w-80 h-80 bg-amber-200/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 items-center">
+
+        <!-- Left Column: Copywriting Hero -->
+        <div class="lg:col-span-7 text-center lg:text-left">
+          
+          <!-- Sleek Single-Line Pill Badge -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100/80 text-emerald-900 border border-emerald-300/60 mb-5 shadow-xs whitespace-nowrap">
+            <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Aplikasi Pengelola Kos & Kontrakan Berbasis PWA</span>
+          </div>
+
+          <!-- Headline: Proporsional, Tegas & Elegan (Tidak Balon/Gendut) -->
+          <h1 class="text-2xl sm:text-3xl lg:text-[38px] font-extrabold text-slate-900 tracking-tight leading-[1.2] mb-4">
+            Kelola Puluhan Pintu Kos <span class="text-emerald-700 whitespace-nowrap">Tanpa Pusing.</span><br class="hidden sm:inline" />
+            Pantau Keuangan <span class="text-brand-orange whitespace-nowrap">Sekali Klik.</span>
+          </h1>
+
+          <!-- Sub-headline: Ramping & Jelas -->
+          <p class="text-sm sm:text-base text-slate-600 font-body leading-relaxed max-w-xl mx-auto lg:mx-0 mb-7">
+            Ganti buku kas manual yang mudah tercecer dengan aplikasi modern yang ringan, cepat dibuka di HP atau laptop, dan 100% data aman di perangkat Anda.
+          </p>
+
+          <!-- Dual CTA Buttons -->
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-7">
+            <a href="https://app.juragankosan.id" target="_blank" rel="noopener" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-brand-orange hover:bg-brand-orangeHover shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+              <span>🚀 Coba Gratis Sekarang</span>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
-            <nav class="hidden lg:flex items-center gap-7 text-sm font-semibold text-slate-600">
-                <a href="#masalah" class="hover:text-emerald-700 transition">Masalah vs Solusi</a>
-                <a href="#fitur" class="hover:text-emerald-700 transition">9 Modul Lengkap</a>
-                <a href="#kwitansi" class="hover:text-emerald-700 transition">Demo WA & Kwitansi</a>
-                <a href="#harga" class="hover:text-emerald-700 transition">Harga & Batch</a>
-                <a href="#faq" class="hover:text-emerald-700 transition">FAQ</a>
-            </nav>
-            <div class="flex items-center gap-3">
-                <a href="https://app.juragankosan.id" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition">
-                    Buka Aplikasi
-                </a>
-                <a href="#harga" class="hidden sm:inline-flex px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-orange-600 hover:bg-orange-700 shadow-md shadow-orange-600/20 transition">
-                    Ambil Promo PRO
-                </a>
+            <a href="#harga" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300/80 shadow-xs transition-all">
+              <span>Lihat Paket PRO (Sekali Bayar)</span>
+            </a>
+          </div>
+
+          <!-- Micro Trust Elements (1 Baris Ringkas) -->
+          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-y-2 gap-x-5 text-xs font-semibold text-slate-600">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Tanpa Download PlayStore</span>
             </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>100% Data Aman di HP</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Sekali Bayar Selamanya</span>
+            </div>
+          </div>
+
         </div>
-    </header>
 
-    <!-- HERO SECTION -->
-    <section class="relative pt-14 pb-24 overflow-hidden bg-gradient-to-b from-emerald-50/70 via-white to-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-6 border border-emerald-200">
-                <span class="w-2 h-2 rounded-full bg-emerald-700 animate-ping"></span>
-                Local-First PWA • Tanpa Install PlayStore • 100% Data Aman di Perangkat Anda
-            </div>
-            <h1 class="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight mb-6 max-w-4xl mx-auto leading-[1.12]">
-                Kelola Puluhan Pintu Kos <span class="text-emerald-700">Tanpa Pusing.</span>
-            </h1>
-            <p class="text-lg sm:text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed font-medium">
-                Hitung tagihan & cicilan otomatis, kirim pengingat sopan via <strong class="text-slate-800">WhatsApp 1-Klik</strong>, terbitkan <strong class="text-slate-800">Kwitansi Digital Resmi</strong>, dan pantau laba bersih riil setiap bulan. <span class="text-emerald-700 font-bold underline decoration-emerald-400">Sekali bayar untuk selamanya!</span>
-            </p>
+        <!-- Right Column: Visual Mockup UI Aplikasi (Proporsional & Nyata) -->
+        <div class="lg:col-span-5 relative flex justify-center">
+          
+          <!-- Floating Badge Atas -->
+          <div class="hidden sm:flex absolute -top-3 -right-3 z-20 items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white text-slate-800 shadow-md border border-emerald-200 animate-float">
+            <span class="text-emerald-600 font-extrabold">💬</span>
+            <span>Tagih WA 1-Klik</span>
+          </div>
 
-            <!-- CTA Buttons -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-                <a href="https://app.juragankosan.id" class="w-full sm:w-auto px-8 py-4 rounded-2xl text-base font-extrabold text-white bg-orange-600 hover:bg-orange-700 shadow-xl shadow-orange-600/25 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                    🚀 Coba Gratis Sekarang (Maks 3 Kamar)
-                </a>
-                <a href="#harga" class="w-full sm:w-auto px-8 py-4 rounded-2xl text-base font-bold text-emerald-900 bg-white border-2 border-emerald-700 hover:bg-emerald-50 transition flex items-center justify-center gap-2">
-                    🔥 Amankan Lisensi PRO Lifetime (Rp 149.000)
-                </a>
-            </div>
+          <!-- Floating Badge Bawah -->
+          <div class="hidden sm:flex absolute -bottom-3 -left-3 z-20 items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white text-slate-800 shadow-md border border-emerald-200 animate-float-delayed">
+            <span class="text-amber-500 font-extrabold">📄</span>
+            <span>Kwitansi Resmi Siap Cetak</span>
+          </div>
 
-            <!-- Bullet Benefits Bar -->
-            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs sm:text-sm font-semibold text-slate-600 mb-14">
-                <span class="flex items-center gap-1.5">⚡ Tanpa Install PlayStore (< 2MB)</span>
-                <span class="flex items-center gap-1.5">💬 Tagih WA Anti-Canggung</span>
-                <span class="flex items-center gap-1.5">📄 Kwitansi No. Seri & PDF</span>
-                <span class="flex items-center gap-1.5">🔒 Kunci PIN 4-Digit</span>
-                <span class="flex items-center gap-1.5">💰 Tanpa Biaya Bulanan</span>
-            </div>
-
-            <!-- EXECUTIVE COCKPIT MOCKUP -->
-            <div class="max-w-5xl mx-auto rounded-3xl p-3 sm:p-4 bg-slate-900/5 border border-slate-200/90 shadow-2xl">
-                <div class="rounded-2xl bg-white border border-slate-200 overflow-hidden text-left">
-                    <!-- Top App Bar Mockup -->
-                    <div class="bg-emerald-700 px-6 py-4 flex items-center justify-between text-white">
-                        <div class="flex items-center gap-3">
-                            <span class="font-extrabold tracking-tight">🏠 Executive Cockpit — Kos Putra Mandiri</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-xs bg-emerald-800/80 px-3 py-1.5 rounded-lg font-semibold">
-                            🔒 PIN Lock Aktif • Mode Offline Ready
-                        </div>
-                    </div>
-
-                    <div class="p-6 sm:p-8 space-y-6">
-                        <!-- Alert Banner Jatuh Tempo -->
-                        <div class="bg-red-50 border border-red-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                            <div class="flex items-center gap-3">
-                                <span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-red-600 text-white uppercase">Telat 3 Hari</span>
-                                <p class="text-sm font-semibold text-red-950">
-                                    <strong>Kamar 104 (Budi Santoso)</strong> belum melunasi sisa cicilan sewa bulan ini sebesar <strong>Rp 750.000</strong>.
-                                </p>
-                            </div>
-                            <a href="https://app.juragankosan.id" class="shrink-0 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-sm transition">
-                                💬 Tagih Sisa via WA (1-Klik)
-                            </a>
-                        </div>
-
-                        <!-- 3 Main Stat Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/80">
-                                <div class="text-slate-500 font-semibold text-xs uppercase tracking-wider mb-1">Statistik Okupansi Kamar</div>
-                                <div class="text-3xl font-black text-slate-900">24 Pintu</div>
-                                <div class="mt-3 flex items-center gap-2 text-xs font-bold">
-                                    <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">22 Terisi (91%)</span>
-                                    <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800">2 Kosong</span>
-                                </div>
-                            </div>
-                            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/80">
-                                <div class="text-slate-500 font-semibold text-xs uppercase tracking-wider mb-1">Arus Kas Bulan Berjalan</div>
-                                <div class="text-3xl font-black text-slate-900">Rp 33.000.000</div>
-                                <div class="mt-3 text-xs font-semibold text-slate-600">
-                                    Pengeluaran Operasional: <span class="text-red-600 font-bold">-Rp 2.450.000</span>
-                                </div>
-                            </div>
-                            <div class="bg-emerald-50/90 rounded-2xl p-5 border-2 border-emerald-600">
-                                <div class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">Laba Bersih Riil (Otomatis)</div>
-                                <div class="text-3xl font-black text-emerald-700">Rp 30.550.000</div>
-                                <div class="mt-3 text-xs font-bold text-emerald-800">
-                                    ✅ Uang Sewa Aman, Tidak Tercampur Belanja Dapur
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- TARGET USER PERSONA SECTION -->
-    <section class="py-16 bg-white border-y border-slate-200/70">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-12">
-                <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-700">Dirancang Khusus Untuk Anda</span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Siapa yang Paling Cocok Menggunakan Juragankosan?</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80">
-                    <div class="text-2xl mb-3">👨‍🦳👩‍🦳</div>
-                    <h3 class="font-bold text-lg text-slate-900 mb-2">1. Bapak/Ibu Kos Perorangan (5–30 Kamar)</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Terbiasa mencatat di buku tulis bergaris yang sering kotor, basah, atau terselip. Butuh aplikasi <strong>super simpel tanpa keahlian IT</strong> yang langsung jalan di HP.</p>
-                </div>
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80">
-                    <div class="text-2xl mb-3">🧑‍💻📱</div>
-                    <h3 class="font-bold text-lg text-slate-900 mb-2">2. Pengelola Kos Keluarga / Profesional</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Anak muda yang ditugaskan orang tua mengelola kos. Sering <strong>canggung atau sungkan saat menagih sewa</strong> dan butuh pesan WhatsApp otomatis berformat sopan & formal.</p>
-                </div>
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80">
-                    <div class="text-2xl mb-3">🏘️🏢</div>
-                    <h3 class="font-bold text-lg text-slate-900 mb-2">3. Pemilik Kontrakan Petak, Ruko & Paviliun</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Memiliki properti sewa bulanan atau tahunan dengan <strong>sistem pembayaran bertahap (cicil)</strong> yang butuh pencatatan sisa tagihan akurat tanpa salah hitung.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- MATRIKS MASALAH VS SOLUSI -->
-    <section id="masalah" class="py-24 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <span class="text-xs font-extrabold uppercase tracking-widest text-orange-600">Tinggalkan Cara Lama yang Bikin Rugi</span>
-                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-2">Masalah Klasik Pemilik Kos vs Solusi Juragankosan</h2>
-                <p class="text-slate-600 mt-3 text-base">Jangan biarkan uang sewa mandek dan laba bocor hanya karena pencatatan manual yang berantakan.</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Kolom Masalah Lama -->
-                <div class="bg-white rounded-3xl p-8 border-2 border-red-100 shadow-sm">
-                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100 text-red-800 text-xs font-extrabold uppercase mb-6">
-                        ❌ Cara Manual & Aplikasi Kompetitor Mahal
-                    </div>
-                    <ul class="space-y-5 text-sm text-slate-700">
-                        <li class="flex items-start gap-3">
-                            <span class="text-red-500 font-bold text-base mt-0.5">✖</span>
-                            <div><strong class="text-slate-900">Buku Kas Kertas Tercecer:</strong> Catatan basah, hilang, atau lupa bawa buku saat sedang berada di luar rumah.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-red-500 font-bold text-base mt-0.5">✖</span>
-                            <div><strong class="text-slate-900">Lupa Tanggal Jatuh Tempo:</strong> Penghuni telat bayar berhari-hari karena pemilik lupa tanggal masuk masing-masing kamar.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-red-500 font-bold text-base mt-0.5">✖</span>
-                            <div><strong class="text-slate-900">Canggung & Repot Ketik Tagihan WA:</strong> Harus merangkai kata-kata penagihan satu per satu setiap jatuh tempo.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-red-500 font-bold text-base mt-0.5">✖</span>
-                            <div><strong class="text-slate-900">Pusing Menghitung Cicilan:</strong> Penyewa baru bayar separuh, sisa cicilan dicatat di kertas sobekan lalu hilang.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-red-500 font-bold text-base mt-0.5">✖</span>
-                            <div><strong class="text-slate-900">Kwitansi Kertas Habis:</strong> Harus bolak-balik beli buku kwitansi, tulis tangan satu-satu, dan tanda tangan basah.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-red-500 font-bold text-base mt-0.5">✖</span>
-                            <div><strong class="text-slate-900">Keuangan Tercampur Belanja Dapur:</strong> Uang sewa terpakai kebutuhan pribadi, tidak pernah tahu laba bersih riil.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-red-500 font-bold text-base mt-0.5">✖</span>
-                            <div><strong class="text-slate-900">Biaya Langganan Bulanan Mahal:</strong> Aplikasi lain memungut Rp 50.000 – Rp 150.000 terus-menerus setiap bulan.</div>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Kolom Solusi Juragankosan -->
-                <div class="bg-emerald-950 text-white rounded-3xl p-8 border-2 border-emerald-600 shadow-xl">
-                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-700 text-emerald-100 text-xs font-extrabold uppercase mb-6">
-                        ✅ Solusi Cerdas di Juragankosan.id
-                    </div>
-                    <ul class="space-y-5 text-sm text-emerald-100">
-                        <li class="flex items-start gap-3">
-                            <span class="text-emerald-400 font-bold text-base mt-0.5">✔</span>
-                            <div><strong class="text-white">Akses Kapan Saja di HP:</strong> Data kamar & penghuni selalu di genggaman, pikiran tenang dan anti hilang.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-emerald-400 font-bold text-base mt-0.5">✔</span>
-                            <div><strong class="text-white">Indikator Jatuh Tempo Otomatis:</strong> Highlight <span class="text-red-400 font-bold">Merah</span> jika telat, <span class="text-amber-300 font-bold">Kuning</span> belum bayar, <span class="text-emerald-400 font-bold">Hijau</span> jika lunas. Arus kas lancar!</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-emerald-400 font-bold text-base mt-0.5">✔</span>
-                            <div><strong class="text-white">Tombol "Tagih WA" 1-Klik:</strong> Pesan sopan tersusun otomatis (nama, kamar, nominal, no. rekening) langsung ke WA penghuni.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-emerald-400 font-bold text-base mt-0.5">✔</span>
-                            <div><strong class="text-white">Fitur Cicilan & Sisa Tagihan Akurat:</strong> Pencatatan bertahap dilengkapi tombol khusus <em>"+ Bayar Sisa"</em> & <em>"Tagih Sisa"</em>.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-emerald-400 font-bold text-base mt-0.5">✔</span>
-                            <div><strong class="text-white">Kwitansi Digital Resmi Otomatis:</strong> Nomor seri unik (<code>KW/202610/101-01</code>) + teks Terbilang Rupiah otomatis, kirim WA atau cetak PDF.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-emerald-400 font-bold text-base mt-0.5">✔</span>
-                            <div><strong class="text-white">Laporan Arus Kas & Pengeluaran:</strong> Catat biaya WiFi, sampah, listrik, tukang, dan ketahui Laba Bersih otomatis setiap bulan.</div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="text-emerald-400 font-bold text-base mt-0.5">✔</span>
-                            <div><strong class="text-white">Sekali Bayar untuk Selamanya (Lifetime):</strong> Bebas tagihan bulanan atau tahunan. Bayar sekali, untung selamanya!</div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- DEMO FITUR HERO: WHATSAPP ENGINE & KWITANSI DIGITAL -->
-    <section id="kwitansi" class="py-24 bg-white border-t border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-700">The Core Hero Features</span>
-                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-2">Tagih Sopan via WhatsApp 1-Klik & Terbitkan Kwitansi Resmi Instan</h2>
-                <p class="text-slate-600 mt-3">Tampil profesional dan berwibawa di mata penyewa tanpa perlu ngetik manual atau beli buku kwitansi kertas lagi.</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-                <!-- Preview Pesan WhatsApp Otomatis -->
-                <div class="bg-emerald-50/70 rounded-3xl p-6 sm:p-8 border border-emerald-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-700 text-white">💬 Simulasi Pesan "Tagih WA" / "Tagih Sisa"</span>
-                        <span class="text-xs font-semibold text-emerald-800">Otomatis 1-Klik</span>
-                    </div>
-                    <div class="bg-white rounded-2xl p-5 shadow-md border border-emerald-100 font-sans text-sm text-slate-800 space-y-3 leading-relaxed">
-                        <p>Halo Kak <strong>Budi Santoso</strong> 👋,</p>
-                        <p>Semoga sehat dan lancar selalu aktivitasnya. Kami dari pengelola <strong>Kos Putra Mandiri</strong> ingin menginformasikan rincian tagihan sewa kamar:</p>
-                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1 font-medium">
-                            <div>🏠 Unit / Kamar: <strong>Kamar 104 (VIP AC)</strong></div>
-                            <div>📅 Periode Sewa: <strong>Oktober 2026</strong></div>
-                            <div>⏰ Jatuh Tempo: <strong>15 Oktober 2026</strong></div>
-                            <div>💳 Status: <strong class="text-amber-700">Dicicil (Sisa Tagihan: Rp 750.000)</strong></div>
-                        </div>
-                        <p>Pembayaran dapat ditransfer melalui rekening resmi kami:<br>
-                        🏦 <strong>Bank BCA: 8720-xxxx-xx (a.n. Yahya Kurniawan)</strong><br>
-                        🏦 <strong>Bank Mandiri: 112-00-xxxx-x</strong></p>
-                        <p class="text-xs text-slate-500 italic">Mohon kirimkan bukti transfer setelah pembayaran ya Kak, agar segera kami terbitkan Kwitansi Digital resminya. Terima kasih! 🙏</p>
-                    </div>
-                </div>
-
-                <!-- Preview Kwitansi Digital Resmi -->
-                <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-orange-600 text-white">📄 Kwitansi Digital Resmi + PDF</span>
-                        <span class="text-xs font-mono text-emerald-400">No. Seri Standar Akuntansi</span>
-                    </div>
-                    <div class="bg-white text-slate-900 rounded-2xl p-6 shadow-inner border-t-8 border-emerald-700 space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-                            <div>
-                                <div class="font-black text-base text-emerald-800">BUKTI PEMBAYARAN SEWA RESMI</div>
-                                <div class="text-xs text-slate-500">Kos Putra Mandiri • Telp: 0812-xxxx-xxxx</div>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs font-mono font-bold bg-slate-100 px-2.5 py-1 rounded border border-slate-300">KW/202610/104-02</span>
-                            </div>
-                        </div>
-                        <div class="text-xs space-y-2">
-                            <div class="flex justify-between"><span class="text-slate-500">Telah Terima Dari:</span> <strong class="text-slate-900">Budi Santoso (Kamar 104)</strong></div>
-                            <div class="flex justify-between"><span class="text-slate-500">Metode Pembayaran:</span> <strong class="text-slate-900">Transfer Bank Mandiri / QRIS</strong></div>
-                            <div class="flex justify-between"><span class="text-slate-500">Nominal Dibayar:</span> <strong class="text-emerald-700 text-sm">Rp 1.500.000 (LUNAS)</strong></div>
-                            <div class="bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 text-emerald-950 font-semibold italic">
-                                Terbilang: "# Satu Juta Lima Ratus Ribu Rupiah #"
-                            </div>
-                        </div>
-                        <div class="pt-2 flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-100">
-                            <span>✅ Sah & Terverifikasi Sistem Juragankosan</span>
-                            <span class="font-bold text-emerald-700">Kirim WA / Cetak PDF &rarr;</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- BEDAH 9 MODUL LENGKAP -->
-    <section id="fitur" class="py-24 bg-slate-50 border-t border-slate-200/70">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-700">Spesifikasi Lengkap Aplikasi</span>
-                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-2">9 Modul Senjata Lengkap dalam Satu Aplikasi Ringan</h2>
-                <p class="text-slate-600 mt-3">Semua fitur di bawah ini sudah siap pakai di dalam <code>app.juragankosan.id</code> tanpa perlu instalasi rumit.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-                <!-- Modul A -->
-                <div class="bg-white p-7 rounded-3xl border border-slate-200/90 shadow-xs hover:border-emerald-600 transition">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold mb-5">📊</div>
-                    <h3 class="font-extrabold text-lg text-slate-900 mb-2">1. Executive Cockpit Dashboard</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Pantau Occupancy Rate (persentase hunian), total pemasukan, pengeluaran operasional, Laba Bersih Riil, serta tombol cepat <em>+ Check-in</em> & <em>+ Pengeluaran</em>.</p>
-                </div>
-                <!-- Modul B -->
-                <div class="bg-white p-7 rounded-3xl border border-slate-200/90 shadow-xs hover:border-emerald-600 transition">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold mb-5">🛏️</div>
-                    <h3 class="font-extrabold text-lg text-slate-900 mb-2">2. Manajemen Kamar Fleksibel</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Bebas beri nama unit (Kamar 101, Paviliun A, Ruko Lt 1), atur Lantai, Tipe (VIP AC / Non-AC), status <em>Terisi/Kosong/Perbaikan</em>, dan checklist 9 fasilitas lengkap.</p>
-                </div>
-                <!-- Modul C -->
-                <div class="bg-white p-7 rounded-3xl border border-slate-200/90 shadow-xs hover:border-emerald-600 transition">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold mb-5">🪪</div>
-                    <h3 class="font-extrabold text-lg text-slate-900 mb-2">3. Database Penyewa & Deposit</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Simpan NIK KTP, No. WA, Pekerjaan, <strong>Kontak Darurat Wajib</strong> (Orang Tua/Suami/Istri), uang jaminan (Deposit), serta tab Riwayat Mantan Penghuni.</p>
-                </div>
-                <!-- Modul D -->
-                <div class="bg-white p-7 rounded-3xl border border-slate-200/90 shadow-xs hover:border-emerald-600 transition">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold mb-5">💬</div>
-                    <h3 class="font-extrabold text-lg text-slate-900 mb-2">4. Siklus Tagihan & WA Engine</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">4 status otomatis (<em>Belum Bayar, Telat X Hari, Dicicil, Lunas</em>) dengan tombol <strong>Tagih WA</strong> & <strong>Tagih Sisa</strong> 1-klik yang ramah dan anti-canggung.</p>
-                </div>
-                <!-- Modul E -->
-                <div class="bg-white p-7 rounded-3xl border border-slate-200/90 shadow-xs hover:border-emerald-600 transition">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold mb-5">🧾</div>
-                    <h3 class="font-extrabold text-lg text-slate-900 mb-2">5. Generator Kwitansi Resmi</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Nomor seri otomatis (<code>KW/YYYYMM/KAMAR-SEQ</code>), fitur <em>Terbilang Rupiah Otomatis</em>, dukung BCA/Mandiri/BRI/BNI/QRIS/Tunai, kirim WA atau simpan PDF.</p>
-                </div>
-                <!-- Modul F -->
-                <div class="bg-white p-7 rounded-3xl border border-slate-200/90 shadow-xs hover:border-emerald-600 transition">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold mb-5">💸</div>
-                    <h3 class="font-extrabold text-lg text-slate-900 mb-2">6. Arus Kas & Laba Bersih Riil</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Catat pengeluaran (WiFi IndiHome/Biznet, sampah, perbaikan pipa/kran, listrik PLN/PAM, gaji penjaga) & pemasukan ekstra (parkir, denda, laundry).</p>
-                </div>
-                <!-- Modul G -->
-                <div class="bg-white p-7 rounded-3xl border border-slate-200/90 shadow-xs hover:border-emerald-600 transition">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold mb-5">🏦</div>
-                    <h3 class="font-extrabold text-lg text-slate-900 mb-2">7. Multi-Rekening & Kustomisasi</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Tampilkan beberapa rekening bank sekaligus di pesan tagihan, opsi pembayaran tunai, dan sesuaikan template teks WhatsApp sesuai gaya bahasa Anda.</p>
-                </div>
-                <!-- Modul H -->
-                <div class="bg-white p-7 rounded-3xl border border-slate-200/90 shadow-xs hover:border-emerald-600 transition">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold mb-5">🔐</div>
-                    <h3 class="font-extrabold text-lg text-slate-900 mb-2">8. Layar Kunci PIN 4-Digit</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Kunci aplikasi secara instan dengan keypad PIN interaktif. Lindungi privasi nominal saldo, laba bersih, dan database penyewa saat HP dipinjam orang.</p>
-                </div>
-                <!-- Modul I -->
-                <div class="bg-white p-7 rounded-3xl border border-slate-200/90 shadow-xs hover:border-emerald-600 transition">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold mb-5">💾</div>
-                    <h3 class="font-extrabold text-lg text-slate-900 mb-2">9. Backup & Restore Mandiri (.JSON)</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Arsitektur <em>Local-First</em>. Ekspor seluruh database ke file <code>.json</code> dalam 1 klik dan pulihkan (Restore) di HP baru hanya dalam 2 detik tanpa takut server tutup.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- PRICING & 3 BATCH STRATEGY SECTION -->
-    <section id="harga" class="py-24 bg-white border-t border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-12">
-                <span class="text-xs font-extrabold uppercase tracking-widest text-orange-600">Investasi Sekali Seumur Hidup</span>
-                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-2">Pilih Paket Sesuai Jumlah Pintu Kos Anda</h2>
-                <p class="text-slate-600 mt-3">Tanpa biaya berlangganan bulanan atau tahunan. Bayar sekali di awal, nikmati kemudahan selamanya.</p>
-            </div>
-
-            <!-- Indikator Mekanisme 3 Batch -->
-            <div class="max-w-4xl mx-auto mb-14 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                <div class="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-700 shadow-sm relative">
-                    <span class="px-2.5 py-0.5 rounded-full bg-orange-600 text-white text-[10px] font-extrabold uppercase">🔥 Promo Aktif</span>
-                    <div class="font-extrabold text-slate-900 mt-1">Batch 1 (100 Lisensi Pertama)</div>
-                    <div class="text-2xl font-black text-emerald-700 mt-1">Rp 149.000</div>
-                    <div class="text-[11px] text-emerald-800 font-semibold mt-0.5">Hemat 50% dari Harga Normal</div>
-                </div>
-                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 opacity-75">
-                    <span class="px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[10px] font-bold uppercase">Segera Menyusul</span>
-                    <div class="font-bold text-slate-700 mt-1">Batch 2 (Lisensi ke 101–300)</div>
-                    <div class="text-2xl font-extrabold text-slate-600 mt-1">Rp 199.000</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">Berlaku setelah Batch 1 habis</div>
-                </div>
-                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 opacity-60">
-                    <span class="px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[10px] font-bold uppercase">Harga Reguler</span>
-                    <div class="font-bold text-slate-700 mt-1">Batch 3 (Harga Normal)</div>
-                    <div class="text-2xl font-extrabold text-slate-600 mt-1">Rp 299.000</div>
-                    <div class="text-[11px] text-slate-500 mt-0.5">Harga standar penuh</div>
-                </div>
-            </div>
-
-            <!-- 2 Pricing Cards Comparison -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
-                <!-- Paket Starter (Gratis) -->
-                <div class="rounded-3xl p-8 sm:p-10 bg-slate-50 border border-slate-200 flex flex-col justify-between">
-                    <div>
-                        <div class="inline-block px-3 py-1 rounded-full bg-slate-200 text-slate-800 text-xs font-bold mb-4">Paket Starter (Uji Coba & Pemula)</div>
-                        <h3 class="text-2xl font-extrabold text-slate-900">Gratis Selamanya</h3>
-                        <div class="mt-4 mb-6 flex items-baseline gap-2">
-                            <span class="text-4xl sm:text-5xl font-black text-slate-900">Rp 0</span>
-                            <span class="text-xs font-semibold text-slate-500">/ tanpa batas waktu</span>
-                        </div>
-                        <p class="text-sm text-slate-600 mb-6">Cocok untuk pemilik kos pemula yang baru memiliki 1 hingga 3 kamar sewa atau ingin mencoba kehebatan aplikasi.</p>
-                        <ul class="space-y-3.5 text-sm text-slate-700 mb-8">
-                            <li class="flex items-center gap-3">✅ <strong>Maksimal 3 Kamar Aktif</strong></li>
-                            <li class="flex items-center gap-3">✅ Pencatatan Kamar & Database Penyewa</li>
-                            <li class="flex items-center gap-3">✅ Kirim Tagihan WhatsApp (Template Standar)</li>
-                            <li class="flex items-center gap-3">✅ Kwitansi Digital Dasar</li>
-                            <li class="flex items-center gap-3 text-slate-400">✖ Laporan Arus Kas & Laba Bersih Operasional</li>
-                            <li class="flex items-center gap-3 text-slate-400">✖ Layar Kunci Keamanan (PIN Lock 4-Digit)</li>
-                        </ul>
-                    </div>
-                    <a href="https://app.juragankosan.id" class="w-full block py-4 rounded-2xl text-center font-bold text-emerald-800 bg-emerald-100 hover:bg-emerald-200 transition">
-                        🚀 Coba Gratis Sekarang (Maks 3 Kamar)
-                    </a>
-                </div>
-
-                <!-- Paket PRO Lifetime (Unggulan) -->
-                <div class="rounded-3xl p-8 sm:p-10 bg-slate-900 text-white border-4 border-emerald-600 shadow-2xl relative flex flex-col justify-between">
-                    <div class="absolute -top-4 right-6 bg-orange-600 text-white text-xs font-extrabold uppercase tracking-wider px-4 py-1.5 rounded-full shadow-lg">
-                        ⭐ Paling Laris • Diskon 50% Batch 1
-                    </div>
-                    <div>
-                        <div class="inline-block px-3 py-1 rounded-full bg-emerald-900 text-emerald-300 text-xs font-bold mb-4 border border-emerald-700">Paket PRO Lifetime (5 hingga 100+ Pintu)</div>
-                        <h3 class="text-2xl font-extrabold text-white">Lisensi Penuh Seumur Hidup</h3>
-                        <div class="mt-4 mb-6 flex items-baseline gap-3">
-                            <span class="text-lg text-slate-400 line-through font-bold">Rp 299.000</span>
-                            <span class="text-4xl sm:text-5xl font-black text-emerald-400">Rp 149.000</span>
-                            <span class="text-xs font-bold text-amber-400 uppercase">Sekali Bayar!</span>
-                        </div>
-                        <p class="text-sm text-slate-300 mb-6">Bebas biaya bulanan/tahunan selamanya. Buka seluruh fitur profesional untuk mengelola puluhan hingga ratusan pintu kos & kontrakan.</p>
-                        <ul class="space-y-3.5 text-sm text-slate-200 mb-8">
-                            <li class="flex items-center gap-3">🔥 <strong class="text-emerald-400">Tanpa Batas (Unlimited Kamar & Pintu Kos)</strong></li>
-                            <li class="flex items-center gap-3">✅ <strong>Template WA Lengkap (Tagih, Cicilan, Lunas)</strong></li>
-                            <li class="flex items-center gap-3">✅ <strong>Kwitansi Digital Resmi No. Seri & Simpan PDF</strong></li>
-                            <li class="flex items-center gap-3">✅ <strong>Laporan Arus Kas, Kategori Operasional & Laba Bersih</strong></li>
-                            <li class="flex items-center gap-3">✅ <strong>Fitur Kunci Aplikasi (PIN Keamanan 4-Digit)</strong></li>
-                            <li class="flex items-center gap-3">✅ <strong>Backup & Restore Database (.JSON) + Update Gratis Selamanya</strong></li>
-                        </ul>
-                    </div>
-                    <a href="https://app.juragankosan.id" class="w-full block py-4 rounded-2xl text-center font-extrabold text-white bg-orange-600 hover:bg-orange-700 shadow-xl shadow-orange-600/30 transition transform hover:-translate-y-0.5">
-                        🔥 Amankan Lisensi PRO Lifetime (Rp 149.000)
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ & OBJECTION HANDLING -->
-    <section id="faq" class="py-24 bg-slate-50 border-t border-slate-200">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-14">
-                <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-700">Pertanyaan yang Sering Diajukan</span>
-                <h2 class="text-3xl font-black text-slate-900 mt-2">Masih Ragu? Ini Jawaban Lengkapnya</h2>
-            </div>
-
-            <div class="space-y-4">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200">
-                    <h3 class="font-bold text-base text-slate-900 mb-2">1. Apakah saya harus bayar tiap bulan seperti aplikasi kos lainnya?</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed"><strong>Tidak sama sekali!</strong> Juragankosan menganut sistem <strong>Sekali Bayar Seumur Hidup (Lifetime License)</strong>. Cukup investasi Rp 149.000 satu kali pada masa Promo Batch 1, dan Anda dapat menggunakannya selamanya tanpa biaya perpanjangan bulanan atau tahunan.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200">
-                    <h3 class="font-bold text-base text-slate-900 mb-2">2. Apakah data penyewa dan keuangan kos saya aman?</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed"><strong>Sangat aman.</strong> Aplikasi ini berbasis <em>Local-First</em>, artinya seluruh data transaksi, nama penyewa, dan nomor telepon tersimpan 100% di memori perangkat Anda sendiri serta dilindungi PIN 4-Digit. Tidak ada server pihak ketiga yang mengintip atau memperjualbelikan data Anda.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200">
-                    <h3 class="font-bold text-base text-slate-900 mb-2">3. Bagaimana jika HP saya hilang atau saya ganti HP baru?</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Anda cukup menggunakan fitur <strong>Backup Data (.json) 1-Klik</strong> di menu Pengaturan. Simpan file cadangannya di Google Drive atau kirim ke WhatsApp pribadi Anda. Saat ganti HP baru, buka aplikasi lalu klik <strong>Restore</strong>—seluruh data kamar, penyewa, dan kas langsung kembali utuh dalam 2 detik!</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200">
-                    <h3 class="font-bold text-base text-slate-900 mb-2">4. Apakah bisa digunakan untuk kontrakan petak, wisma, atau ruko sewa?</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed"><strong>Sangat bisa!</strong> Penamaan unit di Juragankosan sangat fleksibel (misal <em>"Pintu 01"</em>, <em>"Kontrakan Blok B"</em>, atau <em>"Ruko Timur"</em>). Sistem tagihan dan pencatatan cicilannya cocok untuk segala jenis properti sewa.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200">
-                    <h3 class="font-bold text-base text-slate-900 mb-2">5. Bagaimana cara memasangnya di HP Android atau iPhone?</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">Tanpa perlu download yang memakan memori di PlayStore/App Store! Cukup buka <code>app.juragankosan.id</code> di browser Chrome (Android) atau Safari (iPhone), lalu pilih menu <strong>"Add to Home Screen" (Tambahkan ke Layar Utama)</strong>. Ikon aplikasi Juragankosan akan langsung tampil di layar HP Anda dan siap dibuka kapan saja bahkan saat sinyal offline.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FINAL CTA BANNER -->
-    <section class="py-20 bg-emerald-700 text-white text-center px-4">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="text-3xl sm:text-4xl font-black tracking-tight mb-4">Siap Merapikan Bisnis Kos & Kontrakan Anda Hari Ini?</h2>
-            <p class="text-emerald-100 text-base sm:text-lg mb-8">Mulai gratis hingga 3 kamar, atau langsung amankan Lisensi PRO Lifetime mumpung kuota Promo Batch 1 (Rp 149.000) masih tersedia.</p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="https://app.juragankosan.id" class="w-full sm:w-auto px-8 py-4 rounded-2xl text-base font-extrabold text-white bg-orange-600 hover:bg-orange-700 shadow-xl transition">
-                    🚀 Buka Aplikasi Juragankosan Sekarang
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="bg-slate-950 text-slate-400 py-12 border-t border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-emerald-700 flex items-center justify-center text-white font-extrabold text-sm">JK</div>
+          <!-- Container Kartu Mockup HP / Dashboard -->
+          <div class="w-full max-w-[360px] sm:max-w-[380px] rounded-2xl bg-white border border-slate-200/90 shadow-xl p-4 sm:p-5 relative transition-all">
+            
+            <!-- Header Mini Mockup -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3.5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-700 flex items-center justify-center text-white text-xs font-bold">GA</div>
                 <div>
-                    <span class="text-base font-bold text-white">Juragankosan.id</span>
-                    <span class="block text-xs text-slate-500">Aplikasi Manajemen Operasional Kos & Kontrakan Simpel</span>
+                  <div class="text-xs font-extrabold text-slate-900 leading-tight">Griya Asri Harmoni Kost</div>
+                  <div class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+                    <span>Status Operasional Aktif</span>
+                  </div>
                 </div>
+              </div>
+              <span class="text-xs px-2 py-0.5 rounded bg-slate-100 font-semibold text-slate-600">6 Kamar</span>
             </div>
-            <div class="flex items-center gap-6 text-xs font-semibold">
-                <a href="https://app.juragankosan.id" class="hover:text-white transition">Akses Web App (PWA)</a>
-                <a href="#fitur" class="hover:text-white transition">Fitur</a>
-                <a href="#harga" class="hover:text-white transition">Lisensi PRO</a>
-                <a href="#faq" class="hover:text-white transition">Bantuan & FAQ</a>
+
+            <!-- Mini Summary Box -->
+            <div class="grid grid-cols-2 gap-2.5 mb-3.5">
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70">
+                <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide">Kamar Terisi</div>
+                <div class="text-base font-extrabold text-slate-900">4 <span class="text-xs font-medium text-slate-500">/ 6 Unit</span></div>
+                <div class="text-[10px] text-emerald-700 font-medium mt-0.5">2 Kamar Kosong</div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/60">
+                <div class="text-[10px] font-semibold text-emerald-800 uppercase tracking-wide">Laba Bersih</div>
+                <div class="text-base font-extrabold text-emerald-800">Rp 4,30 Jt</div>
+                <div class="text-[10px] text-emerald-700 font-medium mt-0.5">Bulan Oktober 2026</div>
+              </div>
             </div>
-            <p class="text-xs text-slate-500 text-center sm:text-right">
-                &copy; 2026 Juragankosan.id. Hak Cipta Dilindungi.
-            </p>
+
+            <!-- Real Bill Sample Card (Siti Nurhaliza - Sesuai Data Aplikasi) -->
+            <div class="rounded-xl border border-red-200 bg-white p-3 shadow-xs mb-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-bold text-slate-900">Siti Nurhaliza</span>
+                  <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600">Kamar 102</span>
+                </div>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">Telat 9 Hari</span>
+              </div>
+              
+              <div class="text-sm font-extrabold text-slate-900 mb-2.5">
+                Rp 1.500.000 <span class="text-[10px] font-normal text-slate-500">(Jatuh Tempo: 10 Okt)</span>
+              </div>
+
+              <!-- Symmetrical 50:50 Action Buttons -->
+              <div class="grid grid-cols-2 gap-2">
+                <button class="w-full py-1.5 px-2 rounded-lg text-[11px] font-bold text-white bg-emerald-500 hover:bg-emerald-600 flex items-center justify-center gap-1 transition-colors">
+                  <span>💬 Tagih WA</span>
+                </button>
+                <button class="w-full py-1.5 px-2 rounded-lg text-[11px] font-bold text-white bg-emerald-700 hover:bg-emerald-800 flex items-center justify-center gap-1 transition-colors">
+                  <span>✓ Tandai Lunas</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Mini Kwitansi Notification Bar -->
+            <div class="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] flex items-center justify-between">
+              <span class="text-emerald-900 font-semibold truncate">✓ Kwitansi KW/202610/201-03 Siap</span>
+              <span class="text-emerald-700 font-bold ml-2 underline text-[10px]">Kirim WA</span>
+            </div>
+
+          </div>
+
         </div>
-    </footer>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========================================================================
+       SECTION 1: 3 MASALAH KLASIK PENGELOLA KOS (PAIN POINTS)
+       ======================================================================== -->
+  <section id="masalah" class="py-14 sm:py-20 bg-white border-y border-slate-100">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <!-- Section Header: Kompak & Elegan -->
+      <div class="max-w-2xl mx-auto text-center mb-10 sm:mb-14">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-red-700 bg-red-50 border border-red-200 mb-3">
+          Keresahan Pengelola Kos
+        </span>
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Masih Mengelola Kos dengan <span class="text-red-600">Cara Lama?</span>
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 font-body mt-2 leading-relaxed">
+          Catatan tercecer, canggung saat menagih, dan pusing menghitung laba bersih tiap akhir bulan sudah bukan jamannya lagi.
+        </p>
+      </div>
+
+      <!-- 3 Problem Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+        
+        <!-- Card 1 -->
+        <div class="p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-red-200 hover:bg-white hover:shadow-md transition-all group">
+          <div class="w-11 h-11 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+            📖
+          </div>
+          <h3 class="text-base font-bold text-slate-900 mb-2">Catatan Buku Kas Tercecer</h3>
+          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed">
+            Sering lupa siapa saja yang belum bayar, salah mencatat sisa cicilan bertahap, dan buku kas mudah kotor, basah, atau terselip entah di mana.
+          </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-red-200 hover:bg-white hover:shadow-md transition-all group">
+          <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+            ⏰
+          </div>
+          <h3 class="text-base font-bold text-slate-900 mb-2">Repot Nagih Manual via WA</h3>
+          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed">
+            Harus merangkai kata-kata penagihan satu per satu setiap tanggal jatuh tempo tiba. Melelahkan, makan waktu, dan sering timbul rasa tidak enak hati.
+          </p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-red-200 hover:bg-white hover:shadow-md transition-all group">
+          <div class="w-11 h-11 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+            📉
+          </div>
+          <h3 class="text-base font-bold text-slate-900 mb-2">Buta Keuangan & Laba Bersih</h3>
+          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed">
+            Uang sewa kos bercampur dengan uang belanja pribadi. Biaya tukang, WiFi, dan operasional tidak tercatat sehingga tidak tahu apakah kos untung atau rugi.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ========================================================================
+       SECTION 2: 4 SOLUSI & KEUNGGULAN UTAMA (CORE BENEFITS)
+       ======================================================================== -->
+  <section id="solusi" class="py-14 sm:py-20 bg-gradient-to-b from-[#fcfdfd] to-emerald-50/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <!-- Section Header -->
+      <div class="max-w-2xl mx-auto text-center mb-10 sm:mb-14">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 border border-emerald-300/50 mb-3">
+          Solusi Cerdas & Praktis
+        </span>
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Satu Aplikasi untuk Semua <span class="text-emerald-700">Kebutuhan Kos Anda</span>
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 font-body mt-2 leading-relaxed">
+          Dirancang khusus untuk pemilik kos, wisma, dan kontrakan di Indonesia agar operasional serba otomatis, rapi, dan bebas pusing.
+        </p>
+      </div>
+
+      <!-- 4 Core Benefits Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+        
+        <!-- Benefit 1 -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-emerald-300 hover:shadow-md transition-all">
+          <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl mb-4 font-bold">
+            ⚡
+          </div>
+          <h3 class="text-base font-bold text-slate-900 mb-2">PWA Super Cepat & Ringan di HP</h3>
+          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed mb-4">
+            Tanpa perlu instalasi PlayStore yang memakan memori ponsel. Cukup buka di browser, klik <strong>Add to Home Screen</strong>, dan aplikasi langsung siap dipakai kapan saja bahkan saat offline.
+          </p>
+          <div class="space-y-1.5 text-xs font-medium text-slate-700">
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span>Bisa di Android, iPhone, iPad, maupun Laptop Windows/Mac</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span>Loading instan di bawah 1 detik tanpa lag</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benefit 2 -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-emerald-300 hover:shadow-md transition-all">
+          <div class="w-11 h-11 rounded-xl bg-amber-100 text-brand-orange flex items-center justify-center text-xl mb-4 font-bold">
+            💬
+          </div>
+          <h3 class="text-base font-bold text-slate-900 mb-2">Kirim Tagihan WhatsApp 1-Klik</h3>
+          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed mb-4">
+            Dilengkapi template pesan otomatis yang sopan dan profesional. Mulai dari pengingat jatuh tempo, konfirmasi bayar bertahap (cicil), hingga kwitansi pelunasan.
+          </p>
+          <div class="space-y-1.5 text-xs font-medium text-slate-700">
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span>Otomatis terisi nama penyewa, kamar, nominal, & nomor rekening</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span>Langsung membuka WhatsApp resmi di ponsel Anda</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benefit 3 -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-emerald-300 hover:shadow-md transition-all">
+          <div class="w-11 h-11 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-xl mb-4 font-bold">
+            📊
+          </div>
+          <h3 class="text-base font-bold text-slate-900 mb-2">Laporan Arus Kas & Laba Bersih Real-Time</h3>
+          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed mb-4">
+            Pantau arus kas bulanan secara transparan. Catat pengeluaran operasional (listrik, wifi, retribusi sampah, biaya tukang) dan ketahui laba bersih kos secara presisi.
+          </p>
+          <div class="space-y-1.5 text-xs font-medium text-slate-700">
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span>Grafik perbandingan pemasukan vs pengeluaran bulanan</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span>Ekspor laporan siap cetak format PDF atau Excel</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benefit 4 -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-emerald-300 hover:shadow-md transition-all">
+          <div class="w-11 h-11 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl mb-4 font-bold">
+            🔒
+          </div>
+          <h3 class="text-base font-bold text-slate-900 mb-2">Privasi 100% Aman & Data Tersimpan di HP</h3>
+          <p class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed mb-4">
+            Seluruh data penyewa dan keuangan tersimpan aman secara lokal di perangkat Anda (Local-First), bukan di server publik asing yang rawan bocor atau disalahgunakan.
+          </p>
+          <div class="space-y-1.5 text-xs font-medium text-slate-700">
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span>Fitur App Lock PIN 4-digit pengaman saat HP dipinjam</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-600 font-bold">✓</span>
+              <span>Fitur Backup & Restore JSON 1-klik untuk ganti HP</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ========================================================================
+       SECTION 3: PAKET HARGA TRANSPARAN (TRANSPARENT PRICING)
+       ======================================================================== -->
+  <section id="harga" class="py-14 sm:py-20 bg-white border-t border-slate-100">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      
+      <!-- Section Header -->
+      <div class="max-w-xl mx-auto text-center mb-10 sm:mb-14">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 border border-emerald-300/50 mb-3">
+          Harga Jujur & Sekali Bayar
+        </span>
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Investasi Sekali, <span class="text-emerald-700">Akses Selamanya</span>
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 font-body mt-2 leading-relaxed">
+          Tanpa biaya bulanan atau biaya perpanjangan tahunan. Miliki aplikasi selamanya untuk mengelola kos Anda tanpa batas.
+        </p>
+      </div>
+
+      <!-- Pricing Cards (Side-by-Side Symmetrical) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch max-w-4xl mx-auto">
+        
+        <!-- Plan 1: Starter Gratis -->
+        <div class="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 sm:p-7 flex flex-col justify-between hover:border-slate-300 transition-all">
+          <div>
+            <div class="text-lg font-bold text-slate-900">Starter Gratis</div>
+            <p class="text-xs text-slate-500 font-body mt-1 mb-5">Cocok untuk pemula yang baru memiliki 1–3 kamar kos.</p>
+            
+            <div class="pb-5 border-b border-slate-200 mb-5">
+              <div class="text-xs text-slate-400 font-medium invisible">Rp 0</div>
+              <div class="text-3xl font-extrabold text-slate-900">
+                Rp 0 <span class="text-xs font-semibold text-slate-500">/ selamanya</span>
+              </div>
+            </div>
+
+            <ul class="space-y-3 text-xs sm:text-sm text-slate-700 font-body mb-8">
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span>Maksimal <strong>3 Kamar Aktif</strong></span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span>Pencatatan Kamar & Penghuni</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span>Template Tagihan WA Standar</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span>Kwitansi Digital Dasar</span>
+              </li>
+              <li class="flex items-center gap-2.5 text-slate-400">
+                <span class="text-slate-300 font-bold">✕</span>
+                <span class="line-through">Laporan Laba/Rugi Lengkap</span>
+              </li>
+              <li class="flex items-center gap-2.5 text-slate-400">
+                <span class="text-slate-300 font-bold">✕</span>
+                <span class="line-through">Fitur Kunci Aplikasi PIN 4-Digit</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <a href="https://app.juragankosan.id" target="_blank" rel="noopener" class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 shadow-xs transition-all">
+              Mulai Gratis Sekarang
+            </a>
+            <div class="text-[11px] text-center text-slate-400 font-medium mt-2">Tanpa Kartu Kredit • Langsung Pakai</div>
+          </div>
+        </div>
+
+        <!-- Plan 2: PRO Lifetime (Highlight Batch 1) -->
+        <div class="rounded-2xl border-2 border-emerald-500 bg-gradient-to-b from-white to-emerald-50/40 p-6 sm:p-7 flex flex-col justify-between shadow-lg relative">
+          
+          <!-- Sleek Single-Line Promo Badge -->
+          <div class="absolute -top-3.5 left-1/2 transform -translate-x-1/2 whitespace-nowrap px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-gradient-to-r from-red-600 to-brand-orange text-white shadow-sm">
+            🔥 PROMO BATCH 1 TERBATAS
+          </div>
+
+          <div>
+            <div class="text-lg font-bold text-emerald-950 flex items-center gap-1.5">
+              <span>👑 PRO Lifetime</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Terlaris</span>
+            </div>
+            <p class="text-xs text-slate-600 font-body mt-1 mb-5">Solusi lengkap tanpa batas untuk pemilik kos & kontrakan profesional.</p>
+
+            <div class="pb-5 border-b border-emerald-200/80 mb-5">
+              <div class="text-xs text-slate-400 font-semibold line-through">Rp 299.000</div>
+              <div class="text-3xl font-extrabold text-emerald-800 flex items-baseline gap-1">
+                Rp 149.000 <span class="text-xs font-semibold text-slate-500">/ sekali bayar</span>
+              </div>
+            </div>
+
+            <ul class="space-y-3 text-xs sm:text-sm text-slate-800 font-body mb-8">
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span><strong>Kamar & Penghuni Tanpa Batas</strong> (10 s/d 100+ pintu)</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span><strong>Kirim Tagihan WA 1-Klik</strong> (Tagih, Cicil & Lunas)</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span><strong>Generator Kwitansi Resmi</strong> & Cetak PDF Otomatis</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span><strong>Pencatatan Cicilan Bertahap</strong> akurat anti-selisih</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span><strong>Laporan Arus Kas & Laba Bersih</strong> (Ekspor PDF/Excel)</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span><strong>Kunci Aplikasi PIN 4-Digit</strong> untuk privasi data HP</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span><strong>Bebas Update Fitur Baru Selamanya</strong> (Lifetime Access)</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <a href="https://wa.me/6281949098789?text=Halo%20Admin%20Juragankosan%2C%20saya%20ingin%20mengamankan%20Lisensi%20PRO%20Lifetime%20Batch%201%20(Rp%20149.000)" target="_blank" rel="noopener" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-bold text-white bg-brand-orange hover:bg-brand-orangeHover shadow-md transition-all">
+              <span>🔥 Amankan Lisensi PRO Sekarang</span>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+            <div class="text-[11px] text-center text-emerald-800 font-semibold mt-2">🛡️ Aktivasi Instan • Tanpa Biaya Langganan</div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ========================================================================
+       SECTION 4: AKORDION TANYA JAWAB (FAQ)
+       ======================================================================== -->
+  <section id="faq" class="py-14 sm:py-20 bg-slate-50 border-t border-slate-200/80">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      
+      <!-- Section Header -->
+      <div class="text-center mb-10">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-slate-700 bg-slate-200/70 mb-3">
+          Tanya Jawab
+        </span>
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Pertanyaan yang <span class="text-emerald-700">Sering Diajukan</span>
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 font-body mt-1">
+          Segala hal seputar cara kerja, privasi data, dan lisensi aplikasi Juragankosan.
+        </p>
+      </div>
+
+      <!-- FAQ Accordion List -->
+      <div class="space-y-3 font-body">
+        
+        <!-- FAQ 1 -->
+        <div class="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+          <button class="faq-toggle w-full px-5 py-4 text-left font-sans font-bold text-sm text-slate-900 flex items-center justify-between gap-4">
+            <span>Apakah data kos dan nomor kontak penyewa saya aman?</span>
+            <svg class="faq-icon w-4 h-4 text-emerald-700 transform transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-content hidden px-5 pb-4 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+            Sangat aman. Juragankosan beroperasi dengan prinsip <em>Local-First</em>, artinya seluruh database nama penghuni, nomor WhatsApp, serta riwayat pembayaran tersimpan langsung di browser/memori perangkat Anda sendiri. Data tidak pernah dikirim atau dijual ke pihak ketiga.
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+          <button class="faq-toggle w-full px-5 py-4 text-left font-sans font-bold text-sm text-slate-900 flex items-center justify-between gap-4">
+            <span>Bagaimana cara pakai di HP Android atau iPhone?</span>
+            <svg class="faq-icon w-4 h-4 text-emerald-700 transform transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-content hidden px-5 pb-4 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+            Sangat mudah tanpa perlu download dari PlayStore! Buka <strong>app.juragankosan.id</strong> di Chrome (Android) atau Safari (iPhone), lalu pilih menu <strong>"Add to Home Screen"</strong> (Tambahkan ke Layar Utama). Aplikasi akan langsung terpasang di layar HP seperti aplikasi biasa.
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+          <button class="faq-toggle w-full px-5 py-4 text-left font-sans font-bold text-sm text-slate-900 flex items-center justify-between gap-4">
+            <span>Apakah benar-benar sekali bayar tanpa langganan bulanan?</span>
+            <svg class="faq-icon w-4 h-4 text-emerald-700 transform transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-content hidden px-5 pb-4 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+            Betul 100%. Untuk Promo Batch 1, Anda hanya perlu berinvestasi <strong>Rp 149.000 satu kali saja</strong> untuk menikmati lisensi seumur hidup (Lifetime License) tanpa ada biaya bulanan atau tahunan tersembunyi.
+          </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+          <button class="faq-toggle w-full px-5 py-4 text-left font-sans font-bold text-sm text-slate-900 flex items-center justify-between gap-4">
+            <span>Bagaimana jika saya ingin mengganti HP atau perangkat baru?</span>
+            <svg class="faq-icon w-4 h-4 text-emerald-700 transform transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-content hidden px-5 pb-4 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+            Di aplikasi tersedia fitur <strong>Backup & Restore Data</strong>. Anda cukup klik "Unduh Cadangan (JSON)", lalu simpan filenya di Google Drive atau kirim ke WhatsApp Anda. Di HP baru, buka aplikasi dan pilih "Pulihkan Data", seluruh data kembali utuh dalam 2 detik.
+          </div>
+        </div>
+
+        <!-- FAQ 5 -->
+        <div class="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+          <button class="faq-toggle w-full px-5 py-4 text-left font-sans font-bold text-sm text-slate-900 flex items-center justify-between gap-4">
+            <span>Bisa digunakan untuk kontrakan petak, paviliun, atau ruko?</span>
+            <svg class="faq-icon w-4 h-4 text-emerald-700 transform transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="faq-content hidden px-5 pb-4 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+            Tentu saja bisa! Penamaan kamar sangat fleksibel. Anda bebas menamai unit sebagai *"Pintu 01"*, *"Rumah Blok B"*, *"Paviliun Melati"*, atau *"Ruko Lantai 1"* sesuai properti sewa yang Anda miliki.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ========================================================================
+       SECTION 5: FINAL HIGH-CONVERSION CTA BANNER
+       ======================================================================== -->
+  <section class="py-14 sm:py-16 bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="rounded-3xl bg-gradient-to-br from-emerald-800 to-emerald-950 p-8 sm:p-12 text-center text-white relative overflow-hidden shadow-xl">
+        
+        <!-- Background Ornaments -->
+        <div class="absolute -top-20 -right-20 w-64 h-64 bg-emerald-600/30 rounded-full blur-2xl pointer-events-none"></div>
+
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight leading-snug mb-3 max-w-2xl mx-auto">
+          Tinggalkan Cara Manual. Jadilah Juragan Kos yang Santai & Modern!
+        </h2>
+        <p class="text-xs sm:text-sm text-emerald-100/90 font-body max-w-xl mx-auto mb-7 leading-relaxed">
+          Mulai kelola kamar kos Anda dalam 2 menit. 100% Gratis, tanpa kartu kredit, dan langsung bisa digunakan hari ini juga.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          <a href="https://app.juragankosan.id" target="_blank" rel="noopener" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-brand-orange hover:bg-brand-orangeHover shadow-md transition-all">
+            <span>🚀 Buka Aplikasi Sekarang — Gratis!</span>
+          </a>
+          <a href="https://wa.me/6281949098789?text=Halo%20Admin%20Juragankosan%2C%20saya%20ingin%20tanya%20seputar%20Aplikasi%20dan%20Promo%20PRO" target="_blank" rel="noopener" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold text-slate-800 bg-white hover:bg-slate-100 shadow-xs transition-all">
+            <span>Konsultasi WhatsApp</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========================================================================
+       FOOTER PROFESSIONAL
+       ======================================================================== -->
+  <footer class="bg-slate-900 text-slate-400 py-12 sm:py-14 border-t border-slate-800 text-xs sm:text-sm font-body">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-slate-800">
+        
+        <!-- Col 1: Brand -->
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-2 text-white font-sans font-extrabold text-base mb-2.5">
+            <span>🏠 Juragankosan</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Aplikasi manajemen kos & kontrakan simpel berbasis PWA. Cepat, aman, dan tanpa biaya bulanan untuk seluruh pemilik kos di Indonesia.
+          </p>
+          <div class="inline-block px-2 py-1 rounded bg-slate-800 text-[11px] text-slate-300 font-medium">
+            🇮🇩 Solusi Pemilik Kos Indonesia
+          </div>
+        </div>
+
+        <!-- Col 2: Navigasi -->
+        <div>
+          <div class="text-white font-sans font-bold text-xs uppercase tracking-wider mb-3">Navigasi</div>
+          <ul class="space-y-2 text-xs">
+            <li><a href="#" class="hover:text-emerald-400 transition-colors">Beranda</a></li>
+            <li><a href="#masalah" class="hover:text-emerald-400 transition-colors">Keresahan Pemilik</a></li>
+            <li><a href="#solusi" class="hover:text-emerald-400 transition-colors">Keunggulan Fitur</a></li>
+            <li><a href="#harga" class="hover:text-emerald-400 transition-colors">Paket PRO Lifetime</a></li>
+            <li><a href="#faq" class="hover:text-emerald-400 transition-colors">Tanya Jawab (FAQ)</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Aplikasi & Tautan -->
+        <div>
+          <div class="text-white font-sans font-bold text-xs uppercase tracking-wider mb-3">Aplikasi Web</div>
+          <ul class="space-y-2 text-xs">
+            <li><a href="https://app.juragankosan.id" target="_blank" rel="noopener" class="hover:text-emerald-400 transition-colors">Buka Web App</a></li>
+            <li><a href="https://app.juragankosan.id#bills" target="_blank" rel="noopener" class="hover:text-emerald-400 transition-colors">Simulasi Tagihan WA</a></li>
+            <li><a href="https://app.juragankosan.id#rooms" target="_blank" rel="noopener" class="hover:text-emerald-400 transition-colors">Manajemen Kamar</a></li>
+            <li><a href="javascript:void(0)" id="footerPrivacyLink" class="hover:text-emerald-400 transition-colors">Kebijakan Privasi</a></li>
+            <li><a href="javascript:void(0)" id="footerTermsLink" class="hover:text-emerald-400 transition-colors">Syarat & Ketentuan</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Hubungi Kami -->
+        <div>
+          <div class="text-white font-sans font-bold text-xs uppercase tracking-wider mb-3">Kontak Resmi</div>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li>💬 WhatsApp: <strong class="text-white">0819-4909-8789</strong></li>
+            <li>🌐 Domain: <strong class="text-white">juragankosan.id</strong></li>
+            <li>⚡ App: <strong class="text-emerald-400">app.juragankosan.id</strong></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <div>© 2026 Juragankosan.id — Seluruh Hak Cipta Dilindungi Undang-Undang.</div>
+        <div>Aplikasi Manajemen Properti Kos & Kontrakan Terbaik</div>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <!-- ========================================================================
+       MODAL LEGAL (PRIVASI & SYARAT KETENTUAN)
+       ======================================================================== -->
+  <div id="legalModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto p-6 shadow-xl border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+        <h3 id="legalModalTitle" class="text-base font-extrabold text-slate-900">Kebijakan Privasi</h3>
+        <button id="closeLegalModalBtn" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold flex items-center justify-center text-sm">&times;</button>
+      </div>
+      <div id="legalModalBody" class="text-xs sm:text-sm text-slate-600 font-body leading-relaxed space-y-3">
+        <!-- Content will be injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================
+       INTERACTIVE VANILLA JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    // 1. Mobile Menu Toggle
+    const mobileNavBtn = document.getElementById('mobileNavBtn');
+    const mobileNavMenu = document.getElementById('mobileNavMenu');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+    if (mobileNavBtn && mobileNavMenu) {
+      mobileNavBtn.addEventListener('click', () => {
+        mobileNavMenu.classList.toggle('hidden');
+      });
+
+      mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          mobileNavMenu.classList.add('hidden');
+        });
+      });
+    }
+
+    // 2. FAQ Accordion Interaction
+    const faqToggles = document.querySelectorAll('.faq-toggle');
+    faqToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const content = toggle.nextElementSibling;
+        const icon = toggle.querySelector('.faq-icon');
+        const isHidden = content.classList.contains('hidden');
+
+        // Close all
+        document.querySelectorAll('.faq-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('rotate-180'));
+
+        // Toggle current
+        if (isHidden) {
+          content.classList.remove('hidden');
+          icon.classList.add('rotate-180');
+        }
+      });
+    });
+
+    // 3. Modal Legal (Privasi & Syarat Ketentuan)
+    const legalModal = document.getElementById('legalModal');
+    const legalModalTitle = document.getElementById('legalModalTitle');
+    const legalModalBody = document.getElementById('legalModalBody');
+    const closeLegalModalBtn = document.getElementById('closeLegalModalBtn');
+    const footerPrivacyLink = document.getElementById('footerPrivacyLink');
+    const footerTermsLink = document.getElementById('footerTermsLink');
+
+    const privacyHtml = `
+      <p>Selamat datang di <strong>Juragankosan.id</strong>. Kami menjamin privasi dan keamanan data Anda sepenuhnya.</p>
+      <h4 class="font-bold text-slate-900 mt-3 mb-1">1. Arsitektur Local-First (Data di HP Anda)</h4>
+      <p>Aplikasi Juragankosan bekerja secara Local-First, artinya 100% data kamar, penyewa, nomor kontak WhatsApp, dan catatan transaksi keuangan disimpan di Local Storage browser Anda sendiri. Kami tidak menyimpan atau menjual data properti Anda ke server eksternal.</p>
+      <h4 class="font-bold text-slate-900 mt-3 mb-1">2. Fitur WhatsApp 1-Klik</h4>
+      <p>Tautan WhatsApp yang dibuat aplikasi hanya meneruskan pesan lokal ke aplikasi resmi WhatsApp di perangkat Anda. Tidak ada pihak ketiga yang merekam nomor telepon penyewa Anda.</p>
+      <h4 class="font-bold text-slate-900 mt-3 mb-1">3. Cadangan Mandiri (Backup JSON)</h4>
+      <p>Anda memegang kendali penuh melalui fitur Backup & Restore. Anda berhak mengunduh atau menghapus data kapan saja.</p>
+    `;
+
+    const termsHtml = `
+      <p>Ketentuan layanan penggunaan aplikasi dan situs <strong>Juragankosan.id</strong>:</p>
+      <h4 class="font-bold text-slate-900 mt-3 mb-1">1. Lisensi Starter & PRO</h4>
+      <p>Paket Starter berlaku gratis seumur hidup untuk maksimal 3 kamar aktif. Paket PRO Lifetime memberikan hak akses tanpa batas kamar dengan pembayaran satu kali di awal.</p>
+      <h4 class="font-bold text-slate-900 mt-3 mb-1">2. Hak Akses Seumur Hidup</h4>
+      <p>Pemilik lisensi PRO berhak menikmati seluruh pembaruan fitur baru di masa mendatang tanpa dikenakan biaya langganan bulanan atau perpanjangan tahunan.</p>
+    `;
+
+    function showLegal(title, content) {
+      if (!legalModal) return;
+      legalModalTitle.textContent = title;
+      legalModalBody.innerHTML = content;
+      legalModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideLegal() {
+      if (!legalModal) return;
+      legalModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    if (footerPrivacyLink) {
+      footerPrivacyLink.addEventListener('click', () => showLegal('Kebijakan Privasi', privacyHtml));
+    }
+    if (footerTermsLink) {
+      footerTermsLink.addEventListener('click', () => showLegal('Syarat & Ketentuan', termsHtml));
+    }
+    if (closeLegalModalBtn) {
+      closeLegalModalBtn.addEventListener('click', hideLegal);
+    }
+    if (legalModal) {
+      legalModal.addEventListener('click', (e) => {
+        if (e.target === legalModal) hideLegal();
+      });
+    }
+  </script>
 
 </body>
 </html>
