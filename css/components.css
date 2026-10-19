@@ -5550,8 +5550,22 @@ select.form-control option:not([value=""]) {
   margin: 0;
 }
 
+.text-left {
+  text-align: left !important;
+}
+
 .onboarding-form {
   margin-top: 0.5rem;
+  text-align: left;
+}
+
+.onboarding-form .form-group {
+  text-align: left;
+}
+
+.onboarding-form .form-label {
+  text-align: left !important;
+  display: block;
 }
 
 .onboarding-field-hint {
@@ -5560,6 +5574,7 @@ select.form-control option:not([value=""]) {
   margin-top: 4px;
   margin-bottom: 0;
   line-height: 1.4;
+  text-align: left !important;
 }
 
 .letter-spacing-wide {

@@ -76,6 +76,29 @@ export function hideOnboardingOverlay() {
 export function initOnboarding() {
   const overlay = document.getElementById('welcome-onboarding-overlay');
   const form = document.getElementById('onboarding-form');
+  const inputPin = document.getElementById('onboarding-pin');
+
+  // Bila diklik atau difokuskan saat masih bernilai default '1234', langsung hapus agar user bisa langsung ketik PIN baru
+  if (inputPin) {
+    inputPin.addEventListener('focus', () => {
+      if (inputPin.value === '1234') {
+        inputPin.value = '';
+      }
+    });
+
+    inputPin.addEventListener('click', () => {
+      if (inputPin.value === '1234') {
+        inputPin.value = '';
+      }
+    });
+
+    // Jika dikosongkan lalu klik di luar (blur) tanpa mengetik apa-apa, kembalikan ke default '1234'
+    inputPin.addEventListener('blur', () => {
+      if (!inputPin.value.trim()) {
+        inputPin.value = '1234';
+      }
+    });
+  }
 
   if (!isOnboarded()) {
     // Pengguna baru: bypass PIN lock dan tampilkan formulir selamat datang
