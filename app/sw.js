@@ -4,33 +4,33 @@
  * Target Domain: app.juragankosan.id
  */
 
-const CACHE_NAME = 'juragankos-prod-v2.2';
+const CACHE_NAME = 'juragankos-prod-v2.3';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './assets/icons/favicon.svg',
-  './css/main.css?v=6.2',
-  './css/components.css?v=6.2',
-  './css/print.css?v=6.2',
-  './js/app.js?v=6.2',
-  './js/state.js?v=6.2',
-  './js/utils/formatter.js?v=6.2',
-  './js/utils/modal.js?v=6.2',
-  './js/utils/whatsapp.js?v=6.2',
-  './js/utils/license.js?v=6.2',
-  './js/utils/appLock.js?v=6.2',
-  './js/utils/onboarding.js?v=6.2',
-  './js/utils/leadCapture.js?v=6.2',
-  './js/views/dashboardView.js?v=6.2',
-  './js/views/roomsView.js?v=6.2',
-  './js/views/tenantsView.js?v=6.2',
-  './js/views/billsView.js?v=6.2',
-  './js/views/financialView.js?v=6.2',
-  './js/views/expensesView.js?v=6.2',
-  './js/views/settingsView.js?v=6.2',
-  './js/views/backupView.js?v=6.2'
+  './css/main.css?v=6.3',
+  './css/components.css?v=6.3',
+  './css/print.css?v=6.3',
+  './js/app.js?v=6.3',
+  './js/state.js?v=6.3',
+  './js/utils/formatter.js?v=6.3',
+  './js/utils/modal.js?v=6.3',
+  './js/utils/whatsapp.js?v=6.3',
+  './js/utils/license.js?v=6.3',
+  './js/utils/appLock.js?v=6.3',
+  './js/utils/onboarding.js?v=6.3',
+  './js/utils/leadCapture.js?v=6.3',
+  './js/views/dashboardView.js?v=6.3',
+  './js/views/roomsView.js?v=6.3',
+  './js/views/tenantsView.js?v=6.3',
+  './js/views/billsView.js?v=6.3',
+  './js/views/financialView.js?v=6.3',
+  './js/views/expensesView.js?v=6.3',
+  './js/views/settingsView.js?v=6.3',
+  './js/views/backupView.js?v=6.3'
 ];
 
 // 1. Install Event: Pre-cache core shell & assets

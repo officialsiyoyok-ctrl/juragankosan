@@ -442,21 +442,24 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
           <table class="data-table">
             <thead>
               <tr>
-                <th style="width: 50px;">No</th>
-                <th style="width: 120px;">Tanggal</th>
+                <th style="width: 45px;" class="text-center">No</th>
+                <th style="width: 125px; white-space: nowrap;">Tanggal</th>
                 <th>Sumber / Uraian Transaksi</th>
-                <th style="width: 150px;">Kategori</th>
-                <th style="width: 170px;">Metode / No. Kwitansi</th>
-                <th class="text-right" style="width: 160px;">Nominal (Rp)</th>
-                <th style="width: 120px;" class="text-center">Aksi</th>
+                <th style="width: 180px; white-space: nowrap;">Kategori</th>
+                <th style="width: 165px; white-space: nowrap;">Metode / Kwitansi</th>
+                <th class="text-right" style="width: 160px; white-space: nowrap;">Nominal (Rp)</th>
+                <th style="width: 130px; white-space: nowrap;" class="text-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
               ${filteredInflows.map((item, idx) => {
                 const isRent = item.isRent;
+                const catObj = INCOME_CATEGORIES.find(c => c.name === item.category);
+                const catIcon = isRent ? '🏠' : (catObj ? catObj.icon : '✨');
+                const catBadge = isRent ? 'badge-emerald' : (catObj ? catObj.badgeClass : 'badge-purple');
                 return `
                   <tr class="${isRent ? 'row-rent-inflow' : 'row-other-inflow'}">
-                    <td class="text-muted text-xs font-mono">${idx + 1}</td>
+                    <td class="text-muted text-xs text-center">${idx + 1}</td>
                     <td class="text-xs whitespace-nowrap font-medium">
                       ${formatDateIndo(item.date)}
                     </td>
@@ -468,21 +471,15 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
                         <div class="text-xs text-muted mt-0.5">${escapeHtml(item.notes)}</div>
                       ` : ''}
                     </td>
-                    <td>
-                      ${isRent ? `
-                        <span class="badge badge-emerald text-xs">
-                          🏠 Sewa Kamar
-                        </span>
-                      ` : `
-                        <span class="badge badge-purple text-xs">
-                          ✨ ${escapeHtml(item.category || 'Lain-lain')}
-                        </span>
-                      `}
+                    <td class="whitespace-nowrap">
+                      <span class="badge ${catBadge} text-xs">
+                        <span>${catIcon}</span> ${escapeHtml(item.category || (isRent ? 'Sewa Kamar' : 'Lain-lain'))}
+                      </span>
                     </td>
-                    <td class="text-xs">
+                    <td class="text-xs whitespace-nowrap">
                       <div class="font-medium text-main">${escapeHtml(item.paymentMethod || 'Kas Masuk')}</div>
                       ${item.receiptNumber && item.receiptNumber !== '-' ? `
-                        <div class="text-muted font-mono">${escapeHtml(item.receiptNumber)}</div>
+                        <div class="text-muted">${escapeHtml(item.receiptNumber)}</div>
                       ` : ''}
                     </td>
                     <td class="text-right whitespace-nowrap">
@@ -496,11 +493,11 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
                           🧾 Tagihan
                         </button>
                       ` : `
-                        <div class="flex-center gap-1">
-                          <button type="button" class="btn btn-ghost btn-xs btn-edit-income" data-income-id="${item.id}" title="Edit Pemasukan">
+                        <div class="table-action-group">
+                          <button type="button" class="btn btn-action-edit btn-edit-income" data-income-id="${item.id}" title="Edit Pemasukan">
                             ✏️ Edit
                           </button>
-                          <button type="button" class="btn btn-ghost btn-xs text-danger btn-delete-income" data-income-id="${item.id}" title="Hapus Pemasukan">
+                          <button type="button" class="btn btn-action-delete text-danger btn-delete-income" data-income-id="${item.id}" title="Hapus Pemasukan">
                             🗑️
                           </button>
                         </div>
@@ -513,7 +510,7 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
             <tfoot>
               <tr class="table-total-row">
                 <td colspan="5" class="text-right font-bold text-sm">TOTAL PEMASUKAN BULAN INI:</td>
-                <td class="text-right font-bold text-emerald text-base">
+                <td class="text-right font-bold text-emerald text-base whitespace-nowrap">
                   + ${formatRupiah(filteredInflows.reduce((acc, i) => acc + (i.amount || 0), 0))}
                 </td>
                 <td></td>
@@ -656,12 +653,12 @@ function renderExpensesSubTab({ selectedPeriodYM, periodExpenses, totalMonthExpe
           <table class="data-table">
             <thead>
               <tr>
-                <th style="width: 50px;">No</th>
-                <th style="width: 120px;">Tanggal</th>
-                <th style="width: 180px;">Kategori</th>
+                <th style="width: 45px;" class="text-center">No</th>
+                <th style="width: 125px; white-space: nowrap;">Tanggal</th>
+                <th style="width: 180px; white-space: nowrap;">Kategori</th>
                 <th>Keterangan / Rincian Pengeluaran</th>
-                <th class="text-right" style="width: 160px;">Nominal (Rp)</th>
-                <th style="width: 110px;" class="text-center">Aksi</th>
+                <th class="text-right" style="width: 160px; white-space: nowrap;">Nominal (Rp)</th>
+                <th style="width: 130px; white-space: nowrap;" class="text-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -670,11 +667,11 @@ function renderExpensesSubTab({ selectedPeriodYM, periodExpenses, totalMonthExpe
                 const icon = catObj ? catObj.icon : '📦';
                 return `
                   <tr>
-                    <td class="text-muted text-xs font-mono">${idx + 1}</td>
+                    <td class="text-muted text-xs text-center">${idx + 1}</td>
                     <td class="text-xs whitespace-nowrap font-medium">
                       ${formatDateIndo(exp.date)}
                     </td>
-                    <td>
+                    <td class="whitespace-nowrap">
                       <span class="badge badge-secondary text-xs">
                         <span>${icon}</span> ${escapeHtml(exp.category)}
                       </span>
@@ -688,11 +685,11 @@ function renderExpensesSubTab({ selectedPeriodYM, periodExpenses, totalMonthExpe
                       </strong>
                     </td>
                     <td class="text-center whitespace-nowrap">
-                      <div class="flex-center gap-1">
-                        <button type="button" class="btn btn-ghost btn-xs btn-edit-expense" data-exp-id="${exp.id}" title="Edit Pengeluaran">
+                      <div class="table-action-group">
+                        <button type="button" class="btn btn-action-edit btn-edit-expense" data-exp-id="${exp.id}" title="Edit Pengeluaran">
                           ✏️ Edit
                         </button>
-                        <button type="button" class="btn btn-ghost btn-xs text-danger btn-delete-expense" data-exp-id="${exp.id}" title="Hapus Pengeluaran">
+                        <button type="button" class="btn btn-action-delete text-danger btn-delete-expense" data-exp-id="${exp.id}" title="Hapus Pengeluaran">
                           🗑️
                         </button>
                       </div>
@@ -704,7 +701,7 @@ function renderExpensesSubTab({ selectedPeriodYM, periodExpenses, totalMonthExpe
             <tfoot>
               <tr class="table-total-row">
                 <td colspan="4" class="text-right font-bold text-sm">TOTAL BIAYA OPERASIONAL:</td>
-                <td class="text-right font-bold text-danger text-base">
+                <td class="text-right font-bold text-danger text-base whitespace-nowrap">
                   -${formatRupiah(filteredExpenses.reduce((acc, e) => acc + (e.amount || 0), 0))}
                 </td>
                 <td></td>
@@ -906,14 +903,14 @@ function renderReportSubTab({ selectedPeriodYM }) {
           <table class="data-table cashflow-table">
             <thead>
               <tr>
-                <th style="width: 45px;">No</th>
-                <th style="width: 110px;">Tanggal</th>
-                <th style="width: 90px;" class="text-center">Tipe</th>
-                <th style="width: 140px;">Kategori</th>
+                <th style="width: 45px;" class="text-center">No</th>
+                <th style="width: 130px; white-space: nowrap;">Tanggal</th>
+                <th style="width: 105px; white-space: nowrap;" class="text-center">Tipe</th>
+                <th style="width: 170px; white-space: nowrap;">Kategori</th>
                 <th>Uraian Transaksi</th>
-                <th class="text-right" style="width: 140px;">Pemasukan (Kredit)</th>
-                <th class="text-right" style="width: 140px;">Pengeluaran (Debit)</th>
-                <th class="text-right" style="width: 150px;">Saldo Berjalan</th>
+                <th class="text-right" style="width: 150px; white-space: nowrap;">Pemasukan (Kredit)</th>
+                <th class="text-right" style="width: 150px; white-space: nowrap;">Pengeluaran (Debit)</th>
+                <th class="text-right" style="width: 150px; white-space: nowrap;">Saldo Berjalan</th>
               </tr>
             </thead>
             <tbody>
@@ -921,18 +918,18 @@ function renderReportSubTab({ selectedPeriodYM }) {
                 const isIn = entry.type === 'inflow';
                 return `
                   <tr class="${isIn ? 'row-ledger-in' : 'row-ledger-out'}">
-                    <td class="text-muted text-xs font-mono">${idx + 1}</td>
+                    <td class="text-muted text-xs text-center">${idx + 1}</td>
                     <td class="text-xs whitespace-nowrap font-medium">
                       ${formatDateIndo(entry.date)}
                     </td>
-                    <td class="text-center">
+                    <td class="text-center whitespace-nowrap">
                       ${isIn ? `
-                        <span class="badge badge-emerald text-2xs font-bold">📥 Masuk</span>
+                        <span class="badge badge-emerald text-xs font-bold">📥 Masuk</span>
                       ` : `
-                        <span class="badge badge-danger text-2xs font-bold">📤 Keluar</span>
+                        <span class="badge badge-danger text-xs font-bold">📤 Keluar</span>
                       `}
                     </td>
-                    <td>
+                    <td class="whitespace-nowrap">
                       <span class="badge badge-secondary text-xs">${escapeHtml(entry.category)}</span>
                     </td>
                     <td>
@@ -941,13 +938,13 @@ function renderReportSubTab({ selectedPeriodYM }) {
                         <span class="text-xs text-muted block">${escapeHtml(entry.notes)}</span>
                       ` : ''}
                     </td>
-                    <td class="text-right font-mono text-xs ${entry.inAmount > 0 ? 'text-emerald font-bold' : 'text-muted'}">
+                    <td class="text-right whitespace-nowrap text-xs ${entry.inAmount > 0 ? 'text-emerald font-bold' : 'text-muted'}">
                       ${entry.inAmount > 0 ? `+${formatRupiah(entry.inAmount)}` : '-'}
                     </td>
-                    <td class="text-right font-mono text-xs ${entry.outAmount > 0 ? 'text-danger font-bold' : 'text-muted'}">
+                    <td class="text-right whitespace-nowrap text-xs ${entry.outAmount > 0 ? 'text-danger font-bold' : 'text-muted'}">
                       ${entry.outAmount > 0 ? `-${formatRupiah(entry.outAmount)}` : '-'}
                     </td>
-                    <td class="text-right font-mono text-xs font-bold ${entry.balance >= 0 ? 'text-main' : 'text-danger'}">
+                    <td class="text-right whitespace-nowrap text-xs font-bold ${entry.balance >= 0 ? 'text-main' : 'text-danger'}">
                       ${formatRupiah(entry.balance)}
                     </td>
                   </tr>
@@ -957,13 +954,13 @@ function renderReportSubTab({ selectedPeriodYM }) {
             <tfoot>
               <tr class="table-total-row">
                 <td colspan="5" class="text-right font-bold text-sm">TOTAL PERIODE:</td>
-                <td class="text-right font-bold text-emerald text-sm">
+                <td class="text-right font-bold text-emerald text-sm whitespace-nowrap">
                   +${formatRupiah(totalRevenue)}
                 </td>
-                <td class="text-right font-bold text-danger text-sm">
+                <td class="text-right font-bold text-danger text-sm whitespace-nowrap">
                   -${formatRupiah(totalExpense)}
                 </td>
-                <td class="text-right font-bold font-mono text-sm ${isSurplus ? 'text-emerald' : 'text-danger'}">
+                <td class="text-right font-bold text-sm whitespace-nowrap ${isSurplus ? 'text-emerald' : 'text-danger'}">
                   ${isSurplus ? '+' : ''}${formatRupiah(netProfit)}
                 </td>
               </tr>

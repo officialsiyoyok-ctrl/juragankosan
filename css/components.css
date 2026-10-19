@@ -44,6 +44,13 @@
   border-radius: var(--radius-sm);
 }
 
+.btn-xs {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  border-radius: var(--radius-sm, 6px);
+}
+
 /* Primary Button (Emerald Juragan) */
 .btn-primary {
   background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
@@ -940,17 +947,18 @@
 
 .data-table th {
   background-color: var(--bg-surface-subtle);
-  padding: 0.875rem 1.25rem;
+  padding: 0.75rem 1rem;
   font-weight: 700;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
 }
 
 .data-table td {
-  padding: 1rem 1.25rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
 }
@@ -1050,21 +1058,46 @@
   font-weight: 700;
   padding: 0.25rem 0.625rem;
   border-radius: var(--radius-full);
+  white-space: nowrap !important;
 }
 
-.badge-success {
+.badge-success,
+.badge-emerald {
   background-color: var(--badge-emerald-bg);
   color: var(--badge-emerald-text);
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .badge-danger {
   background-color: var(--badge-danger-bg);
   color: var(--badge-danger-text);
+  border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
-.badge-warning {
+.badge-warning,
+.badge-amber {
   background-color: var(--badge-amber-bg);
   color: var(--badge-amber-text);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.badge-blue,
+.badge-info {
+  background-color: var(--badge-blue-bg);
+  color: var(--badge-blue-text);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.badge-purple {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+[data-theme="dark"] .badge-purple {
+  background-color: rgba(168, 85, 247, 0.2);
+  color: #d8b4fe;
+  border-color: rgba(168, 85, 247, 0.35);
 }
 
 .badge-neutral {
@@ -1075,6 +1108,7 @@
 .badge-secondary {
   background-color: var(--bg-surface-subtle);
   color: var(--text-muted);
+  border: 1px solid var(--border-color);
 }
 
 /* ==========================================================================
@@ -5206,6 +5240,55 @@ select.form-control option:not([value=""]) {
 .table-total-row {
   background-color: var(--bg-surface-subtle);
   border-top: 2px solid var(--border-color);
+}
+
+.flex-center {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-action-group {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+}
+
+.table-action-group .btn-action-edit,
+.table-action-group .btn-action-delete {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0.25rem 0.55rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  border: 1px solid var(--border-color) !important;
+  background-color: var(--bg-card) !important;
+  border-radius: var(--radius-sm, 6px) !important;
+  color: var(--text-secondary) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  white-space: nowrap !important;
+}
+
+.table-action-group .btn-action-edit:hover {
+  background-color: var(--bg-surface-subtle) !important;
+  border-color: var(--primary-500) !important;
+  color: var(--primary-600) !important;
+}
+
+.table-action-group .btn-action-delete {
+  color: #ef4444 !important;
+}
+
+.table-action-group .btn-action-delete:hover {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  border-color: #ef4444 !important;
+  color: #dc2626 !important;
 }
 
 /* Financial View Layout Components (Desktop Default) */

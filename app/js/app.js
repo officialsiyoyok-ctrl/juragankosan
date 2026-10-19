@@ -1,8 +1,8 @@
 /**
  * Juragankosan Main Application Orchestrator
  */
-import { store } from './state.js?v=6.1';
-import { initModalListeners, openModal, closeModal, showToast, bindCustomPicker } from './utils/modal.js?v=6.1';
+import { store } from './state.js?v=6.3';
+import { initModalListeners, openModal, closeModal, showToast, bindCustomPicker } from './utils/modal.js?v=6.3';
 import {
   formatRupiah,
   formatDateIndo,
@@ -12,7 +12,7 @@ import {
   terbilangRupiah,
   formatDisplayPhone,
   escapeHtml
-} from './utils/formatter.js?v=6.1';
+} from './utils/formatter.js?v=6.3';
 import {
   generateWhatsAppMessage,
   generateKwitansiWhatsAppText,
@@ -20,19 +20,19 @@ import {
   DEFAULT_RECEIPT_WA_TEMPLATE,
   DEFAULT_RECEIPT_PARTIAL_WA_TEMPLATE,
   DEFAULT_RECEIPT_ADVANCE_WA_TEMPLATE
-} from './utils/whatsapp.js?v=6.1';
+} from './utils/whatsapp.js?v=6.3';
 
-import { renderDashboard } from './views/dashboardView.js?v=6.1';
-import { renderRooms } from './views/roomsView.js?v=6.1';
-import { renderTenants } from './views/tenantsView.js?v=6.1';
-import { renderBills, openReceiptModal as renderReceiptModal } from './views/billsView.js?v=6.1';
-import { renderFinances } from './views/financialView.js?v=6.2';
-import { renderExpenses } from './views/expensesView.js?v=6.1';
-import { renderSettings } from './views/settingsView.js?v=6.1';
-import { renderBackup } from './views/backupView.js?v=6.1';
-import { isPro, openUpgradeModal, openAdminGeneratorModal, MAX_FREE_ROOMS } from './utils/license.js?v=6.1';
-import { initAppLock, lockApp } from './utils/appLock.js?v=6.1';
-import { initOnboarding } from './utils/onboarding.js?v=6.1';
+import { renderDashboard } from './views/dashboardView.js?v=6.3';
+import { renderRooms } from './views/roomsView.js?v=6.3';
+import { renderTenants } from './views/tenantsView.js?v=6.3';
+import { renderBills, openReceiptModal as renderReceiptModal } from './views/billsView.js?v=6.3';
+import { renderFinances } from './views/financialView.js?v=6.3';
+import { renderExpenses } from './views/expensesView.js?v=6.3';
+import { renderSettings } from './views/settingsView.js?v=6.3';
+import { renderBackup } from './views/backupView.js?v=6.3';
+import { isPro, openUpgradeModal, openAdminGeneratorModal, MAX_FREE_ROOMS } from './utils/license.js?v=6.3';
+import { initAppLock, lockApp } from './utils/appLock.js?v=6.3';
+import { initOnboarding } from './utils/onboarding.js?v=6.3';
 
 class JuragankosanApp {
   constructor() {
