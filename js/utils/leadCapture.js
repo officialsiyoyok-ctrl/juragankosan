@@ -6,8 +6,8 @@
 import { store } from '../state.js?v=2.5';
 
 export const LEAD_CAPTURE_CONFIG = {
-  // Masukkan URL Deployment Google Apps Script Anda di sini, atau atur di halaman Pengaturan Kos.
-  defaultWebhookUrl: '',
+  // URL Deployment Google Apps Script resmi pemilik Juragankosan
+  defaultWebhookUrl: 'https://script.google.com/macros/s/AKfycbwUiiDN_-vQL-tqPrESkEYEBYkheo2Etm5N8J1ROVqUUiC-DVvUE1v_tqMtHSHz14hjsA/exec',
   storageKey: 'juragankos_google_sheet_webhook'
 };
 
