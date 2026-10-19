@@ -328,11 +328,11 @@ export function renderSettings(container) {
                 >${escapeHtml(settings.waTemplate || DEFAULT_WA_TEMPLATE)}</textarea>
               </div>
 
-              <div class="flex-between">
+              <div class="settings-card-actions">
                 <button type="button" class="btn btn-ghost btn-sm text-secondary" id="btn-reset-wa-template">
                   Kembalikan Template Bawaan
                 </button>
-                <button type="submit" class="btn btn-primary">Simpan Template WA</button>
+                <button type="submit" class="btn btn-primary btn-sm">Simpan Template WA</button>
               </div>
             </form>
           </div>
@@ -362,7 +362,7 @@ export function renderSettings(container) {
                     <input 
                       type="password" 
                       id="set-pin-old" 
-                      class="form-control font-mono text-center input-pin-numeric" 
+                      class="form-control text-center input-pin-numeric" 
                       placeholder="Masukkan PIN saat ini (Standar: 1234)" 
                       maxlength="6" 
                       inputmode="numeric" 
@@ -379,8 +379,8 @@ export function renderSettings(container) {
                       <input 
                         type="password" 
                         id="set-pin-new" 
-                        class="form-control font-mono text-center input-pin-numeric" 
-                        placeholder="4-6 digit angka" 
+                        class="form-control text-center input-pin-numeric" 
+                        placeholder="Ketik 4-6 digit angka baru" 
                         maxlength="6" 
                         inputmode="numeric" 
                         required 
@@ -394,8 +394,8 @@ export function renderSettings(container) {
                       <input 
                         type="password" 
                         id="set-pin-confirm" 
-                        class="form-control font-mono text-center input-pin-numeric" 
-                        placeholder="Ulangi PIN baru" 
+                        class="form-control text-center input-pin-numeric" 
+                        placeholder="Ketik ulang PIN baru Anda" 
                         maxlength="6" 
                         inputmode="numeric" 
                         required 
@@ -410,11 +410,11 @@ export function renderSettings(container) {
                 💡 PIN standar bawaan aplikasi adalah <strong>1234</strong>. Masukkan PIN lama untuk mengubahnya menjadi PIN kustom pilihan Anda.
               </div>
 
-              <div class="flex-between align-center">
-                <button type="button" class="btn btn-outline btn-sm" id="btn-settings-lock-now">
+              <div class="settings-card-actions">
+                <button type="button" class="btn btn-outline btn-sm text-secondary" id="btn-settings-lock-now">
                   🔒 Kunci Aplikasi Sekarang
                 </button>
-                <button type="submit" class="btn btn-primary" id="btn-save-security-pin">
+                <button type="submit" class="btn btn-primary btn-sm" id="btn-save-security-pin">
                   🔐 Simpan PIN Keamanan
                 </button>
               </div>
