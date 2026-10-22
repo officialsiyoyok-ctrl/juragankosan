@@ -3,6 +3,8 @@
  */
 import { generateId, getCurrentYearMonth, getTodayDateString, cleanWhatsAppNumber, addMonthsToPeriod } from './utils/formatter.js?v=2.5';
 import { DEFAULT_WA_TEMPLATE } from './utils/whatsapp.js?v=3.3';
+import { saveLocalSnapshot } from './utils/autoBackup.js?v=6.3';
+import { queueCloudSync } from './utils/cloudBackup.js?v=6.3';
 
 const STORAGE_KEY = 'juragankos_data_v1';
 
@@ -594,6 +596,17 @@ class Store {
   save() {
     this.saveDataDirect(this.data);
     this.notify();
+
+    try {
+      if (this.data && Array.isArray(this.data.rooms)) {
+        // Simpan snapshot cadangan lokal otomatis ke IndexedDB (7 hari bergulir)
+        saveLocalSnapshot(this.data, 'auto_mutation');
+        // Antrekan sinkronisasi otomatis ke Cloud Safety Vault (di belakang layar)
+        queueCloudSync(this.data, 4000);
+      }
+    } catch (e) {
+      console.warn('Auto-backup trigger warning:', e);
+    }
   }
 
   subscribe(listener) {
@@ -755,12 +768,16 @@ class Store {
 
     this.data.tenants.push(newTenant);
 
-    // Auto-generate bill untuk bulan masuk (atau bulan berjalan jika >= bulan masuk)
+    // Auto-generate bill untuk bulan pertama masuk & bulan berjalan aktif
     const currentYM = getCurrentYearMonth();
     const rawCheckIn = newTenant.checkInDate || '';
     const checkInYM = rawCheckIn ? String(rawCheckIn).trim().substring(0, 7) : '';
-    const targetYM = (checkInYM && checkInYM > currentYM) ? checkInYM : currentYM;
-    this.ensureBillForTenant(newTenant, room, targetYM);
+    if (checkInYM) {
+      this.ensureBillForTenant(newTenant, room, checkInYM);
+    }
+    if (currentYM && (!checkInYM || currentYM > checkInYM)) {
+      this.ensureBillForTenant(newTenant, room, currentYM);
+    }
 
     this.save();
     return newTenant;

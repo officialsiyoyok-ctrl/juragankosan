@@ -130,7 +130,7 @@ export function renderBills(container, options = {}) {
         <div class="summary-sub">Uang masuk diterima</div>
       </div>
       <div class="bills-summary-card border-left-amber">
-        <span class="summary-label text-amber">Belum Lunas (${unpaidBills.length})</span>
+        <span class="summary-label text-amber">Belum Lunas (${pendingBills.length})</span>
         <div class="summary-value text-amber">${formatRupiah(totalUnpaidNominal)}</div>
         <div class="summary-sub">Menunggu pembayaran sewa</div>
       </div>

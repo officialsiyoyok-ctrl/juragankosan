@@ -3,6 +3,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/app/api/:match*",
+      "destination": "/api/:match*"
+    },
+    {
       "source": "/app",
       "destination": "/app/index.html"
     },

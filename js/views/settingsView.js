@@ -82,6 +82,7 @@ export function renderSettings(container) {
                     value="${escapeHtml(settings.ownerPhone || '')}" 
                     placeholder="Contoh: 081234567890" 
                   />
+                  <div class="text-xs text-muted mt-1">☁️ Kunci identitas pencadangan otomatis &amp; pemulihan jika ganti HP.</div>
                 </div>
               </div>
 

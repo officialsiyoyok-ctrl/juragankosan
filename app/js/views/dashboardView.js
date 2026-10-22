@@ -7,7 +7,8 @@ import {
   formatDateIndo,
   getCurrentYearMonth,
   calculateDaysDiffFromToday,
-  escapeHtml
+  escapeHtml,
+  formatDisplayPhone
 } from '../utils/formatter.js?v=2.5';
 import { generateBillWhatsAppText, generateWhatsAppMessage, openWhatsAppLink, DEFAULT_PARTIAL_REMINDER_WA_TEMPLATE } from '../utils/whatsapp.js?v=3.3';
 import { openModal } from '../utils/modal.js?v=2.5';
@@ -257,7 +258,7 @@ export function renderDashboard(container) {
                       <td>
                         <div class="tenant-name-cell">
                           <span class="tenant-name">${escapeHtml(bill.tenantName)}</span>
-                          <span class="tenant-phone-sub">${bill.tenantPhone}</span>
+                          <span class="tenant-phone-sub">${formatDisplayPhone(bill.tenantPhone)}</span>
                         </div>
                       </td>
                       <td>

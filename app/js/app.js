@@ -2,7 +2,7 @@
  * Juragankosan Main Application Orchestrator
  */
 import { store } from './state.js?v=6.3';
-import { initModalListeners, openModal, closeModal, showToast, bindCustomPicker } from './utils/modal.js?v=6.3';
+import { initModalListeners, openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from './utils/modal.js?v=6.3';
 import {
   formatRupiah,
   formatDateIndo,
@@ -33,6 +33,8 @@ import { renderBackup } from './views/backupView.js?v=6.3';
 import { isPro, openUpgradeModal, openAdminGeneratorModal, MAX_FREE_ROOMS } from './utils/license.js?v=6.3';
 import { initAppLock, lockApp } from './utils/appLock.js?v=6.3';
 import { initOnboarding } from './utils/onboarding.js?v=6.3';
+import { requestPersistentStorage, checkEmergencyRecovery } from './utils/autoBackup.js?v=6.3';
+import { queueCloudSync } from './utils/cloudBackup.js?v=6.3';
 
 class JuragankosanApp {
   constructor() {
@@ -127,6 +129,46 @@ class JuragankosanApp {
     const startTab = this.currentTab || 'dashboard';
     this.switchTab(startTab);
     this.updateBadges();
+
+    // 1. Inisialisasi proteksi memori browser (Anti-Hapus Storage saat memori HP penuh)
+    try {
+      requestPersistentStorage().then((res) => {
+        if (res.granted) {
+          console.log('Juragankosan Persistent Storage aktif.');
+        }
+      });
+    } catch (e) {}
+
+    // 2. Cek Pemulihan Darurat jika data kosong tetapi ada snapshot lokal yang selamat di IndexedDB
+    try {
+      setTimeout(async () => {
+        const recoveryData = await checkEmergencyRecovery(store.data);
+        if (recoveryData && recoveryData.data) {
+          const confirmed = await showConfirmModal({
+            title: '🛡️ Pemulihan Darurat Terdeteksi!',
+            message: `Sistem mendeteksi salinan cadangan lokal terakhir Anda dari tanggal ${recoveryData.dateString} (${recoveryData.summary.roomsCount} Kamar, ${recoveryData.summary.tenantsCount} Penyewa).\n\nApakah Anda ingin memulihkan seluruh data kos tersebut ke aplikasi sekarang?`,
+            confirmText: 'Ya, Pulihkan Sekarang',
+            cancelText: 'Batal',
+            danger: false
+          });
+          if (confirmed) {
+            store.data = recoveryData.data;
+            store.save();
+            showToast('🎉 Data kos Anda berhasil diselamatkan dari cadangan lokal!', 'success');
+            this.switchTab(this.currentTab);
+          }
+        }
+      }, 1500);
+    } catch (e) {
+      console.warn('Emergency recovery check error:', e);
+    }
+
+    // 3. Antrekan sinkronisasi awal ke Cloud Safety Vault di balik layar (jika online & No. WA terisi)
+    try {
+      setTimeout(() => {
+        queueCloudSync(store.data, 2000);
+      }, 6000);
+    } catch (e) {}
   }
 
   setupTheme() {

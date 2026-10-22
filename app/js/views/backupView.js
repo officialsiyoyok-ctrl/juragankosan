@@ -1,34 +1,185 @@
 /**
  * Juragankosan Backup, Restore & Data Security View (Tab 7: Pusat Backup & Data)
+ * 
+ * Fitur Komprehensif:
+ * 1. Cloud Safety Vault (Pencadangan Otomatis di Balik Layar via No. WhatsApp)
+ * 2. Proteksi Memori HP (Persistent Storage Anti-Hapus Browser)
+ * 3. Riwayat Snapshot Darurat Lokal (7 Hari Terakhir di IndexedDB)
+ * 4. Download & Import File JSON Manual (Fitur PRO)
+ * 5. Zona Bahaya (Reset Database dengan Proteksi PIN)
  */
 import { store } from '../state.js?v=2.5';
 import { showToast, showConfirmModal, openModal, closeModal } from '../utils/modal.js?v=2.5';
 import { isPro, openUpgradeModal } from '../utils/license.js?v=4.1';
+import { getCloudSyncMeta, syncToCloudVault, fetchCloudBackup } from '../utils/cloudBackup.js?v=6.3';
+import { checkStoragePersistence, getLocalSnapshots, getSnapshotById } from '../utils/autoBackup.js?v=6.3';
+import { formatDateIndo, formatDisplayPhone, escapeHtml } from '../utils/formatter.js?v=2.5';
 
-export function renderBackup(container) {
+export async function renderBackup(container) {
   const isProUser = isPro();
   const rooms = store.getRooms();
   const tenants = store.getTenants();
   const bills = store.getBills();
   const expenses = store.getExpenses();
   const incomes = store.getIncomes ? store.getIncomes() : [];
+  const settings = store.getSettings();
+
+  const cloudMeta = getCloudSyncMeta();
+  let isPersisted = false;
+  let snapshots = [];
+
+  try {
+    isPersisted = await checkStoragePersistence();
+    snapshots = await getLocalSnapshots();
+  } catch (e) {
+    console.warn('Backup view async load error:', e);
+  }
+
+  const hasPhone = Boolean(settings.ownerPhone && settings.ownerPhone.trim().length >= 9);
+  let cloudBadgeHtml = '';
+  let lastSyncText = 'Belum pernah disinkronkan';
+
+  if (cloudMeta && cloudMeta.status === 'synced' && cloudMeta.lastSyncedAt) {
+    cloudBadgeHtml = '<span class="badge badge-emerald font-bold text-xs">✓ OTOMATIS AKTIF</span>';
+    const datePart = cloudMeta.lastSyncedAt.split('T')[0];
+    const timePart = cloudMeta.lastSyncedAt.split('T')[1]?.substring(0, 5) || '';
+    lastSyncText = `${formatDateIndo(datePart)} jam ${timePart} WIB`;
+  } else if (hasPhone) {
+    cloudBadgeHtml = '<span class="badge badge-blue font-bold text-xs">🔄 SIAP TERSINKRON</span>';
+    lastSyncText = 'Siap dicadangkan (tersambung dengan No. WhatsApp Anda)';
+  } else {
+    cloudBadgeHtml = '<span class="badge badge-warning font-bold text-xs">⚠️ BUTUH NO. WHATSAPP</span>';
+    lastSyncText = 'Isi No. WhatsApp Pengelola di Pengaturan agar brankas cloud aktif';
+  }
 
   container.innerHTML = `
     <div class="backup-view-container">
       <div class="view-header">
         <div class="view-header-title">
           <h1 class="page-title">Pusat Backup &amp; Keamanan Data</h1>
-          <p class="page-subtitle">Kelola file cadangan JSON, pulihkan data, atau reset database kos Anda dengan aman &amp; 100% offline</p>
+          <p class="page-subtitle">Pencadangan otomatis di balik layar, proteksi anti-hapus memori HP, dan pemulihan arsip mandiri</p>
         </div>
       </div>
 
       <div class="backup-grid-2col">
         <!-- KOLOM KIRI: PANEL AKSI UTAMA (INTERAKTIF) -->
         <div class="backup-col-actions">
-          
-          <!-- BAGIAN 1: PENCADANGAN DATA (EXPORT) -->
+
+          <!-- BAGIAN 1: SISTEM PENGAMAN OTOMATIS (CLOUD & ANTI-HAPUS BROWSER) -->
           <div class="backup-section-header">
-            <span class="backup-section-tag tag-emerald">BAGIAN 1: PENCADANGAN DATA (EXPORT)</span>
+            <span class="backup-section-tag tag-indigo">BAGIAN 1: SISTEM PENGAMAN OTOMATIS (ANTI-HILANG DATA)</span>
+          </div>
+
+          <!-- CARD 1.1: CLOUD SAFETY VAULT -->
+          <div class="settings-card backup-action-card card-accent-indigo">
+            <div class="settings-card-header">
+              <div class="settings-icon bg-indigo-subtle text-indigo" style="font-size:1.5rem;">☁️</div>
+              <div class="flex-1">
+                <div class="flex-between align-center gap-2">
+                  <h3 class="settings-card-title">Brankas Cadangan Cloud di Balik Layar</h3>
+                  ${cloudBadgeHtml}
+                </div>
+                <p class="settings-card-desc mt-1">
+                  Sistem otomatis mencadangkan data kos Anda secara berkala di latar belakang menggunakan identitas No. WhatsApp Anda. Ganti HP baru atau cache terhapus? Data tetap selamat!
+                </p>
+              </div>
+            </div>
+
+            <div class="cloud-vault-status-box mb-3">
+              <div class="cloud-meta-row">
+                <span class="cloud-meta-label">📱 No. WhatsApp Identitas:</span>
+                <span class="cloud-meta-val">
+                  ${hasPhone ? formatDisplayPhone(settings.ownerPhone) : '<span class="text-warning">Belum diisi di Pengaturan</span>'}
+                </span>
+              </div>
+              <div class="cloud-meta-row">
+                <span class="cloud-meta-label">🔑 Kunci PIN Pemulihan:</span>
+                <span class="cloud-meta-val font-mono">PIN Keamanan Anda (${settings.securityPin || '1234'})</span>
+              </div>
+              <div class="cloud-meta-row">
+                <span class="cloud-meta-label">⏰ Terakhir Dicadangkan:</span>
+                <span class="cloud-meta-val text-xs">${lastSyncText}</span>
+              </div>
+              <div class="cloud-meta-row">
+                <span class="cloud-meta-label">📊 Status Data:</span>
+                <span class="cloud-meta-val text-xs text-emerald font-bold">
+                  🏠 ${rooms.length} Kamar • 👥 ${tenants.length} Penyewa • 🧾 ${bills.length} Tagihan
+                </span>
+              </div>
+            </div>
+
+            <div class="flex-between gap-2">
+              <button type="button" class="btn btn-primary flex-1 btn-cloud-sync-now" id="btn-cloud-sync-now">
+                <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                </svg>
+                <span>☁️ Cadangkan ke Cloud Sekarang</span>
+              </button>
+              <button type="button" class="btn btn-outline flex-1 btn-cloud-restore-action" id="btn-open-cloud-restore">
+                <span>📥 Pulihkan dari Cloud (via No. WA)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- CARD 1.2: PROTEKSI MEMORI HP (ANTI-EVICTION) -->
+          <div class="settings-card backup-action-card card-accent-emerald">
+            <div class="settings-card-header">
+              <div class="settings-icon bg-emerald-subtle text-emerald" style="font-size:1.4rem;">🛡️</div>
+              <div class="flex-1">
+                <div class="flex-between align-center gap-2">
+                  <h3 class="settings-card-title">Proteksi Memori HP (Anti-Hapus Browser)</h3>
+                  <span class="badge ${isPersisted ? 'badge-emerald font-bold text-xs' : 'badge-blue font-bold text-xs'}">
+                    ${isPersisted ? '✓ PROTEKSI PERMANEN AKTIF' : '✓ PERLINDUNGAN AKTIF'}
+                  </span>
+                </div>
+                <p class="settings-card-desc mt-1">
+                  Peramban (Chrome / Safari) telah mengamankan database Juragankosan agar <strong>tidak pernah dihapus otomatis</strong> saat sistem HP Anda kehabisan memori atau melakukan pembersihan file sampah.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 1.3: RIWAYAT SNAPSHOT DARURAT LOKAL (7 HARI TERAKHIR) -->
+          <div class="settings-card backup-action-card card-accent-blue snapshot-history-card">
+            <div class="settings-card-header">
+              <div class="settings-icon bg-blue-subtle text-blue" style="font-size:1.4rem;">💾</div>
+              <div class="flex-1">
+                <div class="flex-between align-center gap-2">
+                  <h3 class="settings-card-title">Riwayat Snapshot Darurat Lokal (7 Terakhir)</h3>
+                  <span class="badge badge-gray font-bold text-xs">${snapshots.length} Arsip Tersedia</span>
+                </div>
+                <p class="settings-card-desc mt-1">
+                  Jika terjadi kesalahan input atau data tidak sengaja terhapus, Anda bisa langsung mengembalikan catatan kos ke salah satu snapshot tanggal sebelumnya di bawah ini:
+                </p>
+              </div>
+            </div>
+
+            <div class="snapshot-list-container mt-2">
+              ${snapshots.length > 0 ? snapshots.slice(0, 5).map((s) => `
+                <div class="snapshot-item">
+                  <div>
+                    <div class="snapshot-info-title">
+                      📌 ${formatDateIndo(s.dateString)} <span class="text-xs font-mono text-muted">(${s.timeString})</span>
+                    </div>
+                    <div class="snapshot-info-meta mt-0.5">
+                      🏠 ${s.summary?.roomsCount || 0} Kamar • 👥 ${s.summary?.tenantsCount || 0} Penyewa • 🧾 ${s.summary?.billsCount || 0} Tagihan
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-outline btn-xs btn-restore-local-snap" data-snap-id="${s.id}">
+                    ↩️ Pulihkan
+                  </button>
+                </div>
+              `).join('') : `
+                <div class="text-xs text-muted p-2 text-center bg-surface-subtle border-radius-md">
+                  Snapshot lokal otomatis dibuat dan diperbarui setiap kali Anda mencatat data kos.
+                </div>
+              `}
+            </div>
+          </div>
+
+          <!-- BAGIAN 2: PENCADANGAN DATA MANUAL (EXPORT JSON) -->
+          <div class="backup-section-header mt-2">
+            <span class="backup-section-tag tag-emerald">BAGIAN 2: PENCADANGAN MANUAL (DOWNLOAD JSON)</span>
           </div>
           <div class="settings-card backup-action-card card-accent-emerald">
             <div class="settings-card-header">
@@ -41,7 +192,7 @@ export function renderBackup(container) {
                   </span>
                 </div>
                 <p class="settings-card-desc mt-1">
-                  Download seluruh database kos (kamar, penyewa, tagihan sewa, dan pengeluaran) ke dalam satu file arsip cadangan <code>.json</code>.
+                  Download seluruh database kos (kamar, penyewa, tagihan sewa, dan pengeluaran) ke dalam satu file arsip cadangan <code>.json</code> untuk disimpan di laptop atau Google Drive.
                 </p>
               </div>
             </div>
@@ -82,15 +233,15 @@ export function renderBackup(container) {
             `}
           </div>
 
-          <!-- BAGIAN 2: PEMULIHAN DATA (RESTORE) -->
+          <!-- BAGIAN 3: PEMULIHAN DATA MANUAL (RESTORE JSON) -->
           <div class="backup-section-header">
-            <span class="backup-section-tag tag-blue">BAGIAN 2: PEMULIHAN DATA (RESTORE)</span>
+            <span class="backup-section-tag tag-blue">BAGIAN 3: PEMULIHAN DATA MANUAL (RESTORE)</span>
           </div>
           <div class="settings-card backup-action-card card-accent-blue">
             <div class="settings-card-header">
               <div class="settings-icon bg-blue-subtle text-blue">📂</div>
               <div>
-                <h3 class="settings-card-title">Import &amp; Pulihkan Data</h3>
+                <h3 class="settings-card-title">Import &amp; Pulihkan File Cadangan</h3>
                 <p class="settings-card-desc">
                   Pulihkan data kos Anda dari file arsip cadangan <code>.json</code> yang pernah didownload sebelumnya (misal dari HP lama atau backup minggu lalu).
                 </p>
@@ -112,9 +263,9 @@ export function renderBackup(container) {
             </label>
           </div>
 
-          <!-- BAGIAN 3: ALAT BANTU SIMULASI -->
+          <!-- BAGIAN 4: ALAT BANTU SIMULASI -->
           <div class="backup-section-header">
-            <span class="backup-section-tag tag-gray">BAGIAN 3: ALAT BANTU SIMULASI</span>
+            <span class="backup-section-tag tag-gray">BAGIAN 4: ALAT BANTU SIMULASI</span>
           </div>
           <div class="settings-card backup-action-card card-accent-gray">
             <div class="settings-card-header">
@@ -132,9 +283,9 @@ export function renderBackup(container) {
             </button>
           </div>
 
-          <!-- BAGIAN 4: ZONA BAHAYA (RESET DATABASE) -->
+          <!-- BAGIAN 5: ZONA BAHAYA (RESET DATABASE) -->
           <div class="backup-section-header mt-3">
-            <span class="backup-section-tag tag-danger">BAGIAN 4: ZONA BAHAYA (RESET DATABASE)</span>
+            <span class="backup-section-tag tag-danger">BAGIAN 5: ZONA BAHAYA (RESET DATABASE)</span>
           </div>
           <div class="settings-card backup-action-card border-danger-subtle card-danger-zone card-accent-red">
             <div class="settings-card-header">
@@ -181,85 +332,101 @@ export function renderBackup(container) {
 
         </div>
 
-        <!-- KOLOM KANAN: PANDUAN, MANFAAT & HIMBAUAN RUTIN (EDUKASI PENGGUNA) -->
+        <!-- KOLOM KANAN: PANDUAN & SKENARIO PENYELAMATAN (EDUKASI PENGGUNA) -->
         <div class="backup-col-guide">
           
-          <!-- 1. Kenapa Data Anda Sangat Aman? -->
+          <!-- 1. Sistem Triple-Protection Juragankosan -->
           <div class="settings-card guide-card">
             <div class="guide-card-header">
               <span class="guide-badge-icon">🛡️</span>
-              <h3 class="guide-title">Kenapa Data Anda Sangat Aman?</h3>
+              <h3 class="guide-title">Sistem Triple-Protection Juragankosan</h3>
             </div>
             <p class="guide-desc">
-              Semua data operasional kos, identitas penyewa, dan catatan keuangan tersimpan aman secara <strong>100% offline</strong> di dalam memori peramban (browser) perangkat Anda menggunakan teknologi <em>Modern LocalStorage</em>.
+              Kami merancang arsitektur 3 lapis perlindungan data agar pemilik kos terhindar dari mimpi buruk kehilangan catatan sewa:
             </p>
             <div class="guide-highlight-box">
               <div class="highlight-item">
-                <span class="item-check">✓</span>
-                <span><strong>Tanpa Server Luar:</strong> Tidak ada data privasi Anda yang dikirim atau dijual ke server pihak ketiga manapun.</span>
+                <span class="item-check">1</span>
+                <div>
+                  <strong>Local-First (HP Anda):</strong>
+                  <p class="text-xs text-secondary mb-0">Buka instan tanpa lag dan bisa digunakan 100% tanpa internet.</p>
+                </div>
               </div>
               <div class="highlight-item">
-                <span class="item-check">✓</span>
-                <span><strong>Bisa Diakses Tanpa Internet:</strong> Anda tetap bisa mencatat tagihan dan cetak kwitansi di saat kuota internet habis.</span>
+                <span class="item-check">2</span>
+                <div>
+                  <strong>Anti-Hapus Storage:</strong>
+                  <p class="text-xs text-secondary mb-0">Browser dikunci agar memori kosan tidak terhapus saat pembersihan sampah HP.</p>
+                </div>
+              </div>
+              <div class="highlight-item">
+                <span class="item-check">3</span>
+                <div>
+                  <strong>Cloud Safety Vault (Di Balik Layar):</strong>
+                  <p class="text-xs text-secondary mb-0">Cadangan tersimpan otomatis ke Cloud Vault menggunakan identitas No. WhatsApp Anda.</p>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- 2. Manfaat Rutin Melakukan Backup JSON -->
+          <!-- 2. Skenario Penyelamatan Saat Ganti HP Baru -->
           <div class="settings-card guide-card">
             <div class="guide-card-header">
-              <span class="guide-badge-icon">💡</span>
-              <h3 class="guide-title">Manfaat Rutin Melakukan Backup JSON</h3>
+              <span class="guide-badge-icon">📲</span>
+              <h3 class="guide-title">Skenario Penyelamatan Saat Ganti HP Baru</h3>
             </div>
+            <p class="guide-desc">
+              Jika Anda baru membeli HP baru atau HP lama diservis/rusak:
+            </p>
             <ul class="guide-benefits-list">
               <li>
-                <div class="benefit-bullet">📲</div>
+                <div class="benefit-bullet">1️⃣</div>
                 <div>
-                  <strong>Pindah Perangkat Sangat Mudah (5 Detik)</strong>
-                  <p>Mau ganti dari HP Android ke iPhone, atau ingin kelola kos lewat Laptop? Cukup download backup di HP lama dan upload di Laptop/HP baru.</p>
+                  <strong>Buka Juragankosan di HP Baru</strong>
+                  <p>Buka alamat <code>app.juragankosan.id</code> di Chrome / Safari HP baru Anda.</p>
                 </div>
               </li>
               <li>
-                <div class="benefit-bullet">🛡️</div>
+                <div class="benefit-bullet">2️⃣</div>
                 <div>
-                  <strong>Antisipasi HP Hilang, Rusak &amp; Bersih-bersih Cache</strong>
-                  <p>Jika HP terkena reset pabrik atau dibersihkan oleh aplikasi cleaner, data kos Anda tetap 100% selamat selama Anda memiliki salinan file <code>.json</code>.</p>
+                  <strong>Klik Tombol "Pulihkan dari Cloud"</strong>
+                  <p>Di halaman Backup &amp; Data, klik tombol biru <em>Pulihkan dari Cloud (via No. WA)</em>.</p>
                 </div>
               </li>
               <li>
-                <div class="benefit-bullet">💼</div>
+                <div class="benefit-bullet">3️⃣</div>
                 <div>
-                  <strong>Bebas Ketergantungan Selamanya</strong>
-                  <p>Arsip file JSON adalah format standar internasional. Data pembukuan kos Anda adalah milik Anda seutuhnya tanpa biaya sewa cloud bulanan.</p>
+                  <strong>Ketik No. WhatsApp &amp; PIN Keamanan</strong>
+                  <p>Sistem akan langsung memuat seluruh kamar, nama penyewa, dan riwayat tagihan Anda dalam 3 detik!</p>
                 </div>
               </li>
             </ul>
           </div>
 
-          <!-- 3. Himbauan Rutin (Best Practice Juragankosan) -->
+          <!-- 3. Himbauan Rutin & Bantuan Admin -->
           <div class="settings-card guide-card routine-callout-card">
             <div class="guide-card-header">
-              <span class="guide-badge-icon">⏰</span>
-              <h3 class="guide-title text-amber">Himbauan Rutin (Best Practice)</h3>
+              <span class="guide-badge-icon">💬</span>
+              <h3 class="guide-title text-amber">Butuh Bantuan Pemulihan?</h3>
             </div>
             <div class="routine-quote-box">
               <p class="routine-quote-text">
-                &ldquo;Kami sangat menghimbau Anda untuk mengklik tombol <strong>Download Arsip Backup JSON</strong> <strong>minimal 1 minggu sekali</strong> (misalnya setiap Hari Minggu malam) dan simpan file cadangannya di WhatsApp atau Google Drive pribadi Anda!&rdquo;
+                &ldquo;Jika Anda mengalami kendala teknis atau tidak sengaja menghapus data, tim Admin WhatsApp kami siap membantu memulihkan arsip data kos Anda kapan saja.&rdquo;
               </p>
             </div>
             <div class="storage-tips-grid mt-3">
               <div class="storage-tip-box">
-                <span class="tip-icon">💬</span>
+                <span class="tip-icon">📥</span>
                 <div>
-                  <strong>Kirim ke WhatsApp Pribadi</strong>
-                  <p class="text-xs text-muted mb-0">Kirim file backup ke chat 'Pesan ke Diri Sendiri' di WA agar mudah dicari kapan saja.</p>
+                  <strong>Download Backup JSON Berkala</strong>
+                  <p class="text-xs text-muted mb-0">Simpan salinan JSON di WhatsApp 'Pesan ke Diri Sendiri' setiap akhir bulan.</p>
                 </div>
               </div>
               <div class="storage-tip-box">
-                <span class="tip-icon">☁️</span>
+                <span class="tip-icon">👑</span>
                 <div>
-                  <strong>Simpan di Google Drive</strong>
-                  <p class="text-xs text-muted mb-0">Buat folder 'Backup Juragankosan' di Google Drive untuk arsip jangka panjang yang aman.</p>
+                  <strong>Layanan Prioritas PRO</strong>
+                  <p class="text-xs text-muted mb-0">Pengguna PRO mendapatkan prioritas pemulihan data 1-on-1 via WhatsApp Admin.</p>
                 </div>
               </div>
             </div>
@@ -268,7 +435,75 @@ export function renderBackup(container) {
         </div>
       </div>
 
-      <!-- Modal Proteksi PIN Reset Semua Data (Zona Bahaya) -->
+      <!-- MODAL 1: PULIHKAN DARI CLOUD VAULT (VIA NO WHATSAPP & PIN) -->
+      <div class="modal-backdrop" id="modal-cloud-restore">
+        <div class="modal-dialog modal-md">
+          <div class="modal-header border-bottom-indigo">
+            <div class="flex-center gap-2">
+              <span class="text-indigo font-bold text-lg">☁️</span>
+              <h3 class="modal-title">Pulihkan Data dari Cloud Safety Vault</h3>
+            </div>
+            <button type="button" class="modal-close" data-close-modal="modal-cloud-restore">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="p-3 bg-indigo-subtle border-radius-md mb-3">
+              <p class="text-xs text-secondary mb-0">
+                Masukkan <strong>Nomor WhatsApp Pengelola</strong> yang pernah terdaftar dan <strong>PIN Keamanan</strong> untuk mencari arsip cadangan kos Anda di cloud.
+              </p>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="input-cloud-restore-phone" class="form-label font-bold">
+                Nomor WhatsApp Pengelola <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="tel" 
+                id="input-cloud-restore-phone" 
+                class="form-control" 
+                placeholder="Contoh: 081234567890" 
+                value="${escapeHtml(settings.ownerPhone || '')}"
+              />
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="input-cloud-restore-pin" class="form-label font-bold">
+                PIN Keamanan (Standar: 1234) <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="password" 
+                id="input-cloud-restore-pin" 
+                class="form-control font-mono text-center" 
+                placeholder="••••" 
+                maxlength="6" 
+                value="${escapeHtml(settings.securityPin || '1234')}"
+              />
+            </div>
+
+            <button type="button" class="btn btn-outline w-full mb-3" id="btn-search-cloud-vault">
+              🔍 Cari Arsip Cadangan di Cloud
+            </button>
+
+            <!-- Box Hasil Pencarian (Muncul jika arsip ditemukan) -->
+            <div id="cloud-search-result-box" style="display:none;" class="p-3 bg-surface-subtle border-radius-md border mb-2">
+              <div class="text-xs font-bold text-emerald mb-1">✓ Arsip Cadangan Ditemukan!</div>
+              <div class="text-sm font-bold text-primary" id="cloud-res-kos-name">-</div>
+              <div class="text-xs text-secondary mt-1" id="cloud-res-summary">-</div>
+              <div class="text-xs text-muted mt-1" id="cloud-res-date">-</div>
+
+              <button type="button" class="btn btn-primary w-full mt-3" id="btn-execute-cloud-restore">
+                🎉 Ya, Pulihkan Data Kos Ini Sekarang
+              </button>
+            </div>
+
+            <div id="cloud-search-error-msg" class="text-xs text-danger text-center mt-2" style="display:none;"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-close-modal="modal-cloud-restore">Tutup</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL 2: PROTEKSI PIN RESET SEMUA DATA (ZONA BAHAYA) -->
       <div class="modal-backdrop" id="modal-reset-data-pin">
         <div class="modal-dialog modal-sm">
           <div class="modal-header border-bottom-danger">
@@ -322,7 +557,165 @@ export function renderBackup(container) {
 }
 
 function setupBackupEvents(container) {
-  // Download Backup JSON (PRO)
+  // 1. Sinkronisasi Manual ke Cloud Sekarang
+  const btnCloudSync = container.querySelector('#btn-cloud-sync-now');
+  if (btnCloudSync) {
+    btnCloudSync.addEventListener('click', async () => {
+      const origText = btnCloudSync.innerHTML;
+      btnCloudSync.innerHTML = '<span>⏳ Menyinkronkan...</span>';
+      btnCloudSync.disabled = true;
+
+      try {
+        const res = await syncToCloudVault(store.data, { force: true });
+        if (res.success) {
+          showToast('☁️ Data kos Anda berhasil dicadangkan ke Cloud Vault!', 'success');
+          renderBackup(container);
+        } else if (res.status === 'no_phone') {
+          showToast('⚠️ Mohon isi Nomor WhatsApp Pengelola di menu Pengaturan terlebih dahulu!', 'warning');
+        } else {
+          showToast(res.message || 'Gagal menyinkronkan ke cloud.', 'error');
+        }
+      } catch (err) {
+        showToast('Koneksi terputus. Pastikan perangkat Anda online.', 'error');
+      } finally {
+        btnCloudSync.innerHTML = origText;
+        btnCloudSync.disabled = false;
+      }
+    });
+  }
+
+  // 2. Buka Modal Pulihkan dari Cloud
+  const btnOpenRestore = container.querySelector('#btn-open-cloud-restore');
+  if (btnOpenRestore) {
+    btnOpenRestore.addEventListener('click', () => {
+      openModal('modal-cloud-restore');
+    });
+  }
+
+  // 3. Cari Arsip di Cloud Vault
+  const btnSearchVault = container.querySelector('#btn-search-cloud-vault');
+  const inputRestorePhone = container.querySelector('#input-cloud-restore-phone');
+  const inputRestorePin = container.querySelector('#input-cloud-restore-pin');
+  const resultBox = container.querySelector('#cloud-search-result-box');
+  const errorMsg = container.querySelector('#cloud-search-error-msg');
+  const resKosName = container.querySelector('#cloud-res-kos-name');
+  const resSummary = container.querySelector('#cloud-res-summary');
+  const resDate = container.querySelector('#cloud-res-date');
+  const btnExecuteRestore = container.querySelector('#btn-execute-cloud-restore');
+
+  let fetchedBackupData = null;
+
+  if (btnSearchVault && inputRestorePhone && inputRestorePin) {
+    btnSearchVault.addEventListener('click', async () => {
+      const phone = inputRestorePhone.value.trim();
+      const pin = inputRestorePin.value.trim();
+
+      if (!phone) {
+        showToast('Masukkan nomor WhatsApp pengelola!', 'warning');
+        return;
+      }
+
+      btnSearchVault.disabled = true;
+      btnSearchVault.textContent = '🔍 Mencari di Brankas Cloud...';
+      if (resultBox) resultBox.style.display = 'none';
+      if (errorMsg) errorMsg.style.display = 'none';
+
+      try {
+        const res = await fetchCloudBackup(phone, pin);
+        if (res.success && res.backup) {
+          fetchedBackupData = res.backup;
+          if (resKosName) resKosName.textContent = res.backup.settings?.kosName || 'Juragankosan';
+          if (resSummary) {
+            const rCount = res.backup.rooms?.length || 0;
+            const tCount = res.backup.tenants?.length || 0;
+            const bCount = res.backup.bills?.length || 0;
+            resSummary.textContent = `Arsip Terdeteksi: ${rCount} Kamar • ${tCount} Penyewa • ${bCount} Tagihan`;
+          }
+          if (resDate && res.updatedAt) {
+            resDate.textContent = `Waktu Pencadangan: ${new Date(res.updatedAt).toLocaleString('id-ID')}`;
+          }
+          if (resultBox) resultBox.style.display = 'block';
+        } else {
+          fetchedBackupData = null;
+          if (errorMsg) {
+            errorMsg.textContent = res.message || 'Data cadangan tidak ditemukan.';
+            errorMsg.style.display = 'block';
+          }
+        }
+      } catch (e) {
+        if (errorMsg) {
+          errorMsg.textContent = 'Gagal menghubungi server cloud. Periksa koneksi internet.';
+          errorMsg.style.display = 'block';
+        }
+      } finally {
+        btnSearchVault.disabled = false;
+        btnSearchVault.textContent = '🔍 Cari Arsip Cadangan di Cloud';
+      }
+    });
+  }
+
+  // 4. Eksekusi Pemulihan dari Cloud
+  if (btnExecuteRestore) {
+    btnExecuteRestore.addEventListener('click', async () => {
+      if (!fetchedBackupData) return;
+
+      const confirmed = await showConfirmModal({
+        title: 'Pulihkan Data Kos dari Cloud?',
+        message: 'Seluruh data di perangkat ini akan diperbarui mengikuti data cadangan cloud yang ditemukan. Lanjutkan pemulihan?',
+        confirmText: 'Ya, Pulihkan Sekarang',
+        danger: false
+      });
+
+      if (confirmed) {
+        const res = store.importDataJSON(JSON.stringify(fetchedBackupData));
+        if (res.success) {
+          showToast('🎉 Data kos berhasil dipulihkan dari Cloud Vault!', 'success');
+          closeModal('modal-cloud-restore');
+          renderBackup(container);
+          if (window.juraganApp) {
+            window.juraganApp.updateKosHeader();
+            window.juraganApp.updateBadges();
+          }
+        } else {
+          showToast('Gagal memproses data pemulihan: ' + res.message, 'error');
+        }
+      }
+    });
+  }
+
+  // 5. Pulihkan dari Snapshot Lokal Darurat
+  const restoreSnapBtns = container.querySelectorAll('.btn-restore-local-snap');
+  restoreSnapBtns.forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const snapId = btn.dataset.snapId;
+      if (!snapId) return;
+
+      const confirmed = await showConfirmModal({
+        title: 'Kembalikan ke Snapshot Ini?',
+        message: 'Data saat ini akan diganti dengan rekaman snapshot tanggal tersebut. Gunakan fitur ini jika Anda baru saja salah catat.',
+        confirmText: 'Ya, Pulihkan Snapshot',
+        danger: false
+      });
+
+      if (confirmed) {
+        const snap = await getSnapshotById(snapId);
+        if (snap && snap.data) {
+          store.data = snap.data;
+          store.save();
+          showToast('🎉 Data berhasil dikembalikan ke snapshot terpilih!', 'success');
+          renderBackup(container);
+          if (window.juraganApp) {
+            window.juraganApp.updateKosHeader();
+            window.juraganApp.updateBadges();
+          }
+        } else {
+          showToast('Gagal memuat snapshot lokal.', 'error');
+        }
+      }
+    });
+  });
+
+  // 6. Download Backup JSON (PRO)
   const btnDownload = container.querySelector('#btn-backup-download');
   if (btnDownload) {
     btnDownload.addEventListener('click', () => {
@@ -335,7 +728,7 @@ function setupBackupEvents(container) {
     });
   }
 
-  // Upgrade PRO Button (If Free)
+  // 7. Upgrade PRO Button (If Free)
   const btnUpgrade = container.querySelector('#btn-backup-upgrade');
   if (btnUpgrade) {
     btnUpgrade.addEventListener('click', () => {
@@ -343,7 +736,7 @@ function setupBackupEvents(container) {
     });
   }
 
-  // Import JSON File
+  // 8. Import JSON File
   const fileInput = container.querySelector('#backup-file-input');
   if (fileInput) {
     fileInput.addEventListener('change', (e) => {
@@ -369,7 +762,7 @@ function setupBackupEvents(container) {
     });
   }
 
-  // Reload Sample Demo Data
+  // 9. Reload Sample Demo Data
   const btnSample = container.querySelector('#btn-backup-sample');
   if (btnSample) {
     btnSample.addEventListener('click', async () => {
@@ -392,7 +785,7 @@ function setupBackupEvents(container) {
     });
   }
 
-  // Reset All Data (Zona Bahaya) - PIN Protected (In-Card & Modal)
+  // 10. Reset All Data (Zona Bahaya) - PIN Protected (In-Card & Modal)
   const inputCardResetPin = container.querySelector('#input-card-reset-pin');
   const btnToggleCardEye = container.querySelector('#btn-toggle-card-reset-eye');
   const cardStatusMsg = container.querySelector('#card-reset-pin-status-msg');
@@ -412,12 +805,11 @@ function setupBackupEvents(container) {
       sessionStorage.setItem('jk_reset_toast', 'Semua data kos berhasil dibersihkan.');
     } catch (e) {}
 
-    // Clean reload back to dashboard (0 Kamar, 0 Penyewa, 0 Tagihan)
     window.location.hash = 'dashboard';
     window.location.reload();
   };
 
-  // --- 1. In-Card PIN Handler ---
+  // In-Card PIN Handler
   if (btnToggleCardEye && inputCardResetPin) {
     btnToggleCardEye.addEventListener('click', () => {
       if (inputCardResetPin.type === 'password') {
@@ -448,13 +840,15 @@ function setupBackupEvents(container) {
       btnCardExecuteReset.disabled = true;
       btnCardExecuteReset.classList.remove('btn-danger-active-glow');
       inputCardResetPin.classList.remove('is-valid');
-      if (cardStatusMsg) {
-        if (pinVal.length >= 4) {
-          inputCardResetPin.classList.add('is-invalid');
-          cardStatusMsg.className = 'reset-pin-status-msg text-xs mt-1 text-danger font-semibold text-center';
-          cardStatusMsg.innerHTML = '⚠️ PIN salah! Tombol reset tetap terkunci.';
-        } else {
-          inputCardResetPin.classList.remove('is-invalid');
+      if (pinVal.length >= 4) {
+        inputCardResetPin.classList.add('is-invalid');
+        if (cardStatusMsg) {
+          cardStatusMsg.className = 'reset-pin-status-msg text-xs mt-1 text-danger font-medium text-center';
+          cardStatusMsg.innerHTML = '✕ PIN Salah! Pastikan PIN sesuai di menu Pengaturan.';
+        }
+      } else {
+        inputCardResetPin.classList.remove('is-invalid');
+        if (cardStatusMsg) {
           cardStatusMsg.className = 'reset-pin-status-msg text-xs mt-1 text-muted text-center';
           cardStatusMsg.innerHTML = 'Ketik PIN keamanan (standar: 1234) untuk mengaktifkan tombol.';
         }
@@ -464,39 +858,25 @@ function setupBackupEvents(container) {
 
   if (inputCardResetPin) {
     inputCardResetPin.addEventListener('input', validateCardResetPin);
-    inputCardResetPin.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const pinVal = inputCardResetPin.value.trim();
-        if (store.verifySecurityPin(pinVal)) {
-          triggerResetExecution();
-        } else {
-          inputCardResetPin.classList.remove('animate-shake');
-          void inputCardResetPin.offsetWidth;
-          inputCardResetPin.classList.add('animate-shake', 'is-invalid');
-          showToast('PIN Keamanan salah! Aksi dibatalkan demi keamanan data Anda.', 'error');
-        }
-      }
-    });
   }
 
   if (btnCardExecuteReset) {
     btnCardExecuteReset.addEventListener('click', () => {
-      const pinVal = inputCardResetPin ? inputCardResetPin.value.trim() : '';
-      if (!store.verifySecurityPin(pinVal)) {
-        if (inputCardResetPin) {
-          inputCardResetPin.classList.remove('animate-shake');
-          void inputCardResetPin.offsetWidth;
-          inputCardResetPin.classList.add('animate-shake', 'is-invalid');
+      if (btnCardExecuteReset.disabled) return;
+      openModal('modal-reset-data-pin');
+      if (inputResetPin) {
+        inputResetPin.value = '';
+        inputResetPin.classList.remove('is-valid', 'is-invalid');
+        if (statusMsg) {
+          statusMsg.className = 'reset-pin-status-msg text-xs mt-1 text-muted';
+          statusMsg.innerHTML = 'Ketik PIN keamanan Anda untuk mengonfirmasi reset.';
         }
-        showToast('PIN Keamanan salah! Aksi dibatalkan demi keamanan data Anda.', 'error');
-        return;
       }
-      triggerResetExecution();
+      if (btnExecuteReset) btnExecuteReset.disabled = true;
     });
   }
 
-  // --- 2. Modal PIN Handler ---
+  // Modal PIN Handler
   if (btnToggleEye && inputResetPin) {
     btnToggleEye.addEventListener('click', () => {
       if (inputResetPin.type === 'password') {
@@ -509,69 +889,42 @@ function setupBackupEvents(container) {
     });
   }
 
-  const triggerModalPinErrorFeedback = () => {
-    if (inputResetPin) {
-      inputResetPin.classList.remove('animate-shake');
-      void inputResetPin.offsetWidth;
-      inputResetPin.classList.add('animate-shake', 'is-invalid');
-    }
-    showToast('PIN Keamanan salah! Aksi dibatalkan demi keamanan data Anda.', 'error');
-  };
+  if (inputResetPin && btnExecuteReset) {
+    inputResetPin.addEventListener('input', () => {
+      const pinVal = inputResetPin.value.trim();
+      const isValid = store.verifySecurityPin(pinVal);
 
-  const validateModalResetPin = () => {
-    if (!inputResetPin || !btnExecuteReset) return;
-    const pinVal = inputResetPin.value.trim();
-    const isValid = store.verifySecurityPin(pinVal);
-
-    if (isValid) {
-      btnExecuteReset.disabled = false;
-      btnExecuteReset.classList.add('btn-danger-active-glow');
-      inputResetPin.classList.remove('is-invalid');
-      inputResetPin.classList.add('is-valid');
-      if (statusMsg) {
-        statusMsg.className = 'reset-pin-status-msg text-xs mt-1 text-emerald font-bold';
-        statusMsg.innerHTML = '✓ PIN Keamanan Cocok! Tombol eksekusi telah aktif.';
-      }
-    } else {
-      btnExecuteReset.disabled = true;
-      btnExecuteReset.classList.remove('btn-danger-active-glow');
-      inputResetPin.classList.remove('is-valid');
-      if (statusMsg) {
+      if (isValid) {
+        btnExecuteReset.disabled = false;
+        btnExecuteReset.classList.add('btn-danger-active-glow');
+        inputResetPin.classList.remove('is-invalid');
+        inputResetPin.classList.add('is-valid');
+        if (statusMsg) {
+          statusMsg.className = 'reset-pin-status-msg text-xs mt-1 text-emerald font-bold';
+          statusMsg.innerHTML = '✓ PIN Cocok! Klik tombol merah untuk melanjutkan.';
+        }
+      } else {
+        btnExecuteReset.disabled = true;
+        btnExecuteReset.classList.remove('btn-danger-active-glow');
+        inputResetPin.classList.remove('is-valid');
         if (pinVal.length >= 4) {
           inputResetPin.classList.add('is-invalid');
-          statusMsg.className = 'reset-pin-status-msg text-xs mt-1 text-danger';
-          statusMsg.innerHTML = '⚠️ PIN salah! Tombol eksekusi tetap terkunci.';
+          if (statusMsg) {
+            statusMsg.className = 'reset-pin-status-msg text-xs mt-1 text-danger font-medium';
+            statusMsg.innerHTML = '✕ PIN Salah! Mohon periksa kembali PIN Anda.';
+          }
         } else {
           inputResetPin.classList.remove('is-invalid');
-          statusMsg.className = 'reset-pin-status-msg text-xs mt-1 text-muted';
-          statusMsg.innerHTML = 'Ketik PIN keamanan dengan benar untuk membuka tombol eksekusi di bawah.';
-        }
-      }
-    }
-  };
-
-  if (inputResetPin) {
-    inputResetPin.addEventListener('input', validateModalResetPin);
-    inputResetPin.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const pinVal = inputResetPin.value.trim();
-        if (store.verifySecurityPin(pinVal)) {
-          triggerResetExecution();
-        } else {
-          triggerModalPinErrorFeedback();
+          if (statusMsg) {
+            statusMsg.className = 'reset-pin-status-msg text-xs mt-1 text-muted';
+            statusMsg.innerHTML = 'Ketik PIN keamanan dengan benar untuk membuka tombol eksekusi.';
+          }
         }
       }
     });
-  }
 
-  if (btnExecuteReset) {
     btnExecuteReset.addEventListener('click', () => {
-      const pinVal = inputResetPin ? inputResetPin.value.trim() : '';
-      if (!store.verifySecurityPin(pinVal)) {
-        triggerModalPinErrorFeedback();
-        return;
-      }
+      if (btnExecuteReset.disabled) return;
       triggerResetExecution();
     });
   }

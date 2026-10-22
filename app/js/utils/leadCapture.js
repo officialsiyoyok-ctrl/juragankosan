@@ -60,7 +60,7 @@ export async function sendLeadToGoogleSheet(leadData) {
     securityPin: leadData.securityPin || '1234',
     roomCount: leadData.roomCount || 0,
     source: leadData.source || 'Juragankosan Web App (Onboarding)',
-    appVersion: 'v5.2',
+    appVersion: 'v6.3',
     userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown'
   };
 

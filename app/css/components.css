@@ -5001,6 +5001,87 @@ select.form-control option:not([value=""]) {
 }
 
 /* ==========================================================================
+   Cloud Safety Vault & Local Snapshot Styles
+   ========================================================================== */
+.card-accent-indigo {
+  border-left: 4px solid #6366f1 !important;
+}
+
+.tag-indigo {
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.cloud-vault-status-box {
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.cloud-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.cloud-meta-row:last-child {
+  border-bottom: none;
+}
+
+.cloud-meta-label {
+  color: var(--text-secondary);
+}
+
+.cloud-meta-val {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.snapshot-history-card {
+  margin-top: 10px;
+}
+
+.snapshot-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  gap: 10px;
+}
+
+.snapshot-item:last-child {
+  margin-bottom: 0;
+}
+
+.snapshot-info-title {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.snapshot-info-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.btn-cloud-sync-now {
+  font-weight: 600;
+}
+
+.btn-cloud-restore-action {
+  font-weight: 600;
+}
+
+/* ==========================================================================
    Pusat Keuangan & Arus Kas Terpadu (Financial View)
    ========================================================================== */
 .finances-view-container {
