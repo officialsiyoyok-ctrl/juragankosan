@@ -824,6 +824,7 @@ export function openReceiptModal(billId, paymentResult = null) {
 
   // Print Receipt Event
   document.getElementById('btn-print-receipt').addEventListener('click', () => {
+    document.body.classList.add('has-active-receipt');
     window.print();
   });
 

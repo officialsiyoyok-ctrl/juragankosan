@@ -972,7 +972,7 @@ function renderReportSubTab({ selectedPeriodYM }) {
     </div>
 
     <!-- Signature Block for Printed Financial Statement -->
-    <div class="print-only mt-5" style="display: flex; justify-content: space-between; padding: 0 40px;">
+    <div class="print-only print-flex mt-5" style="display: flex; justify-content: space-between; padding: 0 40px;">
       <div style="text-align: center;">
         <p style="margin-bottom: 50px; font-size: 9pt;">Mengetahui,<br>Pengelola / Pemilik Kos</p>
         <p style="font-weight: bold; text-decoration: underline; font-size: 10pt; margin: 0;">${escapeHtml(settings.ownerName || 'Pengelola Kos')}</p>
@@ -1009,11 +1009,17 @@ function setupFinancialEventListeners(container) {
   // 3. Print Report
   const btnPrintTop = container.querySelector('#btn-print-financial-report');
   if (btnPrintTop) {
-    btnPrintTop.addEventListener('click', () => window.print());
+    btnPrintTop.addEventListener('click', () => {
+      document.body.classList.remove('has-active-receipt');
+      window.print();
+    });
   }
   const btnPrintInner = container.querySelector('#btn-print-report-inner');
   if (btnPrintInner) {
-    btnPrintInner.addEventListener('click', () => window.print());
+    btnPrintInner.addEventListener('click', () => {
+      document.body.classList.remove('has-active-receipt');
+      window.print();
+    });
   }
 
   // 4. Modal Triggers: Income

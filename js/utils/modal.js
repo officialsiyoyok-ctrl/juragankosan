@@ -51,6 +51,9 @@ export function openModal(modalId, options = {}) {
   if (!modal) return;
   modal.classList.add('active');
   document.body.classList.add('modal-open');
+  if (modalId === 'receipt-modal-container' || modalId === 'receipt-view-modal') {
+    document.body.classList.add('has-active-receipt');
+  }
 
   // Reset scroll to top on modal open
   const scrollTargets = modal.querySelectorAll('.modal-body, .modal-dialog, .upgrade-modal-body, .upgrade-pane');
@@ -75,8 +78,12 @@ export function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (!modal) return;
   modal.classList.remove('active');
+  if (modalId === 'receipt-modal-container' || modalId === 'receipt-view-modal') {
+    document.body.classList.remove('has-active-receipt');
+  }
   if (!document.querySelector('.modal-backdrop.active')) {
     document.body.classList.remove('modal-open');
+    document.body.classList.remove('has-active-receipt');
   }
 }
 
@@ -85,8 +92,12 @@ export function initModalListeners() {
   document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal-backdrop')) {
       e.target.classList.remove('active');
+      if (e.target.id === 'receipt-modal-container' || e.target.id === 'receipt-view-modal') {
+        document.body.classList.remove('has-active-receipt');
+      }
       if (!document.querySelector('.modal-backdrop.active')) {
         document.body.classList.remove('modal-open');
+        document.body.classList.remove('has-active-receipt');
       }
     }
   });
@@ -98,8 +109,12 @@ export function initModalListeners() {
       if (activeModals.length > 0) {
         const topModal = activeModals[activeModals.length - 1];
         topModal.classList.remove('active');
+        if (topModal.id === 'receipt-modal-container' || topModal.id === 'receipt-view-modal') {
+          document.body.classList.remove('has-active-receipt');
+        }
         if (!document.querySelector('.modal-backdrop.active')) {
           document.body.classList.remove('modal-open');
+          document.body.classList.remove('has-active-receipt');
         }
       }
     }
@@ -114,10 +129,16 @@ export function initModalListeners() {
         closeModal(modalId);
       } else {
         const parentModal = closeBtn.closest('.modal-backdrop');
-        if (parentModal) parentModal.classList.remove('active');
+        if (parentModal) {
+          parentModal.classList.remove('active');
+          if (parentModal.id === 'receipt-modal-container' || parentModal.id === 'receipt-view-modal') {
+            document.body.classList.remove('has-active-receipt');
+          }
+        }
       }
       if (!document.querySelector('.modal-backdrop.active')) {
         document.body.classList.remove('modal-open');
+        document.body.classList.remove('has-active-receipt');
       }
     }
   });

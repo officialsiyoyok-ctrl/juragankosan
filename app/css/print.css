@@ -1,6 +1,7 @@
 /**
- * Juragankosan — Dedicated Print Stylesheet for Official Corporate Receipts
- * Guaranteed Strict 1-Page Layout Isolation (No 2nd Page Spill)
+ * Juragankosan — Comprehensive Print Stylesheet
+ * 1. Mode Kwitansi: Strict 1-Page Layout Isolation untuk Kwitansi Resmi
+ * 2. Mode Laporan: Format Dokumen A4 Profesional untuk Laporan Laba Bersih & Arus Kas
  */
 
 @media print {
@@ -9,14 +10,81 @@
     margin: 8mm 10mm;
   }
 
-  /* 1. Sembunyikan seluruh elemen di dalam <body> secara ketat */
-  body > * {
+  /* =========================================================================
+     1. GLOBAL PRINT RESET & BASE STYLES
+     ========================================================================= */
+  html,
+  body {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+
+  /* Sembunyikan elemen non-print di semua mode */
+  .no-print,
+  #sidebar-nav,
+  .sidebar,
+  #topbar,
+  .topbar,
+  #mobile-bottom-nav,
+  .mobile-bottom-nav,
+  .app-footer,
+  #welcome-onboarding-overlay,
+  #app-lock-overlay,
+  #toast-container,
+  .modal-backdrop:not(.active),
+  .custom-picker-overlay,
+  .picker-backdrop,
+  .sidebar-license-widget,
+  .sidebar-lock-wrapper,
+  .sidebar-footer {
     display: none !important;
   }
 
-  /* 2. Tampilkan HANYA container modal kwitansi */
-  body > #receipt-modal-container,
-  body > #receipt-view-modal {
+  /* Tampilkan elemen khusus cetak */
+  .print-only {
+    display: block !important;
+  }
+
+  .print-only.print-flex,
+  div.print-only[style*="display: flex"],
+  .print-only[style*="display: flex"] {
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+
+  /* =========================================================================
+     2. MODE A: CETAK KWITANSI RESMI (RECEIPT ISOLATION MODE)
+     Aktif hanya saat modal kwitansi sedang dibuka (#receipt-modal-container.active)
+     ========================================================================= */
+  body.has-active-receipt,
+  body:has(#receipt-modal-container.active) {
+    overflow: hidden !important;
+    max-height: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Sembunyikan seluruh layout aplikasi saat mencetak kwitansi */
+  body.has-active-receipt > *:not(#receipt-modal-container):not(#receipt-view-modal),
+  body:has(#receipt-modal-container.active) > *:not(#receipt-modal-container):not(#receipt-view-modal),
+  body.has-active-receipt .app-layout,
+  body:has(#receipt-modal-container.active) .app-layout {
+    display: none !important;
+  }
+
+  /* Tampilkan container kwitansi */
+  body.has-active-receipt > #receipt-modal-container,
+  body:has(#receipt-modal-container.active) > #receipt-modal-container,
+  #receipt-modal-container.active {
     display: block !important;
     position: absolute !important;
     left: 0 !important;
@@ -33,14 +101,12 @@
     overflow: visible !important;
   }
 
-  /* 3. Sembunyikan kontrol modal non-print (tombol aksi, header modal, tombol close) */
   #receipt-modal-container .modal-header,
   #receipt-view-modal .modal-header,
   #receipt-modal-container .modal-footer,
   #receipt-view-modal .modal-footer,
   #receipt-modal-container .modal-close,
-  #receipt-view-modal .modal-close,
-  .no-print {
+  #receipt-view-modal .modal-close {
     display: none !important;
   }
 
@@ -59,22 +125,6 @@
     box-shadow: none !important;
     transform: none !important;
     overflow: visible !important;
-  }
-
-  /* 4. Format dan isolasi dokumen agar pas tepat 1 halaman penuh tanpa meluber */
-  html,
-  body {
-    background-color: #ffffff !important;
-    background: #ffffff !important;
-    color: #0f172a !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: 100% !important;
-    overflow: hidden !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
 
   .printable-receipt-card,
@@ -99,7 +149,6 @@
     break-after: avoid !important;
   }
 
-  /* Warna dan border cetak tajam beresolusi tinggi */
   .receipt-corp-title {
     color: #0f172a !important;
   }
@@ -196,5 +245,260 @@
   .receipt-watermark-free {
     border-top: 1px dashed #94a3b8 !important;
     color: #64748b !important;
+  }
+
+  /* =========================================================================
+     3. MODE B: CETAK LAPORAN KEUANGAN & DOKUMEN SISTEM (REPORT MODE)
+     Aktif secara default saat mencetak halaman laporan (tanpa modal kwitansi)
+     ========================================================================= */
+  body:not(.has-active-receipt) .app-layout {
+    display: block !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body:not(.has-active-receipt) .main-wrapper {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  body:not(.has-active-receipt) .page-content,
+  body:not(.has-active-receipt) #main-content {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .finances-view-container {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .fin-content-body {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* Sembunyikan modal kwitansi bila tidak dibuka */
+  #receipt-modal-container:not(.active),
+  #receipt-view-modal:not(.active) {
+    display: none !important;
+  }
+
+  /* Highlight Cards Laba Bersih (Pemasukan, Pengeluaran, Laba Bersih) */
+  .pnl-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .pnl-card {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    padding: 10px 12px !important;
+    box-shadow: none !important;
+    color: #0f172a !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .pnl-card-highlight.pnl-profit {
+    border: 2px solid #059669 !important;
+    background-color: #f0fdf4 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pnl-card-highlight.pnl-loss {
+    border: 2px solid #e11d48 !important;
+    background-color: #fff1f2 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pnl-label {
+    font-size: 8pt !important;
+    color: #475569 !important;
+    font-weight: 600 !important;
+    display: block !important;
+  }
+
+  .pnl-value {
+    font-size: 13pt !important;
+    font-weight: 800 !important;
+    margin: 3px 0 !important;
+    letter-spacing: -0.02em !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pnl-sub {
+    font-size: 7.5pt !important;
+    color: #64748b !important;
+  }
+
+  /* Format Tabel Buku Kas / Arus Kas Kronologis */
+  .card {
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    border-radius: 6px !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  .fin-card-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background-color: #f8fafc !important;
+    border-bottom: 1.5px solid #0f172a !important;
+    padding: 8px 12px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .fin-card-header .card-title {
+    font-size: 9.5pt !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+  }
+
+  .fin-card-header p {
+    font-size: 7.5pt !important;
+    color: #64748b !important;
+    margin: 0 !important;
+  }
+
+  .table-responsive {
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  .data-table,
+  .cashflow-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    border-collapse: collapse !important;
+    font-size: 8pt !important;
+    table-layout: auto !important;
+  }
+
+  .data-table thead,
+  .cashflow-table thead {
+    display: table-header-group !important;
+  }
+
+  .data-table tfoot,
+  .cashflow-table tfoot {
+    display: table-footer-group !important;
+  }
+
+  .data-table tr,
+  .cashflow-table tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .data-table th,
+  .cashflow-table th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    border-bottom: 1.5px solid #0f172a !important;
+    padding: 6px 8px !important;
+    font-weight: 700 !important;
+    font-size: 8pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .data-table td,
+  .cashflow-table td {
+    border: 1px solid #e2e8f0 !important;
+    padding: 5px 8px !important;
+    color: #0f172a !important;
+    font-size: 8pt !important;
+    background: transparent !important;
+  }
+
+  .data-table tfoot .table-total-row td,
+  .cashflow-table tfoot .table-total-row td {
+    background-color: #f8fafc !important;
+    border-top: 2px solid #0f172a !important;
+    border-bottom: 2px solid #0f172a !important;
+    font-weight: 800 !important;
+    font-size: 8.5pt !important;
+    padding: 7px 8px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Pewarnaan Badge & Teks di Tabel Cetak */
+  .badge {
+    display: inline-block !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 2px 6px !important;
+    font-size: 7pt !important;
+    border-radius: 4px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .badge-emerald {
+    background-color: #ecfdf5 !important;
+    color: #065f46 !important;
+    border-color: #a7f3d0 !important;
+  }
+
+  .badge-danger {
+    background-color: #fff1f2 !important;
+    color: #9f1239 !important;
+    border-color: #fecdd3 !important;
+  }
+
+  .badge-secondary {
+    background-color: #f8fafc !important;
+    color: #334155 !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  .text-emerald {
+    color: #059669 !important;
+  }
+
+  .text-danger {
+    color: #e11d48 !important;
+  }
+
+  .text-muted {
+    color: #64748b !important;
+  }
+
+  .text-main {
+    color: #0f172a !important;
+  }
+
+  /* Signature Block Mengetahui & Dibuat Oleh */
+  .fin-signature-block,
+  div.print-only.mt-5 {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-top: 28px !important;
   }
 }
