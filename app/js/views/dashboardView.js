@@ -1,7 +1,7 @@
 /**
  * Juragankosan Dashboard View (Tab 1: Ringkasan & Jatuh Tempo)
  */
-import { store } from '../state.js?v=2.5';
+import { store } from '../state.js';
 import {
   formatRupiah,
   formatDateIndo,
@@ -9,9 +9,9 @@ import {
   calculateDaysDiffFromToday,
   escapeHtml,
   formatDisplayPhone
-} from '../utils/formatter.js?v=2.5';
-import { generateBillWhatsAppText, generateWhatsAppMessage, openWhatsAppLink, DEFAULT_PARTIAL_REMINDER_WA_TEMPLATE } from '../utils/whatsapp.js?v=3.3';
-import { openModal } from '../utils/modal.js?v=2.5';
+} from '../utils/formatter.js';
+import { generateBillWhatsAppText, generateWhatsAppMessage, openWhatsAppLink, DEFAULT_PARTIAL_REMINDER_WA_TEMPLATE } from '../utils/whatsapp.js';
+import { openModal } from '../utils/modal.js';
 
 export function renderDashboard(container) {
   const currentYM = getCurrentYearMonth();

@@ -1,7 +1,7 @@
 /**
  * Juragankosan Tenants View (Tab 3: Database Penyewa & Check-in/Check-out)
  */
-import { store } from '../state.js?v=2.5';
+import { store } from '../state.js';
 import {
   formatRupiah,
   formatDateIndo,
@@ -9,8 +9,8 @@ import {
   formatDisplayPhone,
   escapeHtml,
   getTodayDateString
-} from '../utils/formatter.js?v=2.5';
-import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js?v=2.5';
+} from '../utils/formatter.js';
+import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js';
 
 const DEPOSIT_STATUS_OPTIONS = [
   'Deposit dikembalikan penuh',
@@ -938,7 +938,7 @@ function saveTenantForm(container) {
         deposit,
         notes
       });
-      showToast(`Penyewa ${newTenant.name} berhasil di-checkin! Status kamar kini TERISI.`, 'success');
+      showToast(`Penyewa ${newTenant.name} berhasil di-checkin (${newTenant.roomNumber})! Tagihan sewa langsung dibuat otomatis.`, 'success');
       closeModal('tenant-form-modal');
       renderTenants(container);
     } catch (err) {

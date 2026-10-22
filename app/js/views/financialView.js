@@ -2,7 +2,7 @@
  * Juragankosan — Pusat Keuangan & Arus Kas Terpadu
  * Menggabungkan Pemasukan, Pengeluaran, dan Laporan Laba Bersih ke dalam 1 Tabbed Interface
  */
-import { store } from '../state.js?v=2.5';
+import { store } from '../state.js';
 import {
   formatRupiah,
   formatDateIndo,
@@ -10,8 +10,8 @@ import {
   getCurrentYearMonth,
   getTodayDateString,
   escapeHtml
-} from '../utils/formatter.js?v=2.5';
-import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js?v=2.5';
+} from '../utils/formatter.js';
+import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js';
 
 // Master Categories
 export const EXPENSE_CATEGORIES = [
@@ -466,6 +466,7 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
                     <td>
                       <div class="font-semibold text-main text-sm">
                         ${escapeHtml(item.title)}
+                        ${item.isAdvance ? ` <span class="badge badge-success text-xs" style="font-size: 0.7rem; padding: 2px 6px;">Maju ${item.advanceMonths || ''} Bln</span>` : ''}
                       </div>
                       ${item.notes && item.notes !== '-' ? `
                         <div class="text-xs text-muted mt-0.5">${escapeHtml(item.notes)}</div>

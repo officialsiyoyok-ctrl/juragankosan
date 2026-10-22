@@ -1,11 +1,11 @@
 /**
  * Juragankosan Settings & Backup View (Tab 6: Pengaturan & Data)
  */
-import { store } from '../state.js?v=2.5';
-import { DEFAULT_WA_TEMPLATE } from '../utils/whatsapp.js?v=3.3';
-import { cleanWhatsAppNumber, escapeHtml, formatRupiah } from '../utils/formatter.js?v=2.5';
-import { showToast, showConfirmModal } from '../utils/modal.js?v=2.5';
-import { isPro, getLicense, deactivateLicense, openUpgradeModal, getCurrentPricingTier } from '../utils/license.js?v=4.1';
+import { store } from '../state.js';
+import { DEFAULT_WA_TEMPLATE } from '../utils/whatsapp.js';
+import { cleanWhatsAppNumber, escapeHtml, formatRupiah } from '../utils/formatter.js';
+import { showToast, showConfirmModal } from '../utils/modal.js';
+import { isPro, getLicense, deactivateLicense, openUpgradeModal, getCurrentPricingTier } from '../utils/license.js';
 
 export function renderSettings(container) {
   const settings = store.getSettings();

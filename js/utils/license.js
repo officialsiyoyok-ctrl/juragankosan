@@ -3,8 +3,8 @@
  * Option A: Free max 3 rooms, Lifetime Unlimited for PRO
  * Direct Self-Checkout (0% Admin Fee - Transfer Langsung & QRIS)
  */
-import { showToast, openModal, closeModal } from './modal.js?v=2.9';
-import { formatRupiah } from './formatter.js?v=2.9';
+import { showToast, openModal, closeModal } from './modal.js';
+import { formatRupiah } from './formatter.js';
 
 // ============================================================================
 // ⚙️ KONFIGURASI PEMBAYARAN PEMILIK APLIKASI (DIRECT SELF-CHECKOUT)

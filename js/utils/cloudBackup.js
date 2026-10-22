@@ -5,8 +5,8 @@
  * menggunakan identitas No. WhatsApp Pemilik Kos & PIN Keamanan.
  * Mengantisipasi kehilangan data saat HP diservis, ganti HP baru, atau cache terhapus.
  */
-import { cleanWhatsAppNumber } from './formatter.js?v=2.5';
-import { getLicense, getLicenseStatus } from './license.js?v=6.4';
+import { cleanWhatsAppNumber } from './formatter.js';
+import { getLicense, getLicenseStatus } from './license.js';
 
 const CLOUD_SYNC_STORAGE_KEY = 'juragankos_cloud_sync_meta';
 const BACKUP_ENDPOINT = '/api/backup';

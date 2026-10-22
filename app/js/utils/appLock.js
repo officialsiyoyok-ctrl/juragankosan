@@ -2,9 +2,9 @@
  * Juragankosan App Lock (Layar Kunci PIN Keamanan)
  * Sinkron 100% dengan state.settings.securityPin (Pengaturan Kos & Zona Bahaya)
  */
-import { store } from '../state.js?v=6.0';
-import { showToast } from './modal.js?v=6.0';
-import { isOnboarded } from './onboarding.js?v=6.0';
+import { store } from '../state.js';
+import { showToast } from './modal.js';
+import { isOnboarded } from './onboarding.js';
 
 let pinBuffer = '';
 

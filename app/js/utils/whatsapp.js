@@ -1,7 +1,7 @@
 /**
  * Juragankosan WhatsApp Integration Utilities
  */
-import { cleanWhatsAppNumber, formatRupiah, formatDateIndo, formatMonthYear, calculateDaysDiffFromToday, terbilangRupiah } from './formatter.js?v=2.5';
+import { cleanWhatsAppNumber, formatRupiah, formatDateIndo, formatMonthYear, calculateDaysDiffFromToday, terbilangRupiah } from './formatter.js';
 
 export const DEFAULT_WA_TEMPLATE = `Halo Kak {nama} ({kamar}),
 

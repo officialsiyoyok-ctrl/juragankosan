@@ -1,7 +1,7 @@
 /**
  * Juragankosan Bills View (Tab 4: Tracking Tagihan Sewa & Pengingat WhatsApp 1-Klik)
  */
-import { store } from '../state.js?v=6.0';
+import { store } from '../state.js';
 import {
   formatRupiah,
   formatDateIndo,
@@ -12,16 +12,16 @@ import {
   formatDisplayPhone,
   terbilangRupiah,
   addMonthsToPeriod
-} from '../utils/formatter.js?v=6.0';
+} from '../utils/formatter.js';
 import {
   generateBillWhatsAppText,
   generateKwitansiWhatsAppText,
   generateWhatsAppMessage,
   openWhatsAppLink,
   DEFAULT_PARTIAL_REMINDER_WA_TEMPLATE
-} from '../utils/whatsapp.js?v=6.0';
-import { openModal, closeModal, showToast, showConfirmModal } from '../utils/modal.js?v=6.0';
-import { isPro } from '../utils/license.js?v=6.0';
+} from '../utils/whatsapp.js';
+import { openModal, closeModal, showToast, showConfirmModal } from '../utils/modal.js';
+import { isPro } from '../utils/license.js';
 
 let selectedPeriod = getCurrentYearMonth();
 let currentFilter = 'all'; // 'all' | 'belum_bayar' | 'sebagian' | 'lunas' | 'terlambat'
@@ -140,6 +140,26 @@ export function renderBills(container, options = {}) {
         <div class="summary-sub">Melewati tanggal jatuh tempo</div>
       </div>
     </div>
+
+    ${(() => {
+      const otherUnpaidBills = store.getBills().filter((b) => b.period !== selectedPeriod && b.status !== 'lunas');
+      const futureCheckInBills = otherUnpaidBills.filter((b) => b.period > selectedPeriod);
+      if (futureCheckInBills.length > 0) {
+        const targetPeriod = futureCheckInBills[0].period;
+        return `
+          <div class="alert alert-info flex-between mb-3 py-2 px-3 text-xs" style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>📅</span>
+              <span>Terdeteksi <strong>${futureCheckInBills.length}</strong> tagihan periode mendatang (penyewa check-in bulan depan: <em>${futureCheckInBills.map(b => `${escapeHtml(b.tenantName)} [${formatMonthYear(b.period)}]`).slice(0, 2).join(', ')}</em>).</span>
+            </div>
+            <button type="button" class="btn btn-outline btn-xs btn-nav-month" data-period="${targetPeriod}">
+              Buka Periode ${formatMonthYear(targetPeriod)} &rarr;
+            </button>
+          </div>
+        `;
+      }
+      return '';
+    })()}
 
     <!-- Toolbar Filters -->
     <div class="toolbar-card">

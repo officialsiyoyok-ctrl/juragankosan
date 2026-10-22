@@ -3,10 +3,10 @@
  * Menyambut calon pengguna baru, mempersonalisasi nama kos, mengatur PIN pribadi,
  * dan menangkap lead ke Google Sheets tanpa membuat pengguna merasa ribet.
  */
-import { store } from '../state.js?v=2.5';
-import { cleanWhatsAppNumber } from './formatter.js?v=2.5';
-import { showToast } from './modal.js?v=2.5';
-import { sendLeadToGoogleSheet } from './leadCapture.js?v=5.2';
+import { store } from '../state.js';
+import { cleanWhatsAppNumber } from './formatter.js';
+import { showToast } from './modal.js';
+import { sendLeadToGoogleSheet } from './leadCapture.js';
 
 export const ONBOARDING_STORAGE_KEY = 'juragankos_onboarded';
 

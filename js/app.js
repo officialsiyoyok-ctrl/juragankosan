@@ -1,8 +1,8 @@
 /**
  * Juragankosan Main Application Orchestrator
  */
-import { store } from './state.js?v=6.3';
-import { initModalListeners, openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from './utils/modal.js?v=6.3';
+import { store } from './state.js';
+import { initModalListeners, openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from './utils/modal.js';
 import {
   formatRupiah,
   formatDateIndo,
@@ -12,7 +12,7 @@ import {
   terbilangRupiah,
   formatDisplayPhone,
   escapeHtml
-} from './utils/formatter.js?v=6.3';
+} from './utils/formatter.js';
 import {
   generateWhatsAppMessage,
   generateKwitansiWhatsAppText,
@@ -20,21 +20,21 @@ import {
   DEFAULT_RECEIPT_WA_TEMPLATE,
   DEFAULT_RECEIPT_PARTIAL_WA_TEMPLATE,
   DEFAULT_RECEIPT_ADVANCE_WA_TEMPLATE
-} from './utils/whatsapp.js?v=6.3';
+} from './utils/whatsapp.js';
 
-import { renderDashboard } from './views/dashboardView.js?v=6.3';
-import { renderRooms } from './views/roomsView.js?v=6.3';
-import { renderTenants } from './views/tenantsView.js?v=6.3';
-import { renderBills, openReceiptModal as renderReceiptModal } from './views/billsView.js?v=6.3';
-import { renderFinances } from './views/financialView.js?v=6.3';
-import { renderExpenses } from './views/expensesView.js?v=6.3';
-import { renderSettings } from './views/settingsView.js?v=6.3';
-import { renderBackup } from './views/backupView.js?v=6.3';
-import { isPro, openUpgradeModal, openAdminGeneratorModal, MAX_FREE_ROOMS } from './utils/license.js?v=6.4';
-import { initAppLock, lockApp } from './utils/appLock.js?v=6.3';
-import { initOnboarding } from './utils/onboarding.js?v=6.3';
-import { requestPersistentStorage, checkEmergencyRecovery } from './utils/autoBackup.js?v=6.4';
-import { queueCloudSync } from './utils/cloudBackup.js?v=6.4';
+import { renderDashboard } from './views/dashboardView.js';
+import { renderRooms } from './views/roomsView.js';
+import { renderTenants } from './views/tenantsView.js';
+import { renderBills, openReceiptModal as renderReceiptModal } from './views/billsView.js';
+import { renderFinances } from './views/financialView.js';
+import { renderExpenses } from './views/expensesView.js';
+import { renderSettings } from './views/settingsView.js';
+import { renderBackup } from './views/backupView.js';
+import { isPro, openUpgradeModal, openAdminGeneratorModal, MAX_FREE_ROOMS } from './utils/license.js';
+import { initAppLock, lockApp } from './utils/appLock.js';
+import { initOnboarding } from './utils/onboarding.js';
+import { requestPersistentStorage, checkEmergencyRecovery } from './utils/autoBackup.js';
+import { queueCloudSync } from './utils/cloudBackup.js';
 
 class JuragankosanApp {
   constructor() {
@@ -45,6 +45,12 @@ class JuragankosanApp {
   }
 
   navigateTo(tabName, options = {}) {
+    if (tabName === 'bills' && options.highlightBillId && !options.period) {
+      const targetBill = store.getBillById(options.highlightBillId);
+      if (targetBill && targetBill.period) {
+        options.period = targetBill.period;
+      }
+    }
     this.switchTab(tabName, options);
   }
 
@@ -209,7 +215,7 @@ class JuragankosanApp {
     const bills = store.getBills();
     const currentYM = new Date().toISOString().substring(0, 7);
     const unpaidThisMonth = bills.filter(
-      (b) => b.period === currentYM && b.status === 'belum_bayar'
+      (b) => (b.status === 'belum_bayar' || b.status === 'sebagian') && b.period <= currentYM
     ).length;
 
     const vacantBadge = document.getElementById('nav-badge-vacant');
@@ -830,6 +836,7 @@ class JuragankosanApp {
 
       // Refresh current view smoothly
       this.switchTab(this.currentTab);
+      this.updateBadges();
 
       if (openReceipt && result) {
         this.openReceiptModal(bill.id, result);

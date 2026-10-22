@@ -8,12 +8,12 @@
  * 4. Download & Import File JSON Manual (Fitur PRO)
  * 5. Zona Bahaya (Reset Database dengan Proteksi PIN)
  */
-import { store } from '../state.js?v=2.5';
-import { showToast, showConfirmModal, openModal, closeModal } from '../utils/modal.js?v=2.5';
-import { isPro, openUpgradeModal } from '../utils/license.js?v=6.4';
-import { getCloudSyncMeta, syncToCloudVault, fetchCloudBackup } from '../utils/cloudBackup.js?v=6.4';
-import { checkStoragePersistence, getLocalSnapshots, getSnapshotById } from '../utils/autoBackup.js?v=6.4';
-import { formatDateIndo, formatDisplayPhone, escapeHtml } from '../utils/formatter.js?v=2.5';
+import { store } from '../state.js';
+import { showToast, showConfirmModal, openModal, closeModal } from '../utils/modal.js';
+import { isPro, openUpgradeModal } from '../utils/license.js';
+import { getCloudSyncMeta, syncToCloudVault, fetchCloudBackup } from '../utils/cloudBackup.js';
+import { checkStoragePersistence, getLocalSnapshots, getSnapshotById } from '../utils/autoBackup.js';
+import { formatDateIndo, formatDisplayPhone, escapeHtml } from '../utils/formatter.js';
 
 export async function renderBackup(container) {
   const isProUser = isPro();

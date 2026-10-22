@@ -1,7 +1,7 @@
 /**
  * Juragankosan Operational Expenses View (Tab 5: Pencatatan Pengeluaran & Laba Bersih)
  */
-import { store } from '../state.js?v=2.5';
+import { store } from '../state.js';
 import {
   formatRupiah,
   formatDateIndo,
@@ -9,8 +9,8 @@ import {
   getCurrentYearMonth,
   getTodayDateString,
   escapeHtml
-} from '../utils/formatter.js?v=2.5';
-import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js?v=2.5';
+} from '../utils/formatter.js';
+import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js';
 
 let selectedPeriod = getCurrentYearMonth();
 

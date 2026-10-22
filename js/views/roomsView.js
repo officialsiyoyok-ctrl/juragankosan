@@ -1,10 +1,10 @@
 /**
  * Juragankosan Rooms View (Tab 2: Data Kamar & Okupansi)
  */
-import { store } from '../state.js?v=2.5';
-import { formatRupiah, escapeHtml } from '../utils/formatter.js?v=2.5';
-import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js?v=2.5';
-import { isPro, canAddRoom, openUpgradeModal, MAX_FREE_ROOMS } from '../utils/license.js?v=2.9';
+import { store } from '../state.js';
+import { formatRupiah, escapeHtml } from '../utils/formatter.js';
+import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js';
+import { isPro, canAddRoom, openUpgradeModal, MAX_FREE_ROOMS } from '../utils/license.js';
 
 const FLOOR_OPTIONS = [
   'Lantai 1',

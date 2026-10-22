@@ -1,7 +1,7 @@
 /**
  * Juragankosan Modal & Toast Notification System
  */
-import { escapeHtml } from './formatter.js?v=2.5';
+import { escapeHtml } from './formatter.js';
 
 export function showToast(message, type = 'info', duration = 3200) {
   let toastContainer = document.getElementById('toast-container');

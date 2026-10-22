@@ -3,7 +3,7 @@
  * Mengirim data calon pelanggan (Nama, Kos, No. WA) langsung ke Google Sheets secara real-time via Apps Script Webhook.
  * 100% Gratis, tanpa backend server berbayar.
  */
-import { store } from '../state.js?v=2.5';
+import { store } from '../state.js';
 
 export const LEAD_CAPTURE_CONFIG = {
   // URL Deployment Google Apps Script resmi pemilik Juragankosan

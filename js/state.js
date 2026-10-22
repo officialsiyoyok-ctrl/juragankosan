@@ -1,10 +1,10 @@
 /**
  * Juragankosan Reactive State Management & LocalStorage Sync
  */
-import { generateId, getCurrentYearMonth, getTodayDateString, cleanWhatsAppNumber, addMonthsToPeriod } from './utils/formatter.js?v=2.5';
-import { DEFAULT_WA_TEMPLATE } from './utils/whatsapp.js?v=3.3';
-import { saveLocalSnapshot } from './utils/autoBackup.js?v=6.4';
-import { queueCloudSync } from './utils/cloudBackup.js?v=6.4';
+import { generateId, getCurrentYearMonth, getTodayDateString, cleanWhatsAppNumber, addMonthsToPeriod } from './utils/formatter.js';
+import { DEFAULT_WA_TEMPLATE } from './utils/whatsapp.js';
+import { saveLocalSnapshot } from './utils/autoBackup.js';
+import { queueCloudSync } from './utils/cloudBackup.js';
 
 const STORAGE_KEY = 'juragankos_data_v1';
 
@@ -429,8 +429,14 @@ export function getEmptyData() {
 
 class Store {
   constructor() {
+    if (typeof window !== 'undefined' && window.__juragankos_store) {
+      return window.__juragankos_store;
+    }
     this.data = this.loadData();
     this.listeners = [];
+    if (typeof window !== 'undefined') {
+      window.__juragankos_store = this;
+    }
   }
 
   loadData() {
@@ -773,9 +779,17 @@ class Store {
     const rawCheckIn = newTenant.checkInDate || '';
     const checkInYM = rawCheckIn ? String(rawCheckIn).trim().substring(0, 7) : '';
     if (checkInYM) {
-      this.ensureBillForTenant(newTenant, room, checkInYM);
-    }
-    if (currentYM && (!checkInYM || currentYM > checkInYM)) {
+      if (checkInYM <= currentYM) {
+        let p = checkInYM;
+        while (p <= currentYM) {
+          this.ensureBillForTenant(newTenant, room, p);
+          p = addMonthsToPeriod(p, 1);
+        }
+      } else {
+        // Check-in masa depan (cth: bulan depan)
+        this.ensureBillForTenant(newTenant, room, checkInYM);
+      }
+    } else {
       this.ensureBillForTenant(newTenant, room, currentYM);
     }
 
@@ -878,7 +892,8 @@ class Store {
     if (existing) return existing;
 
     const [y, m] = periodYM.split('-');
-    const day = Math.min(28, Math.max(1, tenant.dueDay || 1));
+    const maxDaysInMonth = new Date(parseInt(y, 10), parseInt(m, 10), 0).getDate();
+    const day = Math.min(maxDaysInMonth, Math.max(1, tenant.dueDay || 1));
     const pad = (n) => String(n).padStart(2, '0');
     const dueDate = `${y}-${m}-${pad(day)}`;
 
@@ -1085,7 +1100,7 @@ class Store {
           this.data.bills.push(futureBill);
         } else if (futureBill) {
           futureBill.status = 'lunas';
-          futureBill.paidAmount = futureBill.amount;
+          futureBill.paidAmount = futureBill.amount || monthlyRate;
           futureBill.remainingAmount = 0;
           futureBill.paidDate = paidDate;
           futureBill.paymentMethod = paymentMethod;
@@ -1100,6 +1115,17 @@ class Store {
             receiptNumber: masterReceiptNumber
           };
           futureBill.notes = `Lunas via Pembayaran Maju ${monthsCount} Bulan (${bill.period} s/d ${endPeriod})`;
+
+          if (!Array.isArray(futureBill.payments)) futureBill.payments = [];
+          futureBill.payments.push({
+            id: generateId('pay'),
+            date: paidDate,
+            amount: futureBill.amount || monthlyRate,
+            paymentMethod: paymentMethod,
+            receiptNumber: masterReceiptNumber,
+            notes: `Paket bayar maju bulan ke-${i + 1} (${nextPeriod})`,
+            type: 'advance'
+          });
         }
       }
 
@@ -1153,6 +1179,10 @@ class Store {
     const bill = this.getBillById(billId);
     if (!bill) return null;
 
+    const receiptNum = bill.receiptNumber;
+    const wasAdvance = bill.isAdvance || (receiptNum && receiptNum.startsWith('KW-ADV'));
+    const tenantId = bill.tenantId;
+
     bill.status = 'belum_bayar';
     bill.paidAmount = 0;
     bill.remainingAmount = bill.amount;
@@ -1163,6 +1193,27 @@ class Store {
     bill.isAdvance = false;
     delete bill.advanceMonths;
     delete bill.advanceInfo;
+    bill.notes = '';
+
+    // Jika tagihan adalah bagian paket bayar maju, batalkan juga tagihan masa depan terkait paket tersebut
+    if (wasAdvance && receiptNum) {
+      const linkedBills = this.data.bills.filter(
+        (b) => b.tenantId === tenantId && b.receiptNumber === receiptNum && b.id !== bill.id
+      );
+      linkedBills.forEach((fb) => {
+        fb.status = 'belum_bayar';
+        fb.paidAmount = 0;
+        fb.remainingAmount = fb.amount;
+        fb.paidDate = null;
+        fb.paymentMethod = null;
+        fb.receiptNumber = null;
+        fb.payments = [];
+        fb.isAdvance = false;
+        delete fb.advanceMonths;
+        delete fb.advanceInfo;
+        fb.notes = '';
+      });
+    }
 
     this.save();
     return bill;
@@ -1333,15 +1384,18 @@ class Store {
             isRent: true,
             date: payDate,
             period: payDate.substring(0, 7),
+            billPeriod: bill.period,
             title: `Sewa ${bill.roomNumber} (${bill.tenantName})`,
             category: 'Sewa Kamar',
             amount: p.amount || 0,
             paymentMethod: p.paymentMethod || bill.paymentMethod || 'Transfer Bank',
             receiptNumber: p.receiptNumber || bill.receiptNumber || '-',
-            notes: p.notes || (p.type === 'partial' ? 'Cicilan sewa' : 'Pelunasan sewa'),
+            notes: p.notes || (p.type === 'partial' ? 'Cicilan sewa' : (p.type === 'advance' ? `Sewa Maju (${bill.period})` : 'Pelunasan sewa')),
             tenantName: bill.tenantName,
             roomNumber: bill.roomNumber,
-            billStatus: bill.status
+            billStatus: bill.status,
+            isAdvance: bill.isAdvance || p.type === 'advance',
+            advanceMonths: bill.advanceMonths
           });
         });
       } else if ((bill.status === 'lunas' || bill.status === 'sebagian') && (bill.paidAmount > 0 || bill.amount > 0)) {
@@ -1561,4 +1615,7 @@ class Store {
   }
 }
 
-export const store = new Store();
+export { Store };
+export const store = (typeof window !== 'undefined' && window.__juragankos_store)
+  ? window.__juragankos_store
+  : new Store();
