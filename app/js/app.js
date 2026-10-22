@@ -30,11 +30,11 @@ import { renderFinances } from './views/financialView.js?v=6.3';
 import { renderExpenses } from './views/expensesView.js?v=6.3';
 import { renderSettings } from './views/settingsView.js?v=6.3';
 import { renderBackup } from './views/backupView.js?v=6.3';
-import { isPro, openUpgradeModal, openAdminGeneratorModal, MAX_FREE_ROOMS } from './utils/license.js?v=6.3';
+import { isPro, openUpgradeModal, openAdminGeneratorModal, MAX_FREE_ROOMS } from './utils/license.js?v=6.4';
 import { initAppLock, lockApp } from './utils/appLock.js?v=6.3';
 import { initOnboarding } from './utils/onboarding.js?v=6.3';
-import { requestPersistentStorage, checkEmergencyRecovery } from './utils/autoBackup.js?v=6.3';
-import { queueCloudSync } from './utils/cloudBackup.js?v=6.3';
+import { requestPersistentStorage, checkEmergencyRecovery } from './utils/autoBackup.js?v=6.4';
+import { queueCloudSync } from './utils/cloudBackup.js?v=6.4';
 
 class JuragankosanApp {
   constructor() {

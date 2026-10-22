@@ -264,6 +264,13 @@ export function getLicense() {
 }
 
 /**
+ * Alias untuk getLicense
+ */
+export function getLicenseStatus() {
+  return getLicense();
+}
+
+/**
  * Cek apakah lisensi aktif adalah PRO
  */
 export function isPro() {

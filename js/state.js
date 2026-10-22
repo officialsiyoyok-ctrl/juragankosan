@@ -3,8 +3,8 @@
  */
 import { generateId, getCurrentYearMonth, getTodayDateString, cleanWhatsAppNumber, addMonthsToPeriod } from './utils/formatter.js?v=2.5';
 import { DEFAULT_WA_TEMPLATE } from './utils/whatsapp.js?v=3.3';
-import { saveLocalSnapshot } from './utils/autoBackup.js?v=6.3';
-import { queueCloudSync } from './utils/cloudBackup.js?v=6.3';
+import { saveLocalSnapshot } from './utils/autoBackup.js?v=6.4';
+import { queueCloudSync } from './utils/cloudBackup.js?v=6.4';
 
 const STORAGE_KEY = 'juragankos_data_v1';
 

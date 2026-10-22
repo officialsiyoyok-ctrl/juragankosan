@@ -6,7 +6,7 @@
  * Mengantisipasi kehilangan data saat HP diservis, ganti HP baru, atau cache terhapus.
  */
 import { cleanWhatsAppNumber } from './formatter.js?v=2.5';
-import { getLicenseStatus } from './license.js?v=4.1';
+import { getLicense, getLicenseStatus } from './license.js?v=6.4';
 
 const CLOUD_SYNC_STORAGE_KEY = 'juragankos_cloud_sync_meta';
 const BACKUP_ENDPOINT = '/api/backup';
@@ -83,7 +83,7 @@ export async function syncToCloudVault(data, options = {}) {
     return { success: true, status: 'throttled', message: 'Sinkronisasi cloud baru saja dilakukan.' };
   }
 
-  const licenseStatus = getLicenseStatus();
+  const licenseStatus = typeof getLicenseStatus === 'function' ? getLicenseStatus() : (typeof getLicense === 'function' ? getLicense() : null);
   const licenseKey = licenseStatus?.code || '';
   const securityPin = data.settings?.securityPin || '1234';
   const kosName = data.settings?.kosName || 'Juragankosan';

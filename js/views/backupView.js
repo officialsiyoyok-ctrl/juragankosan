@@ -10,9 +10,9 @@
  */
 import { store } from '../state.js?v=2.5';
 import { showToast, showConfirmModal, openModal, closeModal } from '../utils/modal.js?v=2.5';
-import { isPro, openUpgradeModal } from '../utils/license.js?v=4.1';
-import { getCloudSyncMeta, syncToCloudVault, fetchCloudBackup } from '../utils/cloudBackup.js?v=6.3';
-import { checkStoragePersistence, getLocalSnapshots, getSnapshotById } from '../utils/autoBackup.js?v=6.3';
+import { isPro, openUpgradeModal } from '../utils/license.js?v=6.4';
+import { getCloudSyncMeta, syncToCloudVault, fetchCloudBackup } from '../utils/cloudBackup.js?v=6.4';
+import { checkStoragePersistence, getLocalSnapshots, getSnapshotById } from '../utils/autoBackup.js?v=6.4';
 import { formatDateIndo, formatDisplayPhone, escapeHtml } from '../utils/formatter.js?v=2.5';
 
 export async function renderBackup(container) {
