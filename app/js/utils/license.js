@@ -11,7 +11,7 @@ import { formatRupiah } from './formatter.js';
 // Anda dapat mengubah nomor WhatsApp, harga, dan rekening bank di sini kapan saja
 // ============================================================================
 export const OWNER_PAYMENT_CONFIG = {
-  whatsappAdmin: '6281949098789',
+  whatsappAdmin: '6287776108132',
   priceBase: 149000,
   banks: [
     {

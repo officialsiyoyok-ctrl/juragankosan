@@ -10,7 +10,7 @@
 | **Nama Produk** | **Juragankosan.id** (Web App: `Juragankosan`) |
 | **Domain Utama** | [juragankosan.id](https://juragankosan.id/) |
 | **Akses Web App** | [app.juragankosan.id](https://app.juragankosan.id/) |
-| **WhatsApp Admin** | `+62 819-4909-8789` |
+| **WhatsApp Admin** | `+62 877-7610-8132` |
 | **Kategori Produk** | Software Manajemen Properti Sewa (*Property Management PWA Web App*) |
 | **Tagline Utama** | *"Solusi Modern Kelola Kos & Kontrakan Tanpa Pusing. Pantau Keuangan Sekali Klik."* |
 | **Sub-Tagline** | *"Ganti buku kas manual yang mudah tercecer dengan aplikasi modern yang ringan, cepat dibuka di HP, dan 100% data aman di perangkat Anda."* |
@@ -225,4 +225,4 @@ Claude dapat memanfaatkan ide-ide sudut pandang (*angle*) berikut saat menyusun 
 Setiap naskah video promosi harus diarahkan ke tautan resmi berikut:
 1. **Mulai Coba Gratis:** [app.juragankosan.id](https://app.juragankosan.id/) (Tanpa kartu kredit, langsung pakai di browser).
 2. **Lihat Fitur & Paket Promo:** [juragankosan.id](https://juragankosan.id/)
-3. **Konsultasi WhatsApp Langsung:** Chat Admin di `0819-4909-8789` (Link WA: `https://wa.me/6281949098789`)
+3. **Konsultasi WhatsApp Langsung:** Chat Admin di `0877-7610-8132` (Link WA: `https://wa.me/6287776108132`)
