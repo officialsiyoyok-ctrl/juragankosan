@@ -1199,12 +1199,22 @@ function setupFinancialEventListeners(container) {
       const bill = store.getBillById(billId);
       if (!bill) return;
 
+      const rawAmount = btn.getAttribute('data-amount');
+      const amount = parseInt(rawAmount, 10) || bill.amount || 0;
+
       const confirmed = await showConfirmModal({
         title: 'Batalkan Pembayaran Sewa?',
-        message: `Yakin ingin membatalkan transaksi pembayaran sewa <strong>${escapeHtml(bill.tenantName || 'Penyewa')} (${escapeHtml(bill.roomNumber || 'Kamar')})</strong>? Status tagihan kamar ini akan dikembalikan menjadi Belum Bayar dan arus kas masuk terkait akan dibatalkan.`,
+        message: `
+          <p class="confirm-lead-text">Batalkan pencatatan pembayaran sewa kamar ini?</p>
+          <div class="confirm-item-preview">
+            <div class="confirm-item-name">${escapeHtml(bill.tenantName || 'Penyewa')} (${escapeHtml(bill.roomNumber || 'Kamar')})</div>
+            <div class="confirm-item-amount text-emerald font-bold">+${formatRupiah(amount)}</div>
+            <div class="confirm-item-category"><span class="badge badge-emerald text-xs">Sewa Kamar</span></div>
+          </div>
+          <div class="confirm-warning-note">⚠️ Status tagihan kamar akan dikembalikan menjadi <strong>Belum Bayar</strong>.</div>
+        `,
         confirmText: 'Ya, Batalkan Pembayaran',
-        danger: true,
-        confirmBtnClass: 'btn-danger'
+        danger: true
       });
 
       if (confirmed) {
@@ -1223,10 +1233,17 @@ function setupFinancialEventListeners(container) {
 
       const confirmed = await showConfirmModal({
         title: 'Hapus Catatan Pemasukan?',
-        message: `Yakin ingin menghapus catatan pemasukan "<strong>${escapeHtml(inc.title)}</strong>" sebesar <strong>${formatRupiah(inc.amount)}</strong>? Data yang dihapus tidak dapat dipulihkan.`,
+        message: `
+          <p class="confirm-lead-text">Apakah Anda yakin ingin menghapus catatan pemasukan ini?</p>
+          <div class="confirm-item-preview">
+            <div class="confirm-item-name">${escapeHtml(inc.title)}</div>
+            <div class="confirm-item-amount text-emerald font-bold">+${formatRupiah(inc.amount)}</div>
+            ${inc.category ? `<div class="confirm-item-category"><span class="badge badge-purple text-xs">${escapeHtml(inc.category)}</span></div>` : ''}
+          </div>
+          <div class="confirm-warning-note">⚠️ Data yang dihapus bersifat permanen dan tidak dapat dipulihkan.</div>
+        `,
         confirmText: 'Ya, Hapus Pemasukan',
-        danger: true,
-        confirmBtnClass: 'btn-danger'
+        danger: true
       });
 
       if (confirmed) {
@@ -1253,10 +1270,17 @@ function setupFinancialEventListeners(container) {
 
       const confirmed = await showConfirmModal({
         title: 'Hapus Biaya Operasional?',
-        message: `Yakin ingin menghapus pengeluaran "<strong>${escapeHtml(exp.description || exp.category)}</strong>" sebesar <strong>${formatRupiah(exp.amount)}</strong>? Data yang dihapus tidak dapat dipulihkan.`,
+        message: `
+          <p class="confirm-lead-text">Apakah Anda yakin ingin menghapus biaya pengeluaran ini?</p>
+          <div class="confirm-item-preview">
+            <div class="confirm-item-name">${escapeHtml(exp.description || exp.category)}</div>
+            <div class="confirm-item-amount text-danger font-bold">-${formatRupiah(exp.amount)}</div>
+            ${exp.category ? `<div class="confirm-item-category"><span class="badge badge-secondary text-xs">${escapeHtml(exp.category)}</span></div>` : ''}
+          </div>
+          <div class="confirm-warning-note">⚠️ Data yang dihapus bersifat permanen dan tidak dapat dipulihkan.</div>
+        `,
         confirmText: 'Ya, Hapus Pengeluaran',
-        danger: true,
-        confirmBtnClass: 'btn-danger'
+        danger: true
       });
 
       if (confirmed) {
@@ -1421,11 +1445,19 @@ function setupFinancialEventListeners(container) {
       const catType = btn.getAttribute('data-cat-type');
       const catName = btn.getAttribute('data-cat-name');
       const confirmed = await showConfirmModal({
-        title: 'Hapus Kategori Kustom',
-        message: `Hapus kategori "${escapeHtml(catName)}"? Transaksi lama yang menggunakan kategori ini akan tetap aman.`,
+        title: 'Hapus Kategori Kustom?',
+        message: `
+          <p class="confirm-lead-text">Hapus kategori kustom <strong>${escapeHtml(catName)}</strong>?</p>
+          <div class="confirm-item-preview">
+            <div class="confirm-item-name">${catType === 'expense' ? '📦 Kategori Biaya' : '✨ Kategori Pemasukan'}</div>
+            <div class="confirm-item-amount font-bold text-main">${escapeHtml(catName)}</div>
+          </div>
+          <div class="confirm-warning-note" style="color: var(--text-secondary); background: var(--bg-surface-subtle); border-color: var(--border-color);">
+            ℹ️ Transaksi lama yang menggunakan kategori ini akan tetap aman tersimpan.
+          </div>
+        `,
         confirmText: 'Ya, Hapus Kategori',
-        danger: true,
-        confirmBtnClass: 'btn-danger'
+        danger: true
       });
 
       if (confirmed) {

@@ -160,49 +160,50 @@ export function showConfirmModal({
       confirmModal = document.createElement('div');
       confirmModal.id = 'global-confirm-modal';
       confirmModal.className = 'modal-backdrop';
-      confirmModal.innerHTML = `
-        <div class="modal-dialog modal-sm">
-          <div class="modal-header">
-            <h3 class="modal-title" id="confirm-modal-title">Konfirmasi</h3>
-            <button class="modal-close" data-close-modal="global-confirm-modal">&times;</button>
-          </div>
-          <div class="modal-body">
-            <p id="confirm-modal-message" class="text-body text-secondary"></p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" id="confirm-modal-cancel">Batal</button>
-            <button type="button" class="btn btn-primary" id="confirm-modal-ok">Ya</button>
-          </div>
-        </div>
-      `;
       document.body.appendChild(confirmModal);
     }
 
-    const titleEl = document.getElementById('confirm-modal-title');
-    const msgEl = document.getElementById('confirm-modal-message');
-    const oldOkBtn = document.getElementById('confirm-modal-ok');
-    const oldCancelBtn = document.getElementById('confirm-modal-cancel');
-    const oldCloseBtn = confirmModal.querySelector('.modal-close');
+    const isDanger = danger || (confirmBtnClass && confirmBtnClass.includes('danger'));
+    const dangerIconSvg = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+    const primaryIconSvg = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
 
-    // Clone and replace buttons to purge any leftover listeners cleanly
-    const okBtn = oldOkBtn.cloneNode(true);
-    const cancelBtn = oldCancelBtn.cloneNode(true);
-    oldOkBtn.replaceWith(okBtn);
-    oldCancelBtn.replaceWith(cancelBtn);
+    // Render modern, elegant confirm dialog structure
+    confirmModal.innerHTML = `
+      <div class="modal-dialog modal-confirm-dialog" role="dialog" aria-modal="true">
+        <button type="button" class="confirm-dialog-close" data-close-modal="global-confirm-modal" aria-label="Tutup dialog">&times;</button>
+        
+        <div class="confirm-dialog-header">
+          <div class="confirm-icon-badge ${isDanger ? 'danger' : 'primary'}" id="confirm-modal-icon">
+            ${isDanger ? dangerIconSvg : primaryIconSvg}
+          </div>
+          <h3 class="confirm-dialog-title" id="confirm-modal-title"></h3>
+        </div>
 
-    let closeBtn = null;
-    if (oldCloseBtn) {
-      closeBtn = oldCloseBtn.cloneNode(true);
-      oldCloseBtn.replaceWith(closeBtn);
-    }
+        <div class="confirm-dialog-body">
+          <div id="confirm-modal-message" class="confirm-dialog-message"></div>
+        </div>
+
+        <div class="confirm-dialog-footer">
+          <button type="button" class="btn btn-confirm-cancel" id="confirm-modal-cancel">Batal</button>
+          <button type="button" class="btn btn-confirm-action ${isDanger ? 'btn-confirm-danger' : 'btn-confirm-primary'}" id="confirm-modal-ok">Ya</button>
+        </div>
+      </div>
+    `;
+
+    const titleEl = confirmModal.querySelector('#confirm-modal-title');
+    const msgEl = confirmModal.querySelector('#confirm-modal-message');
+    const okBtn = confirmModal.querySelector('#confirm-modal-ok');
+    const cancelBtn = confirmModal.querySelector('#confirm-modal-cancel');
+    const closeBtn = confirmModal.querySelector('.confirm-dialog-close');
 
     titleEl.textContent = title;
     msgEl.innerHTML = message;
     okBtn.textContent = confirmText;
     cancelBtn.textContent = cancelText;
 
-    const isDanger = danger || (confirmBtnClass && confirmBtnClass.includes('danger'));
-    okBtn.className = confirmBtnClass || (isDanger ? 'btn btn-danger' : 'btn btn-primary');
+    if (confirmBtnClass) {
+      okBtn.className = `btn btn-confirm-action ${confirmBtnClass}`;
+    }
 
     let settled = false;
 
