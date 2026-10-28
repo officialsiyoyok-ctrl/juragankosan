@@ -125,109 +125,10 @@ export function renderRooms(container, options = {}) {
       </div>
     </div>
 
-    <!-- Rooms Cards Grid -->
-    ${
-      filteredRooms.length === 0
-        ? `
-      <div class="empty-state-card">
-        <div class="empty-icon">🛏️</div>
-        <h3>Tidak Ada Kamar Ditemukan</h3>
-        <p>${
-          currentSearch || currentFilter !== 'all'
-            ? 'Tidak ada kamar yang cocok dengan kriteria pencarian atau filter Anda.'
-            : 'Belum ada data kamar terdaftar. Tambahkan kamar pertama Anda sekarang!'
-        }</p>
-        <button class="btn btn-primary" id="btn-empty-create-room">+ Tambah Kamar Baru</button>
-      </div>
-    `
-        : `
-      <div class="cards-grid">
-        ${filteredRooms
-          .map((room) => {
-            const isOccupied = room.status === 'terisi';
-            const tenant = isOccupied ? tenants.find((t) => t.id === room.currentTenantId) : null;
-
-            return `
-              <div class="room-card ${isOccupied ? 'is-occupied' : 'is-vacant'} animate-fade-in">
-                <div class="room-card-top">
-                  <div>
-                    <div class="room-floor-tag">${escapeHtml(room.floor || 'Lantai 1')}</div>
-                    <h3 class="room-card-number">${escapeHtml(room.number)}</h3>
-                    <div class="room-card-type">${escapeHtml(room.type || 'Standar')}</div>
-                  </div>
-                  <div class="room-status-badge ${isOccupied ? 'badge-occupied' : 'badge-vacant'}">
-                    ${isOccupied ? '🔵 TERISI' : '🟢 KOSONG'}
-                  </div>
-                </div>
-
-                <div class="room-card-price">
-                  <span class="price-value">${formatRupiah(room.price)}</span>
-                  <span class="price-period">/ bulan</span>
-                </div>
-
-                <!-- Facilities Chips -->
-                <div class="room-facilities">
-                  ${
-                    room.facilities && room.facilities.length > 0
-                      ? room.facilities
-                          .map((f) => `<span class="facility-chip">${escapeHtml(f)}</span>`)
-                          .join('')
-                      : `<span class="facility-chip text-muted">Fasilitas standar</span>`
-                  }
-                </div>
-
-                <!-- Occupancy info -->
-                <div class="room-tenant-box ${isOccupied ? 'has-tenant' : 'no-tenant'}">
-                  ${
-                    isOccupied && tenant
-                      ? `
-                    <div class="tenant-mini-info">
-                      <div class="tenant-avatar">${escapeHtml(tenant.name.charAt(0).toUpperCase())}</div>
-                      <div class="tenant-mini-details">
-                        <span class="tenant-mini-name">${escapeHtml(tenant.name)}</span>
-                        <span class="tenant-mini-date">Masuk sejak ${tenant.checkInDate || '-'}</span>
-                      </div>
-                    </div>
-                  `
-                      : `
-                    <div class="vacant-callout">
-                      <span>Unit siap dihuni penyewa baru</span>
-                    </div>
-                  `
-                  }
-                </div>
-
-                ${room.notes ? `<div class="room-notes-text">📝 ${escapeHtml(room.notes)}</div>` : ''}
-
-                <!-- Actions -->
-                <div class="room-card-actions">
-                  ${
-                    !isOccupied
-                      ? `
-                    <button class="btn btn-primary btn-sm btn-checkin-room" data-room-id="${room.id}">
-                      + Check-in Penyewa
-                    </button>
-                  `
-                      : `
-                    <button class="btn btn-outline btn-sm btn-view-tenant" data-tenant-id="${tenant ? tenant.id : ''}">
-                      👤 Lihat Penyewa
-                    </button>
-                  `
-                  }
-                  <button class="btn btn-outline btn-sm btn-edit-room" data-room-id="${room.id}" title="Edit Data Kamar">
-                    ✏️ Edit
-                  </button>
-                  <button class="btn btn-ghost btn-sm btn-delete-room text-danger" data-room-id="${room.id}" title="Hapus Kamar">
-                    🗑️
-                  </button>
-                </div>
-              </div>
-            `;
-          })
-          .join('')}
-      </div>
-    `
-    }
+    <!-- Rooms Content Container -->
+    <div id="rooms-content-container">
+      ${buildRoomsListHtml(filteredRooms, tenants, currentSearch, currentFilter)}
+    </div>
 
     <!-- Add / Edit Room Modal -->
     <div id="room-form-modal" class="modal-backdrop">
@@ -343,44 +244,150 @@ export function renderRooms(container, options = {}) {
   }
 }
 
-function setupRoomsEvents(container) {
-  // Search
-  const searchInput = container.querySelector('#room-search-input');
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      currentSearch = e.target.value;
-      renderRooms(container);
-    });
+function buildRoomsListHtml(filteredRooms, tenants, currentSearch, currentFilter) {
+  if (filteredRooms.length === 0) {
+    return `
+      <div class="empty-state-card">
+        <div class="empty-icon">🛏️</div>
+        <h3>Tidak Ada Kamar Ditemukan</h3>
+        <p>${
+          currentSearch || currentFilter !== 'all'
+            ? 'Tidak ada kamar yang cocok dengan kriteria pencarian atau filter Anda.'
+            : 'Belum ada data kamar terdaftar. Tambahkan kamar pertama Anda sekarang!'
+        }</p>
+        <button class="btn btn-primary" id="btn-empty-create-room">+ Tambah Kamar Baru</button>
+      </div>
+    `;
   }
 
-  const btnClearSearch = container.querySelector('#btn-clear-room-search');
-  if (btnClearSearch) {
-    btnClearSearch.addEventListener('click', () => {
-      currentSearch = '';
-      renderRooms(container);
-    });
-  }
+  return `
+    <div class="cards-grid">
+      ${filteredRooms
+        .map((room) => {
+          const isOccupied = room.status === 'terisi';
+          const tenant = isOccupied ? tenants.find((t) => t.id === room.currentTenantId) : null;
 
-  // Filter Pills
-  container.querySelectorAll('.filter-pill').forEach((pill) => {
-    pill.addEventListener('click', () => {
-      currentFilter = pill.getAttribute('data-filter');
-      renderRooms(container);
-    });
+          return `
+            <div class="room-card ${isOccupied ? 'is-occupied' : 'is-vacant'} animate-fade-in">
+              <div class="room-card-top">
+                <div>
+                  <div class="room-floor-tag">${escapeHtml(room.floor || 'Lantai 1')}</div>
+                  <h3 class="room-card-number">${escapeHtml(room.number)}</h3>
+                  <div class="room-card-type">${escapeHtml(room.type || 'Standar')}</div>
+                </div>
+                <div class="room-status-badge ${isOccupied ? 'badge-occupied' : 'badge-vacant'}">
+                  ${isOccupied ? '🔵 TERISI' : '🟢 KOSONG'}
+                </div>
+              </div>
+
+              <div class="room-card-price">
+                <span class="price-value">${formatRupiah(room.price)}</span>
+                <span class="price-period">/ bulan</span>
+              </div>
+
+              <!-- Facilities Chips -->
+              <div class="room-facilities">
+                ${
+                  room.facilities && room.facilities.length > 0
+                    ? room.facilities
+                        .map((f) => `<span class="facility-chip">${escapeHtml(f)}</span>`)
+                        .join('')
+                    : `<span class="facility-chip text-muted">Fasilitas standar</span>`
+                }
+              </div>
+
+              <!-- Occupancy info -->
+              <div class="room-tenant-box ${isOccupied ? 'has-tenant' : 'no-tenant'}">
+                ${
+                  isOccupied && tenant
+                    ? `
+                  <div class="tenant-mini-info">
+                    <div class="tenant-avatar">${escapeHtml(tenant.name.charAt(0).toUpperCase())}</div>
+                    <div class="tenant-mini-details">
+                      <span class="tenant-mini-name">${escapeHtml(tenant.name)}</span>
+                      <span class="tenant-mini-date">Masuk sejak ${tenant.checkInDate || '-'}</span>
+                    </div>
+                  </div>
+                `
+                    : `
+                  <div class="vacant-callout">
+                    <span>Unit siap dihuni penyewa baru</span>
+                  </div>
+                `
+                }
+              </div>
+
+              ${room.notes ? `<div class="room-notes-text">📝 ${escapeHtml(room.notes)}</div>` : ''}
+
+              <!-- Actions -->
+              <div class="room-card-actions">
+                ${
+                  !isOccupied
+                    ? `
+                  <button class="btn btn-primary btn-sm btn-checkin-room" data-room-id="${room.id}">
+                    + Check-in Penyewa
+                  </button>
+                `
+                    : `
+                  <button class="btn btn-outline btn-sm btn-view-tenant" data-tenant-id="${tenant ? tenant.id : ''}">
+                    👤 Lihat Penyewa
+                  </button>
+                `
+                }
+                <button class="btn btn-outline btn-sm btn-edit-room" data-room-id="${room.id}" title="Edit Data Kamar">
+                  ✏️ Edit
+                </button>
+                <button class="btn btn-ghost btn-sm btn-delete-room text-danger" data-room-id="${room.id}" title="Hapus Kamar">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          `;
+        })
+        .join('')}
+    </div>
+  `;
+}
+
+function renderRoomsContent(container) {
+  const contentContainer = container.querySelector('#rooms-content-container');
+  if (!contentContainer) return;
+
+  const allRooms = store.getRooms();
+  const tenants = store.getTenants();
+
+  const filteredRooms = allRooms.filter((room) => {
+    let matchesFilter = true;
+    if (currentFilter === 'kosong') matchesFilter = room.status === 'kosong';
+    if (currentFilter === 'terisi') matchesFilter = room.status === 'terisi';
+
+    const searchLower = currentSearch.toLowerCase().trim();
+    const matchesSearch =
+      !searchLower ||
+      room.number.toLowerCase().includes(searchLower) ||
+      room.type.toLowerCase().includes(searchLower) ||
+      (room.facilities && room.facilities.some((f) => f.toLowerCase().includes(searchLower))) ||
+      (room.floor && room.floor.toLowerCase().includes(searchLower));
+
+    return matchesFilter && matchesSearch;
   });
 
-  // Quota Upgrade PRO button
-  const btnQuotaUpgrade = container.querySelector('#btn-quota-upgrade-rooms');
-  if (btnQuotaUpgrade) {
-    btnQuotaUpgrade.addEventListener('click', () => openUpgradeModal());
-  }
+  contentContainer.innerHTML = buildRoomsListHtml(filteredRooms, tenants, currentSearch, currentFilter);
 
-  // Open Add Room Modal
-  const btnAddRoom = container.querySelector('#btn-add-room-modal');
-  if (btnAddRoom) {
-    btnAddRoom.addEventListener('click', () => openAddRoomModal());
-  }
+  // Update clear button
+  const clearBtn = container.querySelector('#btn-clear-room-search');
+  if (clearBtn) clearBtn.style.display = currentSearch ? 'flex' : 'none';
 
+  // Update filter pills active class
+  container.querySelectorAll('.filter-pill[data-filter]').forEach((pill) => {
+    pill.classList.toggle('active', pill.getAttribute('data-filter') === currentFilter);
+  });
+
+  // Rebind events for room cards
+  setupRoomCardEvents(container);
+}
+
+function setupRoomCardEvents(container) {
   const btnEmptyCreate = container.querySelector('#btn-empty-create-room');
   if (btnEmptyCreate) {
     btnEmptyCreate.addEventListener('click', () => openAddRoomModal());
@@ -440,6 +447,52 @@ function setupRoomsEvents(container) {
       }
     });
   });
+}
+
+function setupRoomsEvents(container) {
+  // Search without destroying input
+  const searchInput = container.querySelector('#room-search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      currentSearch = e.target.value;
+      renderRoomsContent(container);
+    });
+  }
+
+  const btnClearSearch = container.querySelector('#btn-clear-room-search');
+  if (btnClearSearch) {
+    btnClearSearch.addEventListener('click', () => {
+      currentSearch = '';
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      renderRoomsContent(container);
+    });
+  }
+
+  // Filter Pills
+  container.querySelectorAll('.filter-pill[data-filter]').forEach((pill) => {
+    pill.addEventListener('click', () => {
+      currentFilter = pill.getAttribute('data-filter');
+      renderRoomsContent(container);
+    });
+  });
+
+  // Quota Upgrade PRO button
+  const btnQuotaUpgrade = container.querySelector('#btn-quota-upgrade-rooms');
+  if (btnQuotaUpgrade) {
+    btnQuotaUpgrade.addEventListener('click', () => openUpgradeModal());
+  }
+
+  // Open Add Room Modal
+  const btnAddRoom = container.querySelector('#btn-add-room-modal');
+  if (btnAddRoom) {
+    btnAddRoom.addEventListener('click', () => openAddRoomModal());
+  }
+
+  // Bind initial card events
+  setupRoomCardEvents(container);
 
   // Room Form Submit (Add/Edit)
   const roomForm = container.querySelector('#room-form');
