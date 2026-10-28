@@ -1,6 +1,7 @@
 /**
  * Juragankosan WhatsApp Integration Utilities
  */
+import { showToast } from './modal.js';
 import { cleanWhatsAppNumber, formatRupiah, formatDateIndo, formatMonthYear, calculateDaysDiffFromToday, terbilangRupiah } from './formatter.js';
 
 export const DEFAULT_WA_TEMPLATE = `Halo Kak {nama} ({kamar}),
@@ -342,7 +343,7 @@ export function generateKwitansiWhatsAppText(bill, settings = {}, paymentDetails
 export function openWhatsAppLink(phone, message) {
   const cleanPhone = cleanWhatsAppNumber(phone);
   if (!cleanPhone) {
-    alert('Nomor WhatsApp penyewa tidak valid atau belum diisi!');
+    showToast('Nomor WhatsApp penyewa tidak valid atau belum diisi!', 'warning');
     return false;
   }
   const encodedText = encodeURIComponent(message);

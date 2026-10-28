@@ -635,13 +635,29 @@ function setupTenantCardEvents(container) {
 
   // Delete Roomless / Waiting List Tenant
   container.querySelectorAll('.btn-delete-tenant').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const tenantId = btn.getAttribute('data-tenant-id');
       const tenant = store.getTenantById(tenantId);
       if (!tenant) return;
-      if (confirm(`Hapus data calon penyewa "${tenant.name}"?`)) {
+
+      const confirmed = await showConfirmModal({
+        title: 'Hapus Calon Penyewa?',
+        message: `
+          <p class="confirm-lead-text">Apakah Anda yakin ingin menghapus data calon penyewa ini?</p>
+          <div class="confirm-item-preview">
+            <div class="confirm-item-name">${escapeHtml(tenant.name)}</div>
+            <div class="confirm-item-amount font-bold text-main" style="font-size: 1.05rem;">${escapeHtml(formatDisplayPhone(tenant.phone || '-'))}</div>
+            <div class="confirm-item-category"><span class="badge badge-secondary text-xs">Waiting List / Calon Penyewa</span></div>
+          </div>
+          <div class="confirm-warning-note">⚠️ Tindakan ini permanen. Data calon penyewa akan dihapus.</div>
+        `,
+        confirmText: 'Ya, Hapus Data',
+        danger: true
+      });
+
+      if (confirmed) {
         store.deleteTenant(tenantId);
-        showToast(`Data penyewa ${tenant.name} berhasil dihapus.`, 'info');
+        showToast(`Data calon penyewa "${tenant.name}" berhasil dihapus.`, 'info');
         renderTenants(container);
       }
     });

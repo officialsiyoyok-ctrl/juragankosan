@@ -431,7 +431,15 @@ function setupRoomCardEvents(container) {
 
       const confirmed = await showConfirmModal({
         title: 'Hapus Kamar?',
-        message: `Apakah Anda yakin ingin menghapus <strong>${escapeHtml(room.number)}</strong>? Tindakan ini tidak dapat dibatalkan.`,
+        message: `
+          <p class="confirm-lead-text">Apakah Anda yakin ingin menghapus data unit kamar ini?</p>
+          <div class="confirm-item-preview">
+            <div class="confirm-item-name">Kamar ${escapeHtml(room.number)}</div>
+            <div class="confirm-item-amount text-main font-bold">${formatRupiah(room.price)} / bln</div>
+            <div class="confirm-item-category"><span class="badge badge-secondary text-xs">${escapeHtml(room.type || 'Standar')} • ${escapeHtml(room.floor || 'Lantai 1')}</span></div>
+          </div>
+          <div class="confirm-warning-note">⚠️ Tindakan ini permanen. Unit kamar akan dihapus dari sistem.</div>
+        `,
         confirmText: 'Ya, Hapus Kamar',
         danger: true
       });

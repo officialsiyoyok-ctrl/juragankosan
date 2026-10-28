@@ -510,9 +510,17 @@ function setupBillCardEvents(container) {
 
       const confirmed = await showConfirmModal({
         title: 'Batalkan Status Lunas?',
-        message: `Kembalikan status tagihan sewa <strong>${escapeHtml(bill.tenantName)} (${escapeHtml(
-          bill.roomNumber
-        )})</strong> menjadi Belum Bayar?`,
+        message: `
+          <p class="confirm-lead-text">Kembalikan status pembayaran tagihan sewa ini menjadi Belum Bayar?</p>
+          <div class="confirm-item-preview">
+            <div class="confirm-item-name">${escapeHtml(bill.tenantName)} (${escapeHtml(bill.roomNumber)})</div>
+            <div class="confirm-item-amount text-amber font-bold">${formatRupiah(bill.amount)}</div>
+            <div class="confirm-item-category"><span class="badge badge-secondary text-xs">Periode ${bill.period}</span></div>
+          </div>
+          <div class="confirm-warning-note" style="color: var(--amber-600); background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.25);">
+            ℹ️ Kwitansi dan catatan arus kas masuk terkait tagihan ini akan dibatalkan.
+          </div>
+        `,
         confirmText: 'Ya, Batalkan Lunas',
         danger: true
       });
