@@ -75,7 +75,7 @@ export async function renderBackup(container) {
             <div class="settings-card-header">
               <div class="settings-icon bg-indigo-subtle text-indigo" style="font-size:1.5rem;">☁️</div>
               <div class="flex-1">
-                <div class="flex-between align-center gap-2">
+                <div class="backup-card-title-wrap">
                   <h3 class="settings-card-title">Brankas Cadangan Cloud di Balik Layar</h3>
                   ${cloudBadgeHtml}
                 </div>
@@ -87,14 +87,14 @@ export async function renderBackup(container) {
 
             <div class="cloud-vault-status-box mb-3">
               <div class="cloud-meta-row">
-                <span class="cloud-meta-label">📱 No. WhatsApp Identitas:</span>
+                <span class="cloud-meta-label">📱 No. WhatsApp:</span>
                 <span class="cloud-meta-val">
                   ${hasPhone ? formatDisplayPhone(settings.ownerPhone) : '<span class="text-warning">Belum diisi di Pengaturan</span>'}
                 </span>
               </div>
               <div class="cloud-meta-row">
                 <span class="cloud-meta-label">🔑 Kunci PIN Pemulihan:</span>
-                <span class="cloud-meta-val font-mono">PIN Keamanan Anda (${settings.securityPin || '1234'})</span>
+                <span class="cloud-meta-val">PIN Anda (<strong class="font-mono text-primary">${settings.securityPin || '1234'}</strong>)</span>
               </div>
               <div class="cloud-meta-row">
                 <span class="cloud-meta-label">⏰ Terakhir Dicadangkan:</span>
@@ -108,15 +108,18 @@ export async function renderBackup(container) {
               </div>
             </div>
 
-            <div class="flex-between gap-2">
-              <button type="button" class="btn btn-primary flex-1 btn-cloud-sync-now" id="btn-cloud-sync-now">
+            <div class="backup-card-btn-group">
+              <button type="button" class="btn btn-primary btn-cloud-sync-now" id="btn-cloud-sync-now">
                 <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
                 </svg>
-                <span>☁️ Cadangkan ke Cloud Sekarang</span>
+                <span>Cadangkan ke Cloud Sekarang</span>
               </button>
-              <button type="button" class="btn btn-outline flex-1 btn-cloud-restore-action" id="btn-open-cloud-restore">
-                <span>📥 Pulihkan dari Cloud (via No. WA)</span>
+              <button type="button" class="btn btn-outline btn-cloud-restore-action" id="btn-open-cloud-restore">
+                <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
+                <span>Pulihkan dari Cloud (via No. WA)</span>
               </button>
             </div>
           </div>
@@ -126,7 +129,7 @@ export async function renderBackup(container) {
             <div class="settings-card-header">
               <div class="settings-icon bg-emerald-subtle text-emerald" style="font-size:1.4rem;">🛡️</div>
               <div class="flex-1">
-                <div class="flex-between align-center gap-2">
+                <div class="backup-card-title-wrap">
                   <h3 class="settings-card-title">Proteksi Memori HP (Anti-Hapus Browser)</h3>
                   <span class="badge ${isPersisted ? 'badge-emerald font-bold text-xs' : 'badge-blue font-bold text-xs'}">
                     ${isPersisted ? '✓ PROTEKSI PERMANEN AKTIF' : '✓ PERLINDUNGAN AKTIF'}
@@ -144,7 +147,7 @@ export async function renderBackup(container) {
             <div class="settings-card-header">
               <div class="settings-icon bg-blue-subtle text-blue" style="font-size:1.4rem;">💾</div>
               <div class="flex-1">
-                <div class="flex-between align-center gap-2">
+                <div class="backup-card-title-wrap">
                   <h3 class="settings-card-title">Riwayat Snapshot Darurat Lokal (7 Terakhir)</h3>
                   <span class="badge badge-gray font-bold text-xs">${snapshots.length} Arsip Tersedia</span>
                 </div>
@@ -185,7 +188,7 @@ export async function renderBackup(container) {
             <div class="settings-card-header">
               <div class="settings-icon bg-emerald-subtle text-emerald">📥</div>
               <div class="flex-1">
-                <div class="flex-between align-center gap-2">
+                <div class="backup-card-title-wrap">
                   <h3 class="settings-card-title">Download Arsip Backup JSON</h3>
                   <span class="badge ${isProUser ? 'badge-emerald font-bold text-xs' : 'badge-warning font-bold text-xs'} backup-pro-badge">
                     ${isProUser ? '✓ FITUR PRO AKTIF' : '🔒 FITUR PRO'}

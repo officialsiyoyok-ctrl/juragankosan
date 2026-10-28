@@ -2,3 +2,5 @@ node_modules/
 .DS_Store
 scratch/
 .env*
+.vercel
+*-dry-run.json

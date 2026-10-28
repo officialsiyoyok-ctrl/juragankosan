@@ -134,21 +134,21 @@ export function renderFinances(container, options = {}) {
               <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
               </svg>
-              + Tambah Pemasukan
+              Tambah Pemasukan
             </button>
           ` : currentSubTab === 'expenses' ? `
             <button type="button" class="btn btn-danger" id="btn-open-add-expense">
               <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
               </svg>
-              + Catat Pengeluaran
+              Catat Pengeluaran
             </button>
           ` : `
             <button type="button" class="btn btn-outline" id="btn-print-financial-report">
               <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/>
               </svg>
-              🖨️ Cetak Laporan
+              Cetak Laporan
             </button>
           `}
         </div>

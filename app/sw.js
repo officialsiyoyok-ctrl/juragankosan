@@ -4,11 +4,11 @@
  * Target Domain: app.juragankosan.id
  */
 
-const CACHE_NAME = 'juragankos-prod-v2.3';
+const CACHE_NAME = 'juragankos-prod-v2.4';
 
 const STATIC_ASSETS = [
+  '/',
   './',
-  './index.html',
   './manifest.json',
   './assets/icons/favicon.svg',
   './css/main.css?v=6.3',
@@ -85,9 +85,11 @@ self.addEventListener('fetch', (event) => {
           if (cachedResponse) {
             return cachedResponse;
           }
-          // If offline navigation request, fallback to root index.html
+          // If offline navigation request, fallback to root shell
           if (event.request.mode === 'navigate') {
-            return caches.match('./index.html');
+            return caches.match('/').then((rootResponse) => {
+              return rootResponse || caches.match('./');
+            });
           }
         });
       })

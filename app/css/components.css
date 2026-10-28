@@ -4825,6 +4825,86 @@ select.form-control option:not([value=""]) {
   background: linear-gradient(to bottom, var(--bg-surface), rgba(239, 68, 68, 0.02));
 }
 
+/* Backup Card Components */
+.card-accent-indigo {
+  border-top: 4px solid #6366f1;
+}
+
+.backup-card-title-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.cloud-vault-status-box {
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  margin: 14px 0 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cloud-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border-subtle);
+  font-size: 0.84rem;
+  gap: 12px;
+}
+
+.cloud-meta-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.cloud-meta-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cloud-meta-val {
+  color: var(--text-main);
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
+}
+
+.backup-card-btn-group {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 12px;
+}
+
+.backup-card-btn-group .btn {
+  flex: 1 1 0;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 10px 14px;
+  gap: 6px;
+}
+
 .btn-file-upload {
   cursor: pointer;
   display: flex;
@@ -6570,16 +6650,53 @@ html.app-unlocked .app-lock-overlay,
   .room-card-actions {
     display: flex !important;
     flex-direction: row !important;
-    gap: 6px !important;
+    align-items: center !important;
+    gap: 8px !important;
     width: 100% !important;
+    margin-top: auto !important;
+    padding-top: 10px !important;
+    border-top: 1px solid var(--border-subtle) !important;
+    box-sizing: border-box !important;
   }
 
   .room-card-actions .btn {
-    flex: 1 1 0 !important;
+    min-height: 40px !important;
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    border-radius: var(--radius-md) !important;
+    box-sizing: border-box !important;
+  }
+
+  .room-card-actions .btn-checkin-room,
+  .room-card-actions .btn-view-tenant {
+    flex: 1 1 auto !important;
     min-width: 0 !important;
-    font-size: 0.75rem !important;
-    padding: 6px 4px !important;
+    padding: 8px 12px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
     justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .room-card-actions .btn-edit-room {
+    flex: 0 0 auto !important;
+    padding: 8px 14px !important;
+    white-space: nowrap !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .room-card-actions .btn-delete-room {
+    flex: 0 0 40px !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.05rem !important;
   }
 
   /* 3. Halaman 3: Database Penyewa (tenantsView.js) */
@@ -6898,9 +7015,30 @@ html.app-unlocked .app-lock-overlay,
   }
 
   .fin-subnav-btn {
-    flex: 0 0 auto !important;
-    padding: 8px 12px !important;
-    font-size: 0.78rem !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    padding: 6px 4px !important;
+    font-size: 0.72rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    text-align: center !important;
+  }
+
+  .fin-subnav-btn .fin-tab-title {
+    font-size: 0.72rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-weight: 600 !important;
+  }
+
+  .fin-subnav-btn .fin-tab-pill {
+    font-size: 0.625rem !important;
+    padding: 1px 5px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
 
   /* Toolbar & Filter Cards di HP */
@@ -7233,6 +7371,10 @@ html.app-unlocked .app-lock-overlay,
     border: 1px solid rgba(239, 68, 68, 0.3) !important;
   }
 
+  .card-accent-indigo {
+    border-top: 3.5px solid #6366f1 !important;
+  }
+
   .card-accent-emerald {
     border-top: 3.5px solid #10b981 !important;
   }
@@ -7248,6 +7390,102 @@ html.app-unlocked .app-lock-overlay,
   .card-accent-red {
     border-top: 4px solid #ef4444 !important;
     border-left: 4px solid #ef4444 !important;
+  }
+
+  .backup-card-title-wrap {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    width: 100% !important;
+    margin-bottom: 4px !important;
+  }
+
+  .backup-card-title-wrap .settings-card-title {
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    line-height: 1.35 !important;
+    margin: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .backup-card-title-wrap .badge {
+    flex-shrink: 0 !important;
+    font-size: 0.7rem !important;
+    padding: 3px 8px !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Cloud Vault Status Box */
+  .cloud-vault-status-box {
+    background: var(--bg-surface-subtle) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 10px 12px !important;
+    margin: 12px 0 10px 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .cloud-meta-row {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 6px 0 !important;
+    border-bottom: 1px dashed var(--border-subtle) !important;
+    font-size: 0.8125rem !important;
+    gap: 8px !important;
+  }
+
+  .cloud-meta-row:last-child {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+  }
+
+  .cloud-meta-label {
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+    flex-shrink: 0 !important;
+    font-size: 0.78rem !important;
+  }
+
+  .cloud-meta-val {
+    color: var(--text-main) !important;
+    font-weight: 600 !important;
+    text-align: right !important;
+    font-size: 0.78rem !important;
+    word-break: break-word !important;
+  }
+
+  /* Tombol Aksi Backup Rapi Vertikal di Layar HP */
+  .backup-card-btn-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-top: 10px !important;
+  }
+
+  .backup-card-btn-group .btn {
+    width: 100% !important;
+    min-height: 42px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    padding: 10px 12px !important;
+    border-radius: var(--radius-md) !important;
+    white-space: normal !important;
+    line-height: 1.3 !important;
   }
 
   /* Badge FITUR PRO 1 Baris Ramping */

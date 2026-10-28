@@ -496,14 +496,14 @@ button, input, select, textarea {
   color: var(--text-secondary);
 }
 
-/* Mobile Bottom Navigation (Hidden on desktop, elegant scrollable tab bar on mobile) */
+/* Mobile Bottom Navigation (Hidden on desktop, elegant 7-tab bar on mobile) */
 .mobile-bottom-nav {
   display: none;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: calc(60px + env(safe-area-inset-bottom, 0px));
+  height: calc(58px + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
   background-color: var(--bg-surface);
   backdrop-filter: blur(16px);
@@ -511,17 +511,15 @@ button, input, select, textarea {
   border-top: 1px solid var(--border-color);
   z-index: 95;
   box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.08);
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: hidden;
   white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
   align-items: center;
-  justify-content: flex-start;
-  padding-left: 6px;
-  padding-right: 6px;
-  gap: 2px;
+  justify-content: space-around;
+  padding-left: 2px;
+  padding-right: 2px;
+  gap: 0;
+  box-sizing: border-box;
 }
 
 .mobile-bottom-nav::-webkit-scrollbar {
@@ -535,26 +533,42 @@ button, input, select, textarea {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.15rem;
-  flex: 0 0 auto;
-  min-width: 62px;
-  max-width: 72px;
+  gap: 2px;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
   height: 100%;
-  min-height: 48px;
-  padding: 4px 6px;
+  min-height: 44px;
+  padding: 4px 1px;
   color: var(--text-muted);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 600;
+  letter-spacing: -0.2px;
   transition: all var(--transition-fast);
   user-select: none;
   touch-action: manipulation;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   text-decoration: none;
+  box-sizing: border-box;
+}
+
+.mobile-nav-item span {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+  display: block;
 }
 
 .mobile-nav-icon {
-  width: 20px;
-  height: 20px;
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
   transition: transform var(--transition-fast);
 }
 
@@ -564,7 +578,7 @@ button, input, select, textarea {
 }
 
 .mobile-nav-item.active .mobile-nav-icon {
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.05);
 }
 
 [data-theme="dark"] .mobile-nav-item.active {

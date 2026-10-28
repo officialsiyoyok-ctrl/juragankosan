@@ -1,6 +1,13 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/app/index.html",
+      "destination": "/app",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/app/api/:match*",
