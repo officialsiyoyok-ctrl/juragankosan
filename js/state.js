@@ -1479,6 +1479,7 @@ class Store {
   }
 
   deleteExpense(id) {
+    if (!Array.isArray(this.data.expenses)) return true;
     this.data.expenses = this.data.expenses.filter((e) => e.id !== id);
     this.save();
     return true;

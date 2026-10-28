@@ -541,9 +541,14 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
                     </td>
                     <td class="text-center whitespace-nowrap">
                       ${isRent ? `
-                        <button type="button" class="btn btn-outline btn-xs btn-view-bill" data-bill-id="${item.billId}" title="Lihat Tagihan Sewa">
-                          🧾 Tagihan
-                        </button>
+                        <div class="table-action-group">
+                          <button type="button" class="btn btn-outline btn-xs btn-view-bill" data-bill-id="${item.billId}" title="Lihat Tagihan Sewa">
+                            🧾 Tagihan
+                          </button>
+                          <button type="button" class="btn btn-action-delete text-danger btn-delete-rent-payment" data-bill-id="${item.billId}" data-amount="${item.amount || 0}" title="Batalkan / Hapus Pembayaran Sewa">
+                            🗑️
+                          </button>
+                        </div>
                       ` : `
                         <div class="table-action-group">
                           <button type="button" class="btn btn-action-edit btn-edit-income" data-income-id="${item.id}" title="Edit Pemasukan">
@@ -1180,7 +1185,7 @@ function setupFinancialEventListeners(container) {
     });
   });
 
-  // 10. Table Row Actions: Edit & Delete Income
+  // 10. Table Row Actions: View/Revert Rent Bill & Edit/Delete Income
   container.querySelectorAll('.btn-edit-income').forEach((btn) => {
     btn.addEventListener('click', () => {
       const incId = btn.getAttribute('data-income-id');
@@ -1188,23 +1193,47 @@ function setupFinancialEventListeners(container) {
     });
   });
 
+  container.querySelectorAll('.btn-delete-rent-payment').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const billId = btn.getAttribute('data-bill-id');
+      const bill = store.getBillById(billId);
+      if (!bill) return;
+
+      const confirmed = await showConfirmModal({
+        title: 'Batalkan Pembayaran Sewa?',
+        message: `Yakin ingin membatalkan transaksi pembayaran sewa <strong>${escapeHtml(bill.tenantName || 'Penyewa')} (${escapeHtml(bill.roomNumber || 'Kamar')})</strong>? Status tagihan kamar ini akan dikembalikan menjadi Belum Bayar dan arus kas masuk terkait akan dibatalkan.`,
+        confirmText: 'Ya, Batalkan Pembayaran',
+        danger: true,
+        confirmBtnClass: 'btn-danger'
+      });
+
+      if (confirmed) {
+        store.revertBillPayment(billId);
+        showToast('Transaksi pembayaran sewa berhasil dibatalkan.', 'info');
+        renderFinances(container, { subTab: currentSubTab, period: selectedPeriodYM });
+      }
+    });
+  });
+
   container.querySelectorAll('.btn-delete-income').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const incId = btn.getAttribute('data-income-id');
       const inc = store.getIncomeById(incId);
       if (!inc) return;
 
-      showConfirmModal({
+      const confirmed = await showConfirmModal({
         title: 'Hapus Catatan Pemasukan?',
-        message: `Yakin ingin menghapus catatan pemasukan "${escapeHtml(inc.title)}" sebesar ${formatRupiah(inc.amount)}? Data yang dihapus tidak dapat dipulihkan.`,
+        message: `Yakin ingin menghapus catatan pemasukan "<strong>${escapeHtml(inc.title)}</strong>" sebesar <strong>${formatRupiah(inc.amount)}</strong>? Data yang dihapus tidak dapat dipulihkan.`,
         confirmText: 'Ya, Hapus Pemasukan',
-        confirmBtnClass: 'btn-danger',
-        onConfirm: () => {
-          store.deleteIncome(incId);
-          showToast('Catatan pemasukan berhasil dihapus', 'info');
-          renderFinances(container, { subTab: currentSubTab, period: selectedPeriodYM });
-        }
+        danger: true,
+        confirmBtnClass: 'btn-danger'
       });
+
+      if (confirmed) {
+        store.deleteIncome(incId);
+        showToast('Catatan pemasukan berhasil dihapus.', 'info');
+        renderFinances(container, { subTab: currentSubTab, period: selectedPeriodYM });
+      }
     });
   });
 
@@ -1217,22 +1246,24 @@ function setupFinancialEventListeners(container) {
   });
 
   container.querySelectorAll('.btn-delete-expense').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const expId = btn.getAttribute('data-exp-id');
       const exp = store.getExpenseById ? store.getExpenseById(expId) : store.getExpenses().find(e => e.id === expId);
       if (!exp) return;
 
-      showConfirmModal({
+      const confirmed = await showConfirmModal({
         title: 'Hapus Biaya Operasional?',
-        message: `Yakin ingin menghapus pengeluaran "${escapeHtml(exp.description || exp.category)}" sebesar ${formatRupiah(exp.amount)}? Data yang dihapus tidak dapat dipulihkan.`,
+        message: `Yakin ingin menghapus pengeluaran "<strong>${escapeHtml(exp.description || exp.category)}</strong>" sebesar <strong>${formatRupiah(exp.amount)}</strong>? Data yang dihapus tidak dapat dipulihkan.`,
         confirmText: 'Ya, Hapus Pengeluaran',
-        confirmBtnClass: 'btn-danger',
-        onConfirm: () => {
-          store.deleteExpense(expId);
-          showToast('Catatan pengeluaran berhasil dihapus', 'info');
-          renderFinances(container, { subTab: currentSubTab, period: selectedPeriodYM });
-        }
+        danger: true,
+        confirmBtnClass: 'btn-danger'
       });
+
+      if (confirmed) {
+        store.deleteExpense(expId);
+        showToast('Catatan pengeluaran berhasil dihapus.', 'info');
+        renderFinances(container, { subTab: currentSubTab, period: selectedPeriodYM });
+      }
     });
   });
 
@@ -1384,28 +1415,30 @@ function setupFinancialEventListeners(container) {
 
   // Delete custom category buttons
   container.querySelectorAll('.btn-delete-custom-chip, .btn-delete-cat-inline').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       e.preventDefault();
       const catType = btn.getAttribute('data-cat-type');
       const catName = btn.getAttribute('data-cat-name');
-      showConfirmModal({
+      const confirmed = await showConfirmModal({
         title: 'Hapus Kategori Kustom',
-        message: `Hapus kategori "${catName}"? Transaksi lama yang menggunakan kategori ini akan tetap aman.`,
+        message: `Hapus kategori "${escapeHtml(catName)}"? Transaksi lama yang menggunakan kategori ini akan tetap aman.`,
         confirmText: 'Ya, Hapus Kategori',
-        confirmBtnClass: 'btn-danger',
-        onConfirm: () => {
-          if (catType === 'expense') {
-            store.deleteExpenseCategory(catName);
-            if (expenseCategoryFilter === catName) expenseCategoryFilter = 'all';
-          } else {
-            store.deleteIncomeCategory(catName);
-            if (incomeCategoryFilter === catName) incomeCategoryFilter = 'all';
-          }
-          showToast(`Kategori "${catName}" berhasil dihapus`, 'info');
-          renderFinances(container, { subTab: currentSubTab, period: selectedPeriodYM });
-        }
+        danger: true,
+        confirmBtnClass: 'btn-danger'
       });
+
+      if (confirmed) {
+        if (catType === 'expense') {
+          store.deleteExpenseCategory(catName);
+          if (expenseCategoryFilter === catName) expenseCategoryFilter = 'all';
+        } else {
+          store.deleteIncomeCategory(catName);
+          if (incomeCategoryFilter === catName) incomeCategoryFilter = 'all';
+        }
+        showToast(`Kategori "${catName}" berhasil dihapus`, 'info');
+        renderFinances(container, { subTab: currentSubTab, period: selectedPeriodYM });
+      }
     });
   });
 

@@ -149,7 +149,10 @@ export function showConfirmModal({
   message = 'Apakah Anda yakin ingin melanjutkan?',
   confirmText = 'Ya, Lanjutkan',
   cancelText = 'Batal',
-  danger = false
+  danger = false,
+  confirmBtnClass = '',
+  onConfirm = null,
+  onCancel = null
 }) {
   return new Promise((resolve) => {
     let confirmModal = document.getElementById('global-confirm-modal');
@@ -177,39 +180,84 @@ export function showConfirmModal({
 
     const titleEl = document.getElementById('confirm-modal-title');
     const msgEl = document.getElementById('confirm-modal-message');
-    const okBtn = document.getElementById('confirm-modal-ok');
-    const cancelBtn = document.getElementById('confirm-modal-cancel');
+    const oldOkBtn = document.getElementById('confirm-modal-ok');
+    const oldCancelBtn = document.getElementById('confirm-modal-cancel');
+    const oldCloseBtn = confirmModal.querySelector('.modal-close');
+
+    // Clone and replace buttons to purge any leftover listeners cleanly
+    const okBtn = oldOkBtn.cloneNode(true);
+    const cancelBtn = oldCancelBtn.cloneNode(true);
+    oldOkBtn.replaceWith(okBtn);
+    oldCancelBtn.replaceWith(cancelBtn);
+
+    let closeBtn = null;
+    if (oldCloseBtn) {
+      closeBtn = oldCloseBtn.cloneNode(true);
+      oldCloseBtn.replaceWith(closeBtn);
+    }
 
     titleEl.textContent = title;
     msgEl.innerHTML = message;
     okBtn.textContent = confirmText;
     cancelBtn.textContent = cancelText;
 
-    if (danger) {
-      okBtn.className = 'btn btn-danger';
-    } else {
-      okBtn.className = 'btn btn-primary';
-    }
+    const isDanger = danger || (confirmBtnClass && confirmBtnClass.includes('danger'));
+    okBtn.className = confirmBtnClass || (isDanger ? 'btn btn-danger' : 'btn btn-primary');
+
+    let settled = false;
 
     const cleanup = () => {
       confirmModal.classList.remove('active');
-      document.body.classList.remove('modal-open');
-      okBtn.removeEventListener('click', onOk);
-      cancelBtn.removeEventListener('click', onCancel);
+      if (!document.querySelector('.modal-backdrop.active')) {
+        document.body.classList.remove('modal-open');
+        document.body.classList.remove('has-active-receipt');
+      }
     };
 
-    const onOk = () => {
+    const handleOk = (e) => {
+      if (e) e.preventDefault();
+      if (settled) return;
+      settled = true;
       cleanup();
+      try {
+        if (typeof onConfirm === 'function') {
+          onConfirm();
+        }
+      } catch (err) {
+        console.error('Error in onConfirm callback:', err);
+      }
       resolve(true);
     };
 
-    const onCancel = () => {
+    const handleCancel = (e) => {
+      if (e) e.preventDefault();
+      if (settled) return;
+      settled = true;
       cleanup();
+      try {
+        if (typeof onCancel === 'function') {
+          onCancel();
+        }
+      } catch (err) {
+        console.error('Error in onCancel callback:', err);
+      }
       resolve(false);
     };
 
-    okBtn.addEventListener('click', onOk);
-    cancelBtn.addEventListener('click', onCancel);
+    okBtn.addEventListener('click', handleOk);
+    cancelBtn.addEventListener('click', handleCancel);
+    if (closeBtn) {
+      closeBtn.addEventListener('click', handleCancel);
+    }
+
+    // Handle backdrop click
+    const handleBackdrop = (e) => {
+      if (e.target === confirmModal) {
+        confirmModal.removeEventListener('click', handleBackdrop);
+        handleCancel(e);
+      }
+    };
+    confirmModal.addEventListener('click', handleBackdrop);
 
     confirmModal.classList.add('active');
     document.body.classList.add('modal-open');
