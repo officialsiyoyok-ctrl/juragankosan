@@ -514,7 +514,7 @@ function setupSettingsEvents(container) {
 
   // Delete Bank Row (Event Delegation)
   if (bankList) {
-    bankList.addEventListener('click', (e) => {
+    bankList.addEventListener('click', async (e) => {
       const delBtn = e.target.closest('.btn-delete-bank-row');
       if (delBtn) {
         const row = delBtn.closest('.bank-account-row');
@@ -523,6 +523,18 @@ function setupSettingsEvents(container) {
           if (totalRows <= 1) {
             showToast('Minimal harus ada 1 baris rekening bank / e-wallet!', 'warning');
             return;
+          }
+          const bankNameInput = row.querySelector('.input-bank-name');
+          const bankNumInput = row.querySelector('.input-bank-number');
+          const hasContent = Boolean((bankNameInput && bankNameInput.value.trim()) || (bankNumInput && bankNumInput.value.trim()));
+          if (hasContent) {
+            const confirmed = await showConfirmModal({
+              title: 'Hapus Rekening Ini?',
+              message: `Hapus baris rekening <strong>${escapeHtml(bankNameInput?.value || 'Rekening')}</strong> (${escapeHtml(bankNumInput?.value || '-')}) dari formulir?`,
+              confirmText: 'Ya, Hapus Rekening',
+              danger: true
+            });
+            if (!confirmed) return;
           }
           row.remove();
           updateBankBadgeNumbers(bankList);
@@ -653,6 +665,13 @@ function setupSettingsEvents(container) {
       }
     });
   }
+
+  // Filter non-digit characters on numeric PIN inputs
+  container.querySelectorAll('.input-pin-numeric').forEach((input) => {
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/\D/g, '');
+    });
+  });
 
   // Toggle PIN visibility buttons
   container.querySelectorAll('.btn-toggle-pin-field').forEach((btn) => {

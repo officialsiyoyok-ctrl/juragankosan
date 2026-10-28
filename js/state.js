@@ -464,6 +464,109 @@ class Store {
     }
   }
 
+  normalizeData(parsed) {
+    if (!parsed || typeof parsed !== 'object') {
+      return getEmptyData();
+    }
+    const safeData = {
+      version: parsed.version || '1.0',
+      rooms: Array.isArray(parsed.rooms) ? parsed.rooms : [],
+      tenants: Array.isArray(parsed.tenants) ? parsed.tenants : [],
+      bills: Array.isArray(parsed.bills) ? parsed.bills : [],
+      expenses: Array.isArray(parsed.expenses) ? parsed.expenses : [],
+      incomes: Array.isArray(parsed.incomes) ? parsed.incomes : [],
+      settings: parsed.settings && typeof parsed.settings === 'object' ? { ...parsed.settings } : {}
+    };
+
+    // Tenants backwards compatibility
+    const sampleMap = {
+      tenant_01: {
+        emergencyPhone: '6281211112222',
+        emergencyContactName: 'Ibu Ratna (Ibu Kandung)',
+        originAddress: 'Jl. Dago No. 12, Coblong, Bandung, Jawa Barat'
+      },
+      tenant_02: {
+        emergencyPhone: '6285299887766',
+        emergencyContactName: 'Bpk. H. Rahmat (Ayah)',
+        originAddress: 'Jl. Pajajaran No. 44, Bogor Tengah, Jawa Barat'
+      },
+      tenant_03: {
+        emergencyPhone: '6281765432100',
+        emergencyContactName: 'Dewi Anggraeni (Istri)',
+        originAddress: 'Jl. Slamet Riyadi No. 88, Surakarta (Solo), Jawa Tengah'
+      },
+      tenant_04: {
+        emergencyPhone: '6281987654321',
+        emergencyContactName: 'Bpk. Hendra (Ayah)',
+        originAddress: 'Jl. Pemuda No. 25, Semarang Tengah, Jawa Tengah'
+      }
+    };
+    safeData.tenants.forEach((t) => {
+      if (!t.emergencyPhone && sampleMap[t.id]) t.emergencyPhone = sampleMap[t.id].emergencyPhone;
+      if (!t.emergencyContactName && sampleMap[t.id]) t.emergencyContactName = sampleMap[t.id].emergencyContactName;
+      if (!t.originAddress && sampleMap[t.id]) t.originAddress = sampleMap[t.id].originAddress;
+    });
+
+    // Settings normalization
+    const s = safeData.settings;
+    if (!s.kosName) s.kosName = 'Juragankosan';
+    if (s.ownerName === undefined) s.ownerName = '';
+    if (s.ownerPhone === undefined) s.ownerPhone = '';
+    if (s.address === undefined) s.address = '';
+    if (!Array.isArray(s.bankAccounts) || s.bankAccounts.length === 0) {
+      const legacyName = s.bankName || 'Bank Central Asia (BCA)';
+      const legacyNum = s.bankAccount || '7140-8899-22';
+      const legacyHolder = s.ownerName || 'H. Ahmad Fauzi';
+      s.bankAccounts = [
+        {
+          id: 'bank_01',
+          bankName: legacyName,
+          accountNumber: legacyNum,
+          accountHolder: legacyHolder
+        }
+      ];
+    }
+    if (s.bankName === undefined) s.bankName = s.bankAccounts[0]?.bankName || 'Bank Central Asia (BCA)';
+    if (s.bankAccount === undefined) s.bankAccount = s.bankAccounts[0]?.accountNumber || '';
+    if (s.acceptCash === undefined) s.acceptCash = true;
+    if (!s.cashNote) s.cashNote = 'Bayar tunai langsung ke Pengelola Kos';
+    if (!s.waTemplate) s.waTemplate = DEFAULT_WA_TEMPLATE;
+    if (!s.securityPin) s.securityPin = '1234';
+    if (!s.theme) s.theme = 'light';
+    if (!Array.isArray(s.customExpenseCategories)) s.customExpenseCategories = [];
+    if (!Array.isArray(s.customIncomeCategories)) s.customIncomeCategories = [];
+
+    // Bills normalization
+    safeData.bills.forEach((b) => {
+      if (b.status === 'lunas') {
+        if (b.paidAmount === undefined) b.paidAmount = b.amount;
+        if (b.remainingAmount === undefined) b.remainingAmount = 0;
+      } else if (b.status === 'sebagian') {
+        if (b.paidAmount === undefined) b.paidAmount = 0;
+        if (b.remainingAmount === undefined) b.remainingAmount = b.amount - b.paidAmount;
+      } else {
+        if (b.paidAmount === undefined) b.paidAmount = 0;
+        if (b.remainingAmount === undefined) b.remainingAmount = b.amount;
+      }
+      if (!Array.isArray(b.payments)) {
+        b.payments = [];
+        if (b.status === 'lunas' && b.paidDate) {
+          b.payments.push({
+            id: 'pay_init_' + b.id,
+            date: b.paidDate,
+            amount: b.amount,
+            paymentMethod: b.paymentMethod || 'Transfer BCA',
+            receiptNumber: b.receiptNumber || '',
+            notes: b.notes || 'Pelunasan sewa',
+            type: 'full'
+          });
+        }
+      }
+    });
+
+    return safeData;
+  }
+
   loadData() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);

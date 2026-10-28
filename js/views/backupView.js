@@ -703,7 +703,7 @@ function setupBackupEvents(container) {
       if (confirmed) {
         const snap = await getSnapshotById(snapId);
         if (snap && snap.data) {
-          store.data = snap.data;
+          store.data = store.normalizeData ? store.normalizeData(snap.data) : snap.data;
           store.save();
           showToast('🎉 Data berhasil dikembalikan ke snapshot terpilih!', 'success');
           renderBackup(container);
@@ -750,6 +750,7 @@ function setupBackupEvents(container) {
       reader.onload = (event) => {
         const content = event.target.result;
         const res = store.importDataJSON(content);
+        fileInput.value = '';
         if (res.success) {
           showToast('🎉 Data kos berhasil dipulihkan dari file backup!', 'success');
           renderBackup(container);
@@ -760,6 +761,10 @@ function setupBackupEvents(container) {
         } else {
           showToast(res.message || 'Format file JSON tidak sesuai!', 'error');
         }
+      };
+      reader.onerror = () => {
+        fileInput.value = '';
+        showToast('Gagal membaca file arsip!', 'error');
       };
       reader.readAsText(file);
     });
@@ -811,6 +816,15 @@ function setupBackupEvents(container) {
     window.location.hash = 'dashboard';
     window.location.reload();
   };
+
+  // Numeric-only filter for security PIN fields
+  [inputCardResetPin, inputResetPin, inputRestorePin].forEach((input) => {
+    if (input) {
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/\D/g, '');
+      });
+    }
+  });
 
   // In-Card PIN Handler
   if (btnToggleCardEye && inputCardResetPin) {
