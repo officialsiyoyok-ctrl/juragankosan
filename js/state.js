@@ -769,12 +769,16 @@ class Store {
   }
 
   addTenant(tenantData) {
-    const room = this.getRoomById(tenantData.roomId);
-    if (!room) {
-      throw new Error('Kamar yang dipilih tidak valid.');
-    }
-    if (room.status === 'terisi') {
-      throw new Error('Kamar ini sudah terisi penyewa lain.');
+    const hasRoom = Boolean(tenantData.roomId);
+    let room = null;
+    if (hasRoom) {
+      room = this.getRoomById(tenantData.roomId);
+      if (!room) {
+        throw new Error('Kamar yang dipilih tidak valid.');
+      }
+      if (room.status === 'terisi') {
+        throw new Error('Kamar ini sudah terisi penyewa lain.');
+      }
     }
 
     const checkInDate = tenantData.checkInDate || getTodayDateString();
@@ -790,8 +794,8 @@ class Store {
       originAddress: String(tenantData.originAddress || '').trim(),
       idNumber: String(tenantData.idNumber || '').trim(),
       occupation: String(tenantData.occupation || '').trim(),
-      roomId: room.id,
-      roomNumber: room.number,
+      roomId: room ? room.id : null,
+      roomNumber: room ? room.number : (tenantData.roomNumber || 'Belum Ada Kamar'),
       checkInDate: checkInDate,
       dueDay: dueDay,
       deposit: Math.max(0, parseInt(tenantData.deposit, 10) || 0),
@@ -801,29 +805,33 @@ class Store {
       createdAt: getTodayDateString()
     };
 
-    // Auto-update room status
-    room.status = 'terisi';
-    room.currentTenantId = newTenant.id;
+    if (room) {
+      // Auto-update room status
+      room.status = 'terisi';
+      room.currentTenantId = newTenant.id;
+    }
 
     this.data.tenants.push(newTenant);
 
-    // Auto-generate bill untuk bulan pertama masuk & bulan berjalan aktif
-    const currentYM = getCurrentYearMonth();
-    const rawCheckIn = newTenant.checkInDate || '';
-    const checkInYM = rawCheckIn ? String(rawCheckIn).trim().substring(0, 7) : '';
-    if (checkInYM) {
-      if (checkInYM <= currentYM) {
-        let p = checkInYM;
-        while (p <= currentYM) {
-          this.ensureBillForTenant(newTenant, room, p);
-          p = addMonthsToPeriod(p, 1);
+    if (room) {
+      // Auto-generate bill untuk bulan pertama masuk & bulan berjalan aktif
+      const currentYM = getCurrentYearMonth();
+      const rawCheckIn = newTenant.checkInDate || '';
+      const checkInYM = rawCheckIn ? String(rawCheckIn).trim().substring(0, 7) : '';
+      if (checkInYM) {
+        if (checkInYM <= currentYM) {
+          let p = checkInYM;
+          while (p <= currentYM) {
+            this.ensureBillForTenant(newTenant, room, p);
+            p = addMonthsToPeriod(p, 1);
+          }
+        } else {
+          // Check-in masa depan (cth: bulan depan)
+          this.ensureBillForTenant(newTenant, room, checkInYM);
         }
       } else {
-        // Check-in masa depan (cth: bulan depan)
-        this.ensureBillForTenant(newTenant, room, checkInYM);
+        this.ensureBillForTenant(newTenant, room, currentYM);
       }
-    } else {
-      this.ensureBillForTenant(newTenant, room, currentYM);
     }
 
     this.save();
@@ -854,6 +862,65 @@ class Store {
     if (tenantData.deposit !== undefined) {
       tenant.deposit = Math.max(0, parseInt(tenantData.deposit, 10) || 0);
     }
+    if (tenantData.dueDay !== undefined) {
+      tenant.dueDay = parseInt(tenantData.dueDay, 10) || 1;
+    }
+    if (tenantData.checkInDate !== undefined) {
+      tenant.checkInDate = tenantData.checkInDate;
+    }
+
+    // Room assignment / switching / unassigning
+    if (tenantData.roomId !== undefined) {
+      const newRoomId = tenantData.roomId || null;
+      const oldRoomId = tenant.roomId || null;
+
+      if (newRoomId !== oldRoomId) {
+        // Release old room if exists
+        if (oldRoomId) {
+          const oldRoom = this.getRoomById(oldRoomId);
+          if (oldRoom && oldRoom.currentTenantId === tenant.id) {
+            oldRoom.status = 'kosong';
+            oldRoom.currentTenantId = null;
+          }
+        }
+
+        // Assign new room if provided
+        if (newRoomId) {
+          const newRoom = this.getRoomById(newRoomId);
+          if (!newRoom) throw new Error('Kamar yang dipilih tidak valid.');
+          if (newRoom.status === 'terisi' && newRoom.currentTenantId !== tenant.id) {
+            throw new Error('Kamar ini sudah terisi penyewa lain.');
+          }
+          tenant.roomId = newRoom.id;
+          tenant.roomNumber = newRoom.number;
+          newRoom.status = 'terisi';
+          newRoom.currentTenantId = tenant.id;
+
+          // Auto-generate bill for active period if no bill exists yet
+          const currentYM = getCurrentYearMonth();
+          const rawCheckIn = tenant.checkInDate || '';
+          const checkInYM = rawCheckIn ? String(rawCheckIn).trim().substring(0, 7) : '';
+          const startYM = checkInYM && checkInYM <= currentYM ? checkInYM : currentYM;
+          let p = startYM;
+          while (p <= currentYM) {
+            this.ensureBillForTenant(tenant, newRoom, p);
+            p = addMonthsToPeriod(p, 1);
+          }
+
+          // Update room info in existing bills
+          this.data.bills.forEach((b) => {
+            if (b.tenantId === id) {
+              b.roomId = newRoom.id;
+              b.roomNumber = newRoom.number;
+            }
+          });
+        } else {
+          // Unassign room
+          tenant.roomId = null;
+          tenant.roomNumber = 'Belum Ada Kamar';
+        }
+      }
+    }
 
     // Update in bills
     this.data.bills.forEach((b) => {
@@ -867,6 +934,24 @@ class Store {
     return tenant;
   }
 
+  deleteTenant(tenantId) {
+    const tenant = this.getTenantById(tenantId);
+    if (!tenant) return false;
+
+    // Release occupied room if any
+    if (tenant.roomId) {
+      const room = this.getRoomById(tenant.roomId);
+      if (room && room.currentTenantId === tenant.id) {
+        room.status = 'kosong';
+        room.currentTenantId = null;
+      }
+    }
+
+    this.data.tenants = this.data.tenants.filter((t) => t.id !== tenantId);
+    this.save();
+    return true;
+  }
+
   checkOutTenant(tenantId, checkOutDate = getTodayDateString(), note = '') {
     const tenant = this.getTenantById(tenantId);
     if (!tenant) return { success: false, message: 'Penyewa tidak ditemukan' };
@@ -878,10 +963,12 @@ class Store {
     }
 
     // Auto-revert room to vacant
-    const room = this.getRoomById(tenant.roomId);
-    if (room) {
-      room.status = 'kosong';
-      room.currentTenantId = null;
+    if (tenant.roomId) {
+      const room = this.getRoomById(tenant.roomId);
+      if (room && room.currentTenantId === tenant.id) {
+        room.status = 'kosong';
+        room.currentTenantId = null;
+      }
     }
 
     this.save();

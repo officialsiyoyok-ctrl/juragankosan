@@ -34,9 +34,19 @@ export function renderTenants(container, options = {}) {
   }
 
   // Filter tenants
+  const activeCount = allTenants.filter((t) => t.status === 'aktif').length;
+  const historyCount = allTenants.filter((t) => t.status === 'keluar').length;
+  const noRoomCount = allTenants.filter((t) => t.status === 'aktif' && !t.roomId).length;
+
   const filteredTenants = allTenants.filter((tenant) => {
-    const matchesStatus =
-      currentTab === 'aktif' ? tenant.status === 'aktif' : tenant.status === 'keluar';
+    let matchesStatus = false;
+    if (currentTab === 'aktif') {
+      matchesStatus = tenant.status === 'aktif';
+    } else if (currentTab === 'tanpa_kamar') {
+      matchesStatus = tenant.status === 'aktif' && !tenant.roomId;
+    } else {
+      matchesStatus = tenant.status === 'keluar';
+    }
 
     const s = currentSearch.toLowerCase().trim();
     const matchesSearch =
@@ -52,9 +62,6 @@ export function renderTenants(container, options = {}) {
 
     return matchesStatus && matchesSearch;
   });
-
-  const activeCount = allTenants.filter((t) => t.status === 'aktif').length;
-  const historyCount = allTenants.filter((t) => t.status === 'keluar').length;
 
   container.innerHTML = `
     <div class="view-header">
@@ -90,8 +97,17 @@ export function renderTenants(container, options = {}) {
 
       <div class="filter-pills">
         <button class="filter-pill ${currentTab === 'aktif' ? 'active' : ''}" data-tab="aktif">
-          Penyewa Aktif (${activeCount})
+          Semua Aktif (${activeCount})
         </button>
+        ${
+          noRoomCount > 0
+            ? `
+          <button class="filter-pill ${currentTab === 'tanpa_kamar' ? 'active' : ''}" data-tab="tanpa_kamar" style="color: #b45309; font-weight: 600;">
+            ⏳ Belum Ada Kamar (${noRoomCount})
+          </button>
+        `
+            : ''
+        }
         <button class="filter-pill ${currentTab === 'keluar' ? 'active' : ''}" data-tab="keluar">
           Riwayat Check-out (${historyCount})
         </button>
@@ -103,17 +119,19 @@ export function renderTenants(container, options = {}) {
       filteredTenants.length === 0
         ? `
       <div class="empty-state-card">
-        <div class="empty-icon">👥</div>
-        <h3>${currentTab === 'aktif' ? 'Belum Ada Penyewa Aktif' : 'Belum Ada Riwayat Check-out'}</h3>
+        <div class="empty-icon">${currentTab === 'tanpa_kamar' ? '⏳' : '👥'}</div>
+        <h3>${currentTab === 'aktif' ? 'Belum Ada Penyewa Aktif' : currentTab === 'tanpa_kamar' ? 'Tidak Ada Penyewa Tanpa Kamar' : 'Belum Ada Riwayat Check-out'}</h3>
         <p>${
           currentSearch
             ? 'Tidak ada data penyewa yang sesuai dengan kata kunci pencarian.'
             : currentTab === 'aktif'
             ? 'Kamar Anda siap disewakan. Klik tombol di bawah untuk mencatat penyewa baru.'
+            : currentTab === 'tanpa_kamar'
+            ? 'Semua penyewa aktif saat ini telah memiliki kamar yang ditentukan.'
             : 'Belum ada penyewa yang pernah check-out dari kos ini.'
         }</p>
         ${
-          currentTab === 'aktif'
+          currentTab === 'aktif' || currentTab === 'tanpa_kamar'
             ? `<button class="btn btn-primary" id="btn-empty-add-tenant-action">+ Check-in Penyewa Baru</button>`
             : ''
         }
@@ -145,7 +163,11 @@ export function renderTenants(container, options = {}) {
                       }
                     </div>
                     <div class="tenant-sub-tags">
-                      <span class="room-pill-sm">${escapeHtml(tenant.roomNumber || (room ? room.number : '-'))}</span>
+                      ${
+                        tenant.roomId
+                          ? `<span class="room-pill-sm">${escapeHtml(tenant.roomNumber || (room ? room.number : '-'))}</span>`
+                          : `<span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #b45309; border: 1px dashed rgba(245, 158, 11, 0.5); font-weight: 600;">⏳ Belum Ada Kamar</span>`
+                      }
                       ${
                         tenant.occupation
                           ? `<span class="badge badge-neutral">${escapeHtml(tenant.occupation)}</span>`
@@ -173,7 +195,9 @@ export function renderTenants(container, options = {}) {
 
                   <div class="detail-item">
                     <span class="detail-label">Jatuh Tempo</span>
-                    <span class="detail-value font-medium text-emerald" title="Tiap Tanggal ${tenant.dueDay || '1'}">Tiap Tgl ${tenant.dueDay || '1'}</span>
+                    <span class="detail-value font-medium ${tenant.roomId ? 'text-emerald' : 'text-secondary'}" title="${tenant.roomId ? `Tiap Tanggal ${tenant.dueDay || '1'}` : 'Belum ditentukan kamar'}">
+                      ${tenant.roomId ? `Tiap Tgl ${tenant.dueDay || '1'}` : (tenant.dueDay ? `Rencana Tgl ${tenant.dueDay}` : 'Belum Aktif')}
+                    </span>
                   </div>
 
                   <div class="detail-item">
@@ -242,17 +266,29 @@ export function renderTenants(container, options = {}) {
                 <div class="tenant-card-actions">
                   ${
                     isAktif
-                      ? `
-                    <button class="btn btn-outline btn-sm btn-view-bills" data-tenant-id="${tenant.id}" title="Lihat Tagihan Sewa">
-                      💳 Tagihan
-                    </button>
-                    <button class="btn btn-outline btn-sm btn-edit-tenant" data-tenant-id="${tenant.id}" title="Edit Data Penyewa">
-                      ✏️ Edit
-                    </button>
-                    <button class="btn btn-danger-outline btn-sm btn-checkout-tenant" data-tenant-id="${tenant.id}" title="Check-out Penyewa">
-                      🚪 Keluar
-                    </button>
-                  `
+                      ? !tenant.roomId
+                        ? `
+                      <button class="btn btn-primary btn-sm btn-assign-room" data-tenant-id="${tenant.id}" title="Pilih &amp; Masukkan ke Kamar">
+                        🚪 Tentukan Kamar
+                      </button>
+                      <button class="btn btn-outline btn-sm btn-edit-tenant" data-tenant-id="${tenant.id}" title="Edit Data Penyewa">
+                        ✏️ Edit
+                      </button>
+                      <button class="btn btn-danger-outline btn-sm btn-delete-tenant" data-tenant-id="${tenant.id}" title="Hapus Data Calon Penyewa">
+                        🗑️ Hapus
+                      </button>
+                    `
+                        : `
+                      <button class="btn btn-outline btn-sm btn-view-bills" data-tenant-id="${tenant.id}" title="Lihat Tagihan Sewa">
+                        💳 Tagihan
+                      </button>
+                      <button class="btn btn-outline btn-sm btn-edit-tenant" data-tenant-id="${tenant.id}" title="Edit Data Penyewa">
+                        ✏️ Edit
+                      </button>
+                      <button class="btn btn-danger-outline btn-sm btn-checkout-tenant" data-tenant-id="${tenant.id}" title="Check-out Penyewa">
+                        🚪 Keluar
+                      </button>
+                    `
                       : `
                     <button class="btn btn-outline btn-sm btn-edit-tenant" data-tenant-id="${tenant.id}" style="width: 100%;">
                       ✏️ Edit Catatan
@@ -359,7 +395,7 @@ export function renderTenants(container, options = {}) {
 
             <div class="form-row">
               <div class="form-group flex-1" id="group-select-room">
-                <label for="tenant-room-trigger" class="form-label">Pilih Kamar Kosong <span class="text-danger">*</span></label>
+                <label for="tenant-room-trigger" class="form-label">Pilih Kamar <span class="text-secondary font-normal" style="font-size: 0.8rem;">(Opsional — kosongkan jika belum ada kamar)</span></label>
                 <div class="custom-room-select-trigger" id="tenant-room-trigger" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false">
                   <div class="room-trigger-body">
                     <span class="room-trigger-icon">🚪</span>
@@ -567,6 +603,28 @@ function setupTenantsEvents(container) {
     });
   });
 
+  // Assign Room to Roomless Tenant
+  container.querySelectorAll('.btn-assign-room').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tenantId = btn.getAttribute('data-tenant-id');
+      openEditTenantModal(tenantId);
+    });
+  });
+
+  // Delete Roomless / Waiting List Tenant
+  container.querySelectorAll('.btn-delete-tenant').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tenantId = btn.getAttribute('data-tenant-id');
+      const tenant = store.getTenantById(tenantId);
+      if (!tenant) return;
+      if (confirm(`Hapus data calon penyewa "${tenant.name}"?`)) {
+        store.deleteTenant(tenantId);
+        showToast(`Data penyewa ${tenant.name} berhasil dihapus.`, 'info');
+        renderTenants(container);
+      }
+    });
+  });
+
   // View Bills for Tenant
   container.querySelectorAll('.btn-view-bills').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -654,25 +712,14 @@ function updateTenantRoomTrigger(roomId) {
   const subtitleEl = document.getElementById('room-trigger-subtitle');
   if (!hiddenInput || !trigger || !titleEl || !subtitleEl) return;
 
-  const vacantRooms = store.getVacantRooms();
-
-  if (vacantRooms.length === 0) {
-    hiddenInput.value = '';
-    titleEl.textContent = '-- Semua Kamar Sedang Terisi --';
-    subtitleEl.style.display = 'none';
-    trigger.classList.remove('has-value', 'input-invalid');
-    trigger.style.pointerEvents = 'none';
-    trigger.style.opacity = '0.6';
-    return;
-  }
-
   trigger.style.pointerEvents = 'auto';
   trigger.style.opacity = '1';
 
   if (!roomId) {
     hiddenInput.value = '';
-    titleEl.textContent = '-- Pilih Kamar Kosong --';
-    subtitleEl.style.display = 'none';
+    titleEl.innerHTML = '<span style="color: #b45309; font-weight: 600;">⏳ Belum Ditentukan Kamar</span>';
+    subtitleEl.textContent = 'Calon penyewa / booking / waiting list (Kamar dipilih nanti)';
+    subtitleEl.style.display = 'block';
     trigger.classList.remove('has-value', 'input-invalid');
     return;
   }
@@ -680,8 +727,9 @@ function updateTenantRoomTrigger(roomId) {
   const room = store.getRoomById(roomId);
   if (!room) {
     hiddenInput.value = '';
-    titleEl.textContent = '-- Pilih Kamar Kosong --';
-    subtitleEl.style.display = 'none';
+    titleEl.innerHTML = '<span style="color: #b45309; font-weight: 600;">⏳ Belum Ditentukan Kamar</span>';
+    subtitleEl.textContent = 'Calon penyewa / booking / waiting list (Kamar dipilih nanti)';
+    subtitleEl.style.display = 'block';
     trigger.classList.remove('has-value', 'input-invalid');
     return;
   }
@@ -696,11 +744,9 @@ function updateTenantRoomTrigger(roomId) {
 
 function openRoomPickerModal() {
   const vacantRooms = store.getVacantRooms();
-  if (vacantRooms.length === 0) return;
-
   const countBadge = document.getElementById('room-picker-count-badge');
   if (countBadge) {
-    countBadge.textContent = `${vacantRooms.length} Kamar Siap Huni`;
+    countBadge.textContent = vacantRooms.length > 0 ? `${vacantRooms.length} Kamar Siap Huni` : '0 Kamar Kosong';
   }
 
   const searchInput = document.getElementById('room-picker-search-input');
@@ -716,13 +762,21 @@ function renderRoomPickerItems(filterText = '') {
   const listContainer = document.getElementById('room-picker-list');
   if (!listContainer) return;
 
-  const vacantRooms = store.getVacantRooms();
+  let availableRooms = store.getVacantRooms();
   const currentSelectedId = document.getElementById('tenant-room-id')?.value || '';
 
-  let filtered = vacantRooms;
+  // If currently assigned room is occupied by this tenant, include it
+  if (currentSelectedId) {
+    const currentRoom = store.getRoomById(currentSelectedId);
+    if (currentRoom && !availableRooms.some((r) => r.id === currentSelectedId)) {
+      availableRooms = [currentRoom, ...availableRooms];
+    }
+  }
+
+  let filtered = availableRooms;
   if (filterText) {
     const q = filterText.toLowerCase();
-    filtered = vacantRooms.filter((r) => {
+    filtered = availableRooms.filter((r) => {
       const num = String(r.number || '').toLowerCase();
       const type = String(r.type || '').toLowerCase();
       const floor = String(r.floor || '').toLowerCase();
@@ -731,63 +785,91 @@ function renderRoomPickerItems(filterText = '') {
     });
   }
 
+  const isNoneSelected = !currentSelectedId;
+  const noneItemHtml = `
+    <div class="room-picker-item room-picker-item-none ${isNoneSelected ? 'selected' : ''}" data-room-id="" role="button" tabindex="0" style="border: 1.5px dashed #f59e0b; background: rgba(245, 158, 11, 0.06); margin-bottom: 12px; border-radius: 8px;">
+      <div class="room-picker-item-main">
+        <div class="room-picker-item-num" style="color: #b45309; display: flex; align-items: center; gap: 6px; font-weight: 600;">
+          <span>⏳</span> Belum Ditentukan Kamar
+        </div>
+        <div class="room-picker-item-type" style="color: #64748b; font-size: 0.78rem;">
+          Calon penyewa, booking/DP, waiting list, atau tentukan kamar nanti
+        </div>
+      </div>
+      <div class="room-picker-item-aside">
+        <div class="room-picker-radio ${isNoneSelected ? 'checked' : ''}">
+          ${isNoneSelected ? '✓' : ''}
+        </div>
+      </div>
+    </div>
+  `;
+
   if (filtered.length === 0) {
-    listContainer.innerHTML = `
-      <div class="room-picker-empty">
-        <div class="room-picker-empty-icon">🔍</div>
+    listContainer.innerHTML =
+      noneItemHtml +
+      `
+      <div class="room-picker-empty" style="padding: 16px 8px;">
+        <div class="room-picker-empty-icon">ℹ️</div>
         <div class="room-picker-empty-text">
-          ${filterText ? `Tidak ada kamar cocok dengan <strong>"${escapeHtml(filterText)}"</strong>` : 'Tidak ada kamar kosong yang tersedia'}
+          ${
+            filterText
+              ? `Tidak ada kamar kosong yang cocok dengan <strong>"${escapeHtml(filterText)}"</strong>`
+              : 'Semua kamar saat ini terisi penuh. Anda dapat memilih opsi "Belum Ditentukan Kamar" di atas untuk mendaftarkan sebagai Calon Penyewa / Waiting List.'
+          }
         </div>
       </div>
     `;
-    return;
-  }
+  } else {
+    // Group by floor
+    const grouped = {};
+    filtered.forEach((r) => {
+      const fl = (r.floor || 'Lantai 1').trim();
+      if (!grouped[fl]) grouped[fl] = [];
+      grouped[fl].push(r);
+    });
 
-  // Group by floor
-  const grouped = {};
-  filtered.forEach((r) => {
-    const fl = (r.floor || 'Lantai 1').trim();
-    if (!grouped[fl]) grouped[fl] = [];
-    grouped[fl].push(r);
-  });
-
-  listContainer.innerHTML = Object.keys(grouped)
-    .map((floorName) => {
-      const rooms = grouped[floorName];
-      return `
-        <div class="room-picker-group">
-          <div class="room-picker-floor-header">
-            <span class="room-picker-floor-title">🏢 ${escapeHtml(floorName)}</span>
-            <span class="room-picker-floor-count">${rooms.length} Kamar</span>
-          </div>
-          <div class="room-picker-items">
-            ${rooms.map((r) => {
-              const isSelected = r.id === currentSelectedId;
-              return `
-                <div class="room-picker-item ${isSelected ? 'selected' : ''}" data-room-id="${r.id}" role="button" tabindex="0">
-                  <div class="room-picker-item-main">
-                    <div class="room-picker-item-num">Kamar ${escapeHtml(r.number)}</div>
-                    <div class="room-picker-item-type">${escapeHtml(r.type)}</div>
-                  </div>
-                  <div class="room-picker-item-aside">
-                    <div class="room-picker-item-price">${formatRupiah(r.price)}<span class="room-picker-unit">/bln</span></div>
-                    <div class="room-picker-radio ${isSelected ? 'checked' : ''}">
-                      ${isSelected ? '✓' : ''}
+    listContainer.innerHTML =
+      noneItemHtml +
+      Object.keys(grouped)
+        .map((floorName) => {
+          const rooms = grouped[floorName];
+          return `
+            <div class="room-picker-group">
+              <div class="room-picker-floor-header">
+                <span class="room-picker-floor-title">🏢 ${escapeHtml(floorName)}</span>
+                <span class="room-picker-floor-count">${rooms.length} Kamar</span>
+              </div>
+              <div class="room-picker-items">
+                ${rooms
+                  .map((r) => {
+                    const isSelected = r.id === currentSelectedId;
+                    return `
+                    <div class="room-picker-item ${isSelected ? 'selected' : ''}" data-room-id="${r.id}" role="button" tabindex="0">
+                      <div class="room-picker-item-main">
+                        <div class="room-picker-item-num">Kamar ${escapeHtml(r.number)}</div>
+                        <div class="room-picker-item-type">${escapeHtml(r.type)}</div>
+                      </div>
+                      <div class="room-picker-item-aside">
+                        <div class="room-picker-item-price">${formatRupiah(r.price)}<span class="room-picker-unit">/bln</span></div>
+                        <div class="room-picker-radio ${isSelected ? 'checked' : ''}">
+                          ${isSelected ? '✓' : ''}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-      `;
-    })
-    .join('');
+                  `;
+                  })
+                  .join('')}
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+  }
 
   // Attach click listeners to room items
   listContainer.querySelectorAll('.room-picker-item').forEach((item) => {
     item.addEventListener('click', () => {
-      const roomId = item.getAttribute('data-room-id');
+      const roomId = item.getAttribute('data-room-id') || null;
       updateTenantRoomTrigger(roomId);
       clearTenantFormErrors();
       closeModal('modal-room-picker');
@@ -804,18 +886,16 @@ function openAddTenantModal(preselectedRoomId = null) {
 
   if (vacantRooms.length === 0) {
     alertEl.innerHTML = `
-      <div class="alert-banner alert-warning mb-3">
-        <span class="alert-banner-icon" style="font-size: 1.35rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;">⚠️</span>
-        <div class="alert-banner-content" style="display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;">
-          <strong style="color: inherit; font-size: 0.88rem; line-height: 1.3;">Semua kamar sedang terisi!</strong>
-          <span style="font-size: 0.76rem; line-height: 1.4; opacity: 0.95;">Tambahkan kamar baru di tab Data Kamar atau check-out penyewa lama terlebih dahulu sebelum mendaftarkan penyewa baru.</span>
+      <div class="alert-banner alert-warning mb-3" style="display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 8px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);">
+        <span class="alert-banner-icon" style="font-size: 1.25rem; line-height: 1; flex-shrink: 0;">ℹ️</span>
+        <div class="alert-banner-content" style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;">
+          <strong style="font-size: 0.85rem; line-height: 1.3; color: #b45309;">Semua kamar sedang terisi penuh</strong>
+          <span style="font-size: 0.78rem; line-height: 1.4; color: var(--color-text-secondary, #64748b);">Penyewa akan didaftarkan sebagai <strong>Waiting List / Calon Penyewa</strong>. Anda dapat menentukan kamarnya nanti saat ada kamar kosong.</span>
         </div>
       </div>
     `;
-    saveBtn.disabled = true;
-  } else {
-    saveBtn.disabled = false;
   }
+  saveBtn.disabled = false;
 
   document.getElementById('tenant-modal-title').textContent = 'Check-in Penyewa Baru';
   document.getElementById('tenant-id-input').value = '';
@@ -835,7 +915,7 @@ function openAddTenantModal(preselectedRoomId = null) {
   document.getElementById('group-select-room').style.display = 'block';
 
   // Update room selection in custom picker
-  updateTenantRoomTrigger(preselectedRoomId);
+  updateTenantRoomTrigger(preselectedRoomId || null);
 
   clearTenantFormErrors();
   openModal('tenant-form-modal');
@@ -859,8 +939,10 @@ function openEditTenantModal(tenantId) {
   document.getElementById('tenant-deposit').value = tenant.deposit || '';
   document.getElementById('tenant-notes').value = tenant.notes || '';
 
-  // Cannot change room directly in edit (must check-out or reassign)
-  document.getElementById('group-select-room').style.display = 'none';
+  // Show room select so tenant can be assigned to a room or switch rooms
+  document.getElementById('group-select-room').style.display = 'block';
+  updateTenantRoomTrigger(tenant.roomId || null);
+
   document.getElementById('tenant-modal-alert').innerHTML = '';
   document.getElementById('btn-save-tenant').disabled = false;
 
@@ -894,6 +976,7 @@ function saveTenantForm(container) {
   const dueDay = document.getElementById('tenant-dueday').value;
   const deposit = document.getElementById('tenant-deposit').value;
   const notes = document.getElementById('tenant-notes').value.trim();
+  const roomId = document.getElementById('tenant-room-id').value || null;
 
   let hasError = false;
 
@@ -911,18 +994,9 @@ function saveTenantForm(container) {
     hasError = true;
   }
 
-  if (!id) {
-    const roomId = document.getElementById('tenant-room-id').value;
-    const triggerEl = document.getElementById('tenant-room-trigger');
-    if (!roomId) {
-      document.getElementById('error-tenant-room').textContent = 'Pilih salah satu kamar yang kosong!';
-      if (triggerEl) triggerEl.classList.add('input-invalid');
-      hasError = true;
-    } else {
-      if (triggerEl) triggerEl.classList.remove('input-invalid');
-    }
-    if (hasError) return;
+  if (hasError) return;
 
+  if (!id) {
     try {
       const newTenant = store.addTenant({
         name,
@@ -938,30 +1012,38 @@ function saveTenantForm(container) {
         deposit,
         notes
       });
-      showToast(`Penyewa ${newTenant.name} berhasil di-checkin (${newTenant.roomNumber})! Tagihan sewa langsung dibuat otomatis.`, 'success');
+      if (newTenant.roomId) {
+        showToast(`Penyewa ${newTenant.name} berhasil di-checkin (${newTenant.roomNumber})! Tagihan sewa langsung dibuat otomatis.`, 'success');
+      } else {
+        showToast(`Penyewa ${newTenant.name} berhasil didaftarkan (Belum Ada Kamar / Waiting List).`, 'success');
+      }
       closeModal('tenant-form-modal');
       renderTenants(container);
     } catch (err) {
       showToast(err.message, 'error');
     }
   } else {
-    if (hasError) return;
-    store.updateTenant(id, {
-      name,
-      phone: cleanPhone,
-      emergencyPhone,
-      emergencyContactName,
-      originAddress,
-      idNumber,
-      occupation,
-      checkInDate,
-      dueDay: parseInt(dueDay, 10) || 1,
-      deposit,
-      notes
-    });
-    showToast(`Data penyewa ${name} berhasil diperbarui!`, 'success');
-    closeModal('tenant-form-modal');
-    renderTenants(container);
+    try {
+      store.updateTenant(id, {
+        name,
+        phone: cleanPhone,
+        emergencyPhone,
+        emergencyContactName,
+        originAddress,
+        idNumber,
+        occupation,
+        roomId,
+        checkInDate,
+        dueDay: parseInt(dueDay, 10) || 1,
+        deposit,
+        notes
+      });
+      showToast(`Data penyewa ${name} berhasil diperbarui!`, 'success');
+      closeModal('tenant-form-modal');
+      renderTenants(container);
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
   }
 }
 

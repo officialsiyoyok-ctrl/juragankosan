@@ -8848,6 +8848,17 @@ html.app-unlocked .app-lock-overlay,
   color: #ffffff;
 }
 
+.room-picker-item-none.selected {
+  border-color: #f59e0b !important;
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+
+.room-picker-item-none.selected .room-picker-radio {
+  border-color: #d97706 !important;
+  background-color: #d97706 !important;
+  color: #ffffff !important;
+}
+
 .room-picker-empty {
   text-align: center;
   padding: 1.5rem 1rem;
