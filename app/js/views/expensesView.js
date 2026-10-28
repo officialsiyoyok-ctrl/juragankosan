@@ -14,7 +14,7 @@ import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } 
 
 let selectedPeriod = getCurrentYearMonth();
 
-const EXPENSE_CATEGORIES = [
+const getExpenseCategoriesList = () => (store.getExpenseCategories ? store.getExpenseCategories() : [
   { name: 'Listrik / Token PLN', icon: '⚡' },
   { name: 'Air / PDAM', icon: '💧' },
   { name: 'WiFi / Internet', icon: '📶' },
@@ -23,13 +23,14 @@ const EXPENSE_CATEGORIES = [
   { name: 'Keamanan / Satpam', icon: '🛡️' },
   { name: 'Perlengkapan Kos', icon: '🧻' },
   { name: 'Lain-lain', icon: '📦' }
-];
+]);
 
 export function renderExpenses(container, options = {}) {
   if (options.period) {
     selectedPeriod = options.period;
   }
 
+  const expenseCategories = getExpenseCategoriesList();
   const periodExpenses = store.getExpensesByPeriod(selectedPeriod);
   const periodBills = store.getBillsByPeriod(selectedPeriod);
 
@@ -118,7 +119,7 @@ export function renderExpenses(container, options = {}) {
         <div class="category-chips-list">
           ${Object.entries(categoryTotals)
             .map(([cat, amount]) => {
-              const matched = EXPENSE_CATEGORIES.find((c) => c.name === cat);
+              const matched = expenseCategories.find((c) => c.name === cat);
               const icon = matched ? matched.icon : '📦';
               return `
               <div class="category-stat-chip">
@@ -169,7 +170,7 @@ export function renderExpenses(container, options = {}) {
             <tbody>
               ${periodExpenses
                 .map((exp) => {
-                  const matched = EXPENSE_CATEGORIES.find((c) => c.name === exp.category);
+                  const matched = expenseCategories.find((c) => c.name === exp.category);
                   const icon = matched ? matched.icon : '📦';
 
                   return `
@@ -219,10 +220,10 @@ export function renderExpenses(container, options = {}) {
             <div class="form-group">
               <label for="expense-category" class="form-label">Kategori Biaya</label>
               <div class="custom-select-trigger" id="expense-category-trigger" data-picker-for="expense-category" tabindex="0" role="button">
-                <span class="custom-select-label" id="expense-category-label">${EXPENSE_CATEGORIES[0]?.icon} ${EXPENSE_CATEGORIES[0]?.name}</span>
+                <span class="custom-select-label" id="expense-category-label">${expenseCategories[0]?.icon} ${expenseCategories[0]?.name}</span>
                 <span class="custom-select-arrow">▾</span>
               </div>
-              <input type="hidden" id="expense-category" value="${EXPENSE_CATEGORIES[0]?.name || ''}" />
+              <input type="hidden" id="expense-category" value="${expenseCategories[0]?.name || ''}" />
             </div>
 
             <div class="form-group">
@@ -321,14 +322,19 @@ function setupExpensesEvents(container) {
   if (catTrigger && catInput) {
     bindCustomPicker(catTrigger, catInput, {
       title: 'Pilih Kategori Biaya',
-      options: EXPENSE_CATEGORIES.map((c) => ({ value: c.name, label: c.name, icon: c.icon }))
+      getOptions: () => getExpenseCategoriesList().map((c) => ({ value: c.name, label: c.name, icon: c.icon }))
     });
   }
 }
 
 function openAddExpenseModal() {
+  const cats = getExpenseCategoriesList();
+  const firstCat = cats[0]?.name || 'Listrik / Token PLN';
+  const firstIcon = cats[0]?.icon || '⚡';
   document.getElementById('expense-date').value = getTodayDateString();
-  document.getElementById('expense-category').value = EXPENSE_CATEGORIES[0]?.name || '';
+  document.getElementById('expense-category').value = firstCat;
+  const labelEl = document.getElementById('expense-category-label');
+  if (labelEl) labelEl.textContent = `${firstIcon} ${firstCat}`;
   document.getElementById('expense-amount').value = '';
   document.getElementById('expense-desc').value = '';
 

@@ -5548,6 +5548,145 @@ select.form-control option:not([value=""]) {
   font-weight: 700;
 }
 
+/* Custom Category Badges & Actions */
+.btn-link-action {
+  background: none;
+  border: none;
+  color: var(--primary, #059669);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm, 4px);
+  transition: all var(--transition-fast, 0.15s);
+}
+.btn-link-action:hover {
+  background-color: var(--primary-subtle, rgba(5, 150, 105, 0.1));
+  text-decoration: underline;
+}
+
+.badge-custom-cat-tag {
+  font-size: 0.625rem;
+  padding: 1px 5px;
+  border-radius: 9999px;
+  background-color: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-left: 4px;
+}
+
+.btn-delete-custom-chip {
+  background: none;
+  border: none;
+  color: var(--text-muted, #94a3b8);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all var(--transition-fast, 0.15s);
+  margin-left: auto;
+}
+.btn-delete-custom-chip:hover {
+  color: var(--danger, #ef4444);
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+.category-chip-add {
+  border-style: dashed !important;
+  border-color: var(--primary-300, #a7f3d0) !important;
+  background-color: rgba(16, 185, 129, 0.04) !important;
+}
+.category-chip-add:hover {
+  border-color: var(--primary, #059669) !important;
+  background-color: rgba(16, 185, 129, 0.1) !important;
+}
+
+.custom-cat-emoji-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.custom-cat-selected-icon {
+  font-size: 1.75rem;
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-surface-subtle, #f1f5f9);
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--border-color, #cbd5e1);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+}
+.custom-cat-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+  padding: 8px;
+  background-color: var(--bg-surface-subtle, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+}
+[data-theme="dark"] .custom-cat-emoji-grid {
+  background-color: rgba(15, 23, 42, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.custom-cat-emoji-btn {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 1.25rem;
+  padding: 6px 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+.custom-cat-emoji-btn:hover {
+  background-color: var(--bg-surface, #ffffff);
+  border-color: var(--primary-300, #a7f3d0);
+  transform: scale(1.15);
+}
+.custom-cat-emoji-btn.active {
+  border-color: var(--primary, #059669);
+  background-color: var(--primary-50, #ecfdf5);
+  box-shadow: 0 0 0 1px var(--primary, #059669);
+}
+
+.btn-custom-cat-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn-delete-cat-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  line-height: 1;
+  margin-left: 4px;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-delete-cat-inline:hover {
+  opacity: 1;
+  background-color: rgba(239, 68, 68, 0.2);
+  color: var(--danger, #ef4444);
+}
+
 /* Cashflow table styling */
 .cashflow-table tbody tr.row-ledger-in {
   background-color: rgba(16, 185, 129, 0.02);

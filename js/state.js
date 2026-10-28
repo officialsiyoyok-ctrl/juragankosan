@@ -8,6 +8,27 @@ import { queueCloudSync } from './utils/cloudBackup.js';
 
 const STORAGE_KEY = 'juragankos_data_v1';
 
+// Master Default Categories
+export const DEFAULT_EXPENSE_CATEGORIES = [
+  { id: 'exp_cat_listrik', name: 'Listrik / Token PLN', icon: '⚡', isDefault: true },
+  { id: 'exp_cat_air', name: 'Air / PDAM', icon: '💧', isDefault: true },
+  { id: 'exp_cat_wifi', name: 'WiFi / Internet', icon: '📶', isDefault: true },
+  { id: 'exp_cat_kebersihan', name: 'Kebersihan & Sampah', icon: '🧹', isDefault: true },
+  { id: 'exp_cat_perbaikan', name: 'Perbaikan / Maintenance', icon: '🔧', isDefault: true },
+  { id: 'exp_cat_keamanan', name: 'Keamanan / Satpam', icon: '🛡️', isDefault: true },
+  { id: 'exp_cat_perlengkapan', name: 'Perlengkapan Kos', icon: '🧻', isDefault: true },
+  { id: 'exp_cat_lain', name: 'Lain-lain', icon: '📦', isDefault: true }
+];
+
+export const DEFAULT_INCOME_CATEGORIES = [
+  { id: 'inc_cat_sewa', name: 'Sewa Kamar', icon: '🏠', badgeClass: 'badge-emerald', isDefault: true },
+  { id: 'inc_cat_parkir', name: 'Parkir Kendaraan', icon: '🛵', badgeClass: 'badge-blue', isDefault: true },
+  { id: 'inc_cat_denda', name: 'Denda Keterlambatan', icon: '⚠️', badgeClass: 'badge-amber', isDefault: true },
+  { id: 'inc_cat_layanan', name: 'Layanan Tambahan', icon: '🧺', badgeClass: 'badge-purple', isDefault: true },
+  { id: 'inc_cat_token', name: 'Penjualan Token Listrik', icon: '⚡', badgeClass: 'badge-info', isDefault: true },
+  { id: 'inc_cat_lain', name: 'Lain-lain', icon: '💰', badgeClass: 'badge-secondary', isDefault: true }
+];
+
 // Initial realistic sample data
 export function getSampleData() {
   const currentYM = getCurrentYearMonth();
@@ -380,7 +401,9 @@ export function getSampleData() {
     cashNote: 'Bayar tunai langsung ke Pengelola Kos',
     waTemplate: DEFAULT_WA_TEMPLATE,
     securityPin: '1234',
-    theme: 'light'
+    theme: 'light',
+    customExpenseCategories: [],
+    customIncomeCategories: []
   };
 
   return {
@@ -422,7 +445,9 @@ export function getEmptyData() {
       cashNote: 'Bayar tunai langsung ke Pengelola Kos',
       waTemplate: DEFAULT_WA_TEMPLATE,
       securityPin: '1234',
-      theme: 'light'
+      theme: 'light',
+      customExpenseCategories: [],
+      customIncomeCategories: []
     }
   };
 }
@@ -516,6 +541,14 @@ class Store {
             }
             if (!parsed.settings.securityPin) {
               parsed.settings.securityPin = '1234';
+              settingsMigrated = true;
+            }
+            if (!Array.isArray(parsed.settings.customExpenseCategories)) {
+              parsed.settings.customExpenseCategories = [];
+              settingsMigrated = true;
+            }
+            if (!Array.isArray(parsed.settings.customIncomeCategories)) {
+              parsed.settings.customIncomeCategories = [];
               settingsMigrated = true;
             }
             if (settingsMigrated) {
@@ -1362,6 +1395,110 @@ class Store {
     this.data.expenses = this.data.expenses.filter((e) => e.id !== id);
     this.save();
     return true;
+  }
+
+  // --- CATEGORIES MANAGEMENT (EXPENSE & INCOME) ---
+  getExpenseCategories() {
+    const custom = Array.isArray(this.data.settings?.customExpenseCategories)
+      ? this.data.settings.customExpenseCategories
+      : [];
+    return [...DEFAULT_EXPENSE_CATEGORIES, ...custom];
+  }
+
+  addExpenseCategory({ name, icon }) {
+    const trimmedName = String(name || '').trim();
+    if (!trimmedName) {
+      throw new Error('Nama kategori pengeluaran tidak boleh kosong.');
+    }
+    const all = this.getExpenseCategories();
+    const isDup = all.some((c) => c.name.toLowerCase() === trimmedName.toLowerCase());
+    if (isDup) {
+      throw new Error(`Kategori "${trimmedName}" sudah ada.`);
+    }
+
+    if (!this.data.settings) this.data.settings = {};
+    if (!Array.isArray(this.data.settings.customExpenseCategories)) {
+      this.data.settings.customExpenseCategories = [];
+    }
+
+    const newCat = {
+      id: generateId('cat_exp'),
+      name: trimmedName,
+      icon: icon || '🏷️',
+      isCustom: true,
+      createdAt: getTodayDateString()
+    };
+
+    this.data.settings.customExpenseCategories.push(newCat);
+    this.save();
+    return newCat;
+  }
+
+  deleteExpenseCategory(nameOrId) {
+    if (!this.data.settings || !Array.isArray(this.data.settings.customExpenseCategories)) {
+      return false;
+    }
+    const beforeLen = this.data.settings.customExpenseCategories.length;
+    this.data.settings.customExpenseCategories = this.data.settings.customExpenseCategories.filter(
+      (c) => c.id !== nameOrId && c.name !== nameOrId
+    );
+    if (this.data.settings.customExpenseCategories.length !== beforeLen) {
+      this.save();
+      return true;
+    }
+    return false;
+  }
+
+  getIncomeCategories() {
+    const custom = Array.isArray(this.data.settings?.customIncomeCategories)
+      ? this.data.settings.customIncomeCategories
+      : [];
+    return [...DEFAULT_INCOME_CATEGORIES, ...custom];
+  }
+
+  addIncomeCategory({ name, icon, badgeClass }) {
+    const trimmedName = String(name || '').trim();
+    if (!trimmedName) {
+      throw new Error('Nama kategori pemasukan tidak boleh kosong.');
+    }
+    const all = this.getIncomeCategories();
+    const isDup = all.some((c) => c.name.toLowerCase() === trimmedName.toLowerCase());
+    if (isDup) {
+      throw new Error(`Kategori "${trimmedName}" sudah ada.`);
+    }
+
+    if (!this.data.settings) this.data.settings = {};
+    if (!Array.isArray(this.data.settings.customIncomeCategories)) {
+      this.data.settings.customIncomeCategories = [];
+    }
+
+    const newCat = {
+      id: generateId('cat_inc'),
+      name: trimmedName,
+      icon: icon || '✨',
+      badgeClass: badgeClass || 'badge-purple',
+      isCustom: true,
+      createdAt: getTodayDateString()
+    };
+
+    this.data.settings.customIncomeCategories.push(newCat);
+    this.save();
+    return newCat;
+  }
+
+  deleteIncomeCategory(nameOrId) {
+    if (!this.data.settings || !Array.isArray(this.data.settings.customIncomeCategories)) {
+      return false;
+    }
+    const beforeLen = this.data.settings.customIncomeCategories.length;
+    this.data.settings.customIncomeCategories = this.data.settings.customIncomeCategories.filter(
+      (c) => c.id !== nameOrId && c.name !== nameOrId
+    );
+    if (this.data.settings.customIncomeCategories.length !== beforeLen) {
+      this.save();
+      return true;
+    }
+    return false;
   }
 
   // --- AUTOMATIC RENT & UNIFIED CASH FLOW INTEGRATION ---

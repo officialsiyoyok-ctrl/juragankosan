@@ -2,7 +2,7 @@
  * Juragankosan — Pusat Keuangan & Arus Kas Terpadu
  * Menggabungkan Pemasukan, Pengeluaran, dan Laporan Laba Bersih ke dalam 1 Tabbed Interface
  */
-import { store } from '../state.js';
+import { store, DEFAULT_EXPENSE_CATEGORIES, DEFAULT_INCOME_CATEGORIES } from '../state.js';
 import {
   formatRupiah,
   formatDateIndo,
@@ -13,26 +13,13 @@ import {
 } from '../utils/formatter.js';
 import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js';
 
-// Master Categories
-export const EXPENSE_CATEGORIES = [
-  { name: 'Listrik / Token PLN', icon: '⚡' },
-  { name: 'Air / PDAM', icon: '💧' },
-  { name: 'WiFi / Internet', icon: '📶' },
-  { name: 'Kebersihan & Sampah', icon: '🧹' },
-  { name: 'Perbaikan / Maintenance', icon: '🔧' },
-  { name: 'Keamanan / Satpam', icon: '🛡️' },
-  { name: 'Perlengkapan Kos', icon: '🧻' },
-  { name: 'Lain-lain', icon: '📦' }
-];
+// Master Categories (Default & Backward-Compatible)
+export const EXPENSE_CATEGORIES = DEFAULT_EXPENSE_CATEGORIES;
+export const INCOME_CATEGORIES = DEFAULT_INCOME_CATEGORIES;
 
-export const INCOME_CATEGORIES = [
-  { name: 'Sewa Kamar', icon: '🏠', badgeClass: 'badge-emerald' },
-  { name: 'Parkir Kendaraan', icon: '🛵', badgeClass: 'badge-blue' },
-  { name: 'Denda Keterlambatan', icon: '⚠️', badgeClass: 'badge-amber' },
-  { name: 'Layanan Tambahan', icon: '🧺', badgeClass: 'badge-purple' },
-  { name: 'Penjualan Token Listrik', icon: '⚡', badgeClass: 'badge-info' },
-  { name: 'Lain-lain', icon: '💰', badgeClass: 'badge-secondary' }
-];
+// Preset emojis for custom category creation
+const EXPENSE_EMOJI_PRESETS = ['⚡', '💧', '📶', '🧹', '🔧', '🛡️', '🧻', '📦', '💡', '🚗', '🛵', '🍱', '🧺', '🧯', '🛒', '🏷️', '🏢', '🧾', '🪴', '🎨', '🔑', '🍳', '⛽', '💰'];
+const INCOME_EMOJI_PRESETS = ['💰', '🏠', '🛵', '🚗', '⚠️', '🧺', '⚡', '🏷️', '📦', '🍱', '🪙', '💵', '📈', '🔑', '☕', '🏪', '🚿', '🏊', '🎯', '✨'];
 
 // Local state for the view
 let currentSubTab = 'incomes'; // 'incomes' | 'expenses' | 'report'
@@ -217,7 +204,12 @@ export function renderFinances(container, options = {}) {
             </div>
 
             <div class="form-group mb-3">
-              <label for="income-category" class="form-label font-semibold">Kategori Pemasukan</label>
+              <div class="flex-between align-center mb-1">
+                <label for="income-category" class="form-label font-semibold mb-0">Kategori Pemasukan</label>
+                <button type="button" class="btn-link-action" id="btn-add-income-cat-modal" title="Tambah Kategori Pemasukan Baru">
+                  <span>＋</span> Kategori Baru
+                </button>
+              </div>
               <div class="custom-select-trigger" id="income-category-trigger" data-picker-for="income-category" tabindex="0" role="button">
                 <span class="custom-select-label" id="income-category-label">🛵 Parkir Kendaraan</span>
                 <span class="custom-select-arrow">▾</span>
@@ -272,7 +264,12 @@ export function renderFinances(container, options = {}) {
             </div>
 
             <div class="form-group mb-3">
-              <label for="expense-category" class="form-label font-semibold">Kategori Biaya Operasional</label>
+              <div class="flex-between align-center mb-1">
+                <label for="expense-category" class="form-label font-semibold mb-0">Kategori Biaya Operasional</label>
+                <button type="button" class="btn-link-action" id="btn-add-expense-cat-modal" title="Tambah Kategori Biaya Baru">
+                  <span>＋</span> Kategori Baru
+                </button>
+              </div>
               <div class="custom-select-trigger" id="expense-category-trigger" data-picker-for="expense-category" tabindex="0" role="button">
                 <span class="custom-select-label" id="expense-category-label">⚡ Listrik / Token PLN</span>
                 <span class="custom-select-arrow">▾</span>
@@ -309,6 +306,47 @@ export function renderFinances(container, options = {}) {
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-close-modal="expense-modal">Batal</button>
             <button type="submit" class="btn btn-danger" id="btn-submit-expense">Simpan Pengeluaran</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: TAMBAH KATEGORI KUSTOM (PEMASUKAN & PENGELUARAN) -->
+    <div id="custom-category-modal" class="modal-backdrop">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-header">
+          <h3 class="modal-title" id="custom-cat-modal-title">Tambah Kategori Baru</h3>
+          <button class="modal-close" data-close-modal="custom-category-modal">&times;</button>
+        </div>
+        <form id="custom-category-form" novalidate>
+          <input type="hidden" id="custom-cat-type" value="expense" />
+          <div class="modal-body">
+            <div class="form-group mb-3">
+              <label for="custom-cat-name" class="form-label font-semibold">Nama Kategori <span class="text-danger">*</span></label>
+              <input 
+                type="text" 
+                id="custom-cat-name" 
+                class="form-control" 
+                placeholder="Contoh: Air Galon / Aqua" 
+                maxlength="40" 
+                required 
+              />
+              <span class="form-error" id="error-custom-cat-name"></span>
+            </div>
+
+            <div class="form-group mb-1">
+              <label class="form-label font-semibold">Pilih Ikon / Emoji</label>
+              <div class="custom-cat-emoji-preview mb-2">
+                <span class="custom-cat-selected-icon" id="custom-cat-icon-preview">🏷️</span>
+                <input type="hidden" id="custom-cat-icon" value="🏷️" />
+                <span class="text-xs text-muted">Pilih ikon emoji yang sesuai:</span>
+              </div>
+              <div class="custom-cat-emoji-grid" id="custom-cat-emoji-presets"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-close-modal="custom-category-modal">Batal</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-custom-category">Simpan Kategori</button>
           </div>
         </form>
       </div>
@@ -401,11 +439,24 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
               Semua (${periodInflows.length})
             </button>
             <button type="button" class="btn btn-sm ${incomeCategoryFilter === 'rent_only' ? 'btn-primary' : 'btn-outline'} btn-filter-income-cat" data-cat="rent_only">
-              🏠 Sewa Kamar (${periodInflows.filter(i => i.isRent).length})
+              🏠 Sewa Kamar (${periodInflows.filter((i) => i.isRent).length})
             </button>
             <button type="button" class="btn btn-sm ${incomeCategoryFilter === 'other_only' ? 'btn-primary' : 'btn-outline'} btn-filter-income-cat" data-cat="other_only">
-              ✨ Pemasukan Lain (${periodInflows.filter(i => !i.isRent).length})
+              ✨ Pemasukan Lain (${periodInflows.filter((i) => !i.isRent).length})
             </button>
+            ${(store.getIncomeCategories ? store.getIncomeCategories() : INCOME_CATEGORIES)
+              .filter((c) => c.name !== 'Sewa Kamar')
+              .map((c) => {
+                const count = periodInflows.filter((i) => !i.isRent && i.category === c.name).length;
+                if (count === 0 && !c.isCustom) return '';
+                const isSelected = incomeCategoryFilter === c.name;
+                return `
+                  <button type="button" class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-outline'} btn-filter-income-cat ${c.isCustom ? 'btn-custom-cat-filter' : ''}" data-cat="${escapeHtml(c.name)}">
+                    <span>${c.icon}</span> ${escapeHtml(c.name)} ${count > 0 ? `(${count})` : ''}
+                    ${c.isCustom ? `<span class="btn-delete-cat-inline" data-cat-type="income" data-cat-name="${escapeHtml(c.name)}" title="Hapus kategori kustom">&times;</span>` : ''}
+                  </button>
+                `;
+              }).join('')}
           </div>
         </div>
 
@@ -454,9 +505,9 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
             <tbody>
               ${filteredInflows.map((item, idx) => {
                 const isRent = item.isRent;
-                const catObj = INCOME_CATEGORIES.find(c => c.name === item.category);
+                const catObj = (store.getIncomeCategories ? store.getIncomeCategories() : INCOME_CATEGORIES).find(c => c.name === item.category);
                 const catIcon = isRent ? '🏠' : (catObj ? catObj.icon : '✨');
-                const catBadge = isRent ? 'badge-emerald' : (catObj ? catObj.badgeClass : 'badge-purple');
+                const catBadge = isRent ? 'badge-emerald' : (catObj ? catObj.badgeClass || 'badge-purple' : 'badge-purple');
                 return `
                   <tr class="${isRent ? 'row-rent-inflow' : 'row-other-inflow'}">
                     <td class="text-muted text-xs text-center">${idx + 1}</td>
@@ -596,25 +647,43 @@ function renderExpensesSubTab({ selectedPeriodYM, periodExpenses, totalMonthExpe
 
     <!-- Category Breakdown Chips -->
     <div class="card mb-4 category-breakdown-card">
-      <div class="card-header border-b px-4 py-3">
+      <div class="card-header border-b px-4 py-3 flex-between align-center">
         <h3 class="card-title text-sm font-bold mb-0">Rincian Pos Operasional (${formatMonthYear(selectedPeriodYM)})</h3>
+        <button type="button" class="btn-link-action" id="btn-add-expense-cat-header" style="font-size: 0.8rem;">
+          <span>＋</span> Kategori Baru
+        </button>
       </div>
       <div class="category-chips-grid p-4">
-        ${EXPENSE_CATEGORIES.map((cat) => {
+        ${(store.getExpenseCategories ? store.getExpenseCategories() : EXPENSE_CATEGORIES).map((cat) => {
           const total = categoryTotals[cat.name] || 0;
           const isSelected = expenseCategoryFilter === cat.name;
           return `
             <div class="category-chip ${total > 0 ? 'category-chip-active' : ''} ${isSelected ? 'category-chip-selected' : ''}" data-cat="${escapeHtml(cat.name)}">
               <span class="category-icon">${cat.icon}</span>
-              <div class="category-info">
-                <span class="category-name">${escapeHtml(cat.name)}</span>
+              <div class="category-info flex-1">
+                <div class="flex align-center gap-1">
+                  <span class="category-name">${escapeHtml(cat.name)}</span>
+                  ${cat.isCustom ? `<span class="badge-custom-cat-tag">Kustom</span>` : ''}
+                </div>
                 <span class="category-amount ${total > 0 ? 'text-danger font-semibold' : 'text-muted'}">
                   ${formatRupiah(total)}
                 </span>
               </div>
+              ${cat.isCustom ? `
+                <button type="button" class="btn-delete-custom-chip" data-cat-type="expense" data-cat-name="${escapeHtml(cat.name)}" title="Hapus kategori kustom">
+                  &times;
+                </button>
+              ` : ''}
             </div>
           `;
         }).join('')}
+        <div class="category-chip category-chip-add" id="btn-add-expense-cat-chip" role="button" tabindex="0">
+          <span class="category-icon" style="color: var(--primary);">＋</span>
+          <div class="category-info">
+            <span class="category-name" style="color: var(--primary); font-weight: 700;">Tambah Kategori</span>
+            <span class="category-amount text-muted" style="font-size: 0.72rem;">Kustom baru</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -664,7 +733,8 @@ function renderExpensesSubTab({ selectedPeriodYM, periodExpenses, totalMonthExpe
             </thead>
             <tbody>
               ${filteredExpenses.map((exp, idx) => {
-                const catObj = EXPENSE_CATEGORIES.find((c) => c.name === exp.category);
+                const allExpCats = store.getExpenseCategories ? store.getExpenseCategories() : EXPENSE_CATEGORIES;
+                const catObj = allExpCats.find((c) => c.name === exp.category);
                 const icon = catObj ? catObj.icon : '📦';
                 return `
                   <tr>
@@ -1044,7 +1114,8 @@ function setupFinancialEventListeners(container) {
 
   // 6. Category filters for Pemasukan
   container.querySelectorAll('.btn-filter-income-cat').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-delete-cat-inline')) return;
       incomeCategoryFilter = btn.getAttribute('data-cat');
       renderFinances(container, { subTab: 'incomes', period: selectedPeriodYM });
     });
@@ -1052,10 +1123,17 @@ function setupFinancialEventListeners(container) {
 
   // 7. Category chips for Pengeluaran
   container.querySelectorAll('.category-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
+    chip.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-delete-custom-chip')) return;
+      if (chip.classList.contains('category-chip-add') || chip.id === 'btn-add-expense-cat-chip') {
+        openCustomCategoryModal('expense');
+        return;
+      }
       const cat = chip.getAttribute('data-cat');
-      expenseCategoryFilter = (expenseCategoryFilter === cat) ? 'all' : cat;
-      renderFinances(container, { subTab: 'expenses', period: selectedPeriodYM });
+      if (cat) {
+        expenseCategoryFilter = (expenseCategoryFilter === cat) ? 'all' : cat;
+        renderFinances(container, { subTab: 'expenses', period: selectedPeriodYM });
+      }
     });
   });
 
@@ -1233,11 +1311,29 @@ function setupFinancialEventListeners(container) {
   if (incomeCatTrigger && incomeCatInput) {
     bindCustomPicker(incomeCatTrigger, incomeCatInput, {
       title: 'Pilih Kategori Pemasukan',
-      options: INCOME_CATEGORIES.filter((c) => c.name !== 'Sewa Kamar').map((c) => ({
-        value: c.name,
-        label: c.name,
-        icon: c.icon
-      }))
+      getOptions: () => {
+        const cats = (store.getIncomeCategories ? store.getIncomeCategories() : INCOME_CATEGORIES)
+          .filter((c) => c.name !== 'Sewa Kamar')
+          .map((c) => ({
+            value: c.name,
+            label: c.name,
+            icon: c.icon,
+            sublabel: c.isCustom ? 'Kategori kustom Anda' : ''
+          }));
+        cats.push({
+          value: '__ADD_NEW_INCOME_CAT__',
+          label: '➕ Tambah Kategori Baru...',
+          icon: '✨',
+          sublabel: 'Buat nama & ikon kategori sendiri'
+        });
+        return cats;
+      },
+      onChange: (val) => {
+        if (val === '__ADD_NEW_INCOME_CAT__') {
+          incomeCatInput.value = 'Parkir Kendaraan';
+          openCustomCategoryModal('income');
+        }
+      }
     });
   }
 
@@ -1246,11 +1342,116 @@ function setupFinancialEventListeners(container) {
   if (expCatTrigger && expCatInput) {
     bindCustomPicker(expCatTrigger, expCatInput, {
       title: 'Pilih Kategori Biaya Operasional',
-      options: EXPENSE_CATEGORIES.map((c) => ({
-        value: c.name,
-        label: c.name,
-        icon: c.icon
-      }))
+      getOptions: () => {
+        const cats = (store.getExpenseCategories ? store.getExpenseCategories() : EXPENSE_CATEGORIES).map((c) => ({
+          value: c.name,
+          label: c.name,
+          icon: c.icon,
+          sublabel: c.isCustom ? 'Kategori kustom Anda' : ''
+        }));
+        cats.push({
+          value: '__ADD_NEW_EXPENSE_CAT__',
+          label: '➕ Tambah Kategori Baru...',
+          icon: '🏷️',
+          sublabel: 'Buat nama & ikon kategori sendiri'
+        });
+        return cats;
+      },
+      onChange: (val) => {
+        if (val === '__ADD_NEW_EXPENSE_CAT__') {
+          expCatInput.value = 'Listrik / Token PLN';
+          openCustomCategoryModal('expense');
+        }
+      }
+    });
+  }
+
+  // 15. Category Management & Modal Buttons
+  const btnAddIncModal = container.querySelector('#btn-add-income-cat-modal');
+  if (btnAddIncModal) {
+    btnAddIncModal.addEventListener('click', () => openCustomCategoryModal('income'));
+  }
+
+  const btnAddExpModal = container.querySelector('#btn-add-expense-cat-modal');
+  if (btnAddExpModal) {
+    btnAddExpModal.addEventListener('click', () => openCustomCategoryModal('expense'));
+  }
+
+  const btnAddExpHeader = container.querySelector('#btn-add-expense-cat-header');
+  if (btnAddExpHeader) {
+    btnAddExpHeader.addEventListener('click', () => openCustomCategoryModal('expense'));
+  }
+
+  // Delete custom category buttons
+  container.querySelectorAll('.btn-delete-custom-chip, .btn-delete-cat-inline').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const catType = btn.getAttribute('data-cat-type');
+      const catName = btn.getAttribute('data-cat-name');
+      showConfirmModal({
+        title: 'Hapus Kategori Kustom',
+        message: `Hapus kategori "${catName}"? Transaksi lama yang menggunakan kategori ini akan tetap aman.`,
+        confirmText: 'Ya, Hapus Kategori',
+        confirmBtnClass: 'btn-danger',
+        onConfirm: () => {
+          if (catType === 'expense') {
+            store.deleteExpenseCategory(catName);
+            if (expenseCategoryFilter === catName) expenseCategoryFilter = 'all';
+          } else {
+            store.deleteIncomeCategory(catName);
+            if (incomeCategoryFilter === catName) incomeCategoryFilter = 'all';
+          }
+          showToast(`Kategori "${catName}" berhasil dihapus`, 'info');
+          renderFinances(container, { subTab: currentSubTab, period: selectedPeriodYM });
+        }
+      });
+    });
+  });
+
+  // 16. Custom Category Form Submission
+  const customCatForm = document.getElementById('custom-category-form');
+  if (customCatForm) {
+    customCatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const type = document.getElementById('custom-cat-type')?.value || 'expense';
+      const name = document.getElementById('custom-cat-name')?.value.trim();
+      const icon = document.getElementById('custom-cat-icon')?.value || (type === 'expense' ? '🏷️' : '✨');
+
+      if (!name) {
+        showToast('Nama kategori wajib diisi', 'error');
+        return;
+      }
+
+      try {
+        if (type === 'expense') {
+          const newCat = store.addExpenseCategory({ name, icon });
+          showToast(`Kategori pengeluaran "${newCat.name}" berhasil dibuat!`, 'success');
+
+          const expInput = document.getElementById('expense-category');
+          const expLabel = document.getElementById('expense-category-label');
+          if (expInput) expInput.value = newCat.name;
+          if (expLabel) expLabel.textContent = `${newCat.icon} ${newCat.name}`;
+        } else {
+          const newCat = store.addIncomeCategory({ name, icon });
+          showToast(`Kategori pemasukan "${newCat.name}" berhasil dibuat!`, 'success');
+
+          const incInput = document.getElementById('income-category');
+          const incLabel = document.getElementById('income-category-label');
+          if (incInput) incInput.value = newCat.name;
+          if (incLabel) incLabel.textContent = `${newCat.icon} ${newCat.name}`;
+        }
+
+        closeModal('custom-category-modal');
+
+        const isIncModalOpen = document.getElementById('income-modal')?.classList.contains('active');
+        const isExpModalOpen = document.getElementById('expense-modal')?.classList.contains('active');
+        if (!isIncModalOpen && !isExpModalOpen) {
+          renderFinances(container, { subTab: currentSubTab, period: selectedPeriodYM });
+        }
+      } catch (err) {
+        showToast(err.message || 'Gagal menambahkan kategori', 'error');
+      }
     });
   }
 }
@@ -1286,6 +1487,12 @@ function openIncomeModal(incomeId = null) {
     if (notesInput) notesInput.value = '';
   }
 
+  // Update label on open
+  const selectedCat = catInput?.value || 'Parkir Kendaraan';
+  const catObj = (store.getIncomeCategories ? store.getIncomeCategories() : INCOME_CATEGORIES).find(c => c.name === selectedCat);
+  const catLabel = document.getElementById('income-category-label');
+  if (catLabel) catLabel.textContent = `${catObj ? catObj.icon : '✨'} ${selectedCat}`;
+
   openModal('income-modal');
 }
 
@@ -1316,7 +1523,64 @@ function openExpenseModal(expenseId = null) {
     if (descInput) descInput.value = '';
   }
 
+  // Update label on open
+  const selectedExpCat = catInput?.value || 'Listrik / Token PLN';
+  const expCatObj = (store.getExpenseCategories ? store.getExpenseCategories() : EXPENSE_CATEGORIES).find(c => c.name === selectedExpCat);
+  const expLabel = document.getElementById('expense-category-label');
+  if (expLabel) expLabel.textContent = `${expCatObj ? expCatObj.icon : '⚡'} ${selectedExpCat}`;
+
   openModal('expense-modal');
+}
+
+function openCustomCategoryModal(type = 'expense') {
+  const modalTitle = document.getElementById('custom-cat-modal-title');
+  const typeInput = document.getElementById('custom-cat-type');
+  const nameInput = document.getElementById('custom-cat-name');
+  const iconInput = document.getElementById('custom-cat-icon');
+  const iconPreview = document.getElementById('custom-cat-icon-preview');
+  const presetContainer = document.getElementById('custom-cat-emoji-presets');
+
+  if (typeInput) typeInput.value = type;
+  if (nameInput) {
+    nameInput.value = '';
+    nameInput.placeholder = type === 'expense' ? 'Contoh: Air Galon / Aqua, Iuran RT' : 'Contoh: Sewa Lapak Usaha, Jual Air Minum';
+  }
+
+  const defaultIcon = type === 'expense' ? '🏷️' : '✨';
+  if (iconInput) iconInput.value = defaultIcon;
+  if (iconPreview) iconPreview.textContent = defaultIcon;
+
+  if (modalTitle) {
+    modalTitle.textContent = type === 'expense' ? 'Tambah Kategori Pengeluaran Baru' : 'Tambah Kategori Pemasukan Baru';
+  }
+
+  const presets = type === 'expense' ? EXPENSE_EMOJI_PRESETS : INCOME_EMOJI_PRESETS;
+  if (presetContainer) {
+    presetContainer.innerHTML = presets
+      .map(
+        (emoji) => `
+        <button type="button" class="custom-cat-emoji-btn ${emoji === defaultIcon ? 'active' : ''}" data-emoji="${emoji}">
+          ${emoji}
+        </button>
+      `
+      )
+      .join('');
+
+    presetContainer.querySelectorAll('.custom-cat-emoji-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const em = btn.getAttribute('data-emoji');
+        if (iconInput) iconInput.value = em;
+        if (iconPreview) iconPreview.textContent = em;
+        presetContainer.querySelectorAll('.custom-cat-emoji-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  }
+
+  openModal('custom-category-modal');
+  if (nameInput) {
+    setTimeout(() => nameInput.focus(), 150);
+  }
 }
 
 function initReportDates() {
