@@ -142,8 +142,7 @@ export function renderBills(container, options = {}) {
     </div>
 
     ${(() => {
-      const otherUnpaidBills = store.getBills().filter((b) => b.period !== selectedPeriod && b.status !== 'lunas');
-      const futureCheckInBills = otherUnpaidBills.filter((b) => b.period > selectedPeriod);
+      const futureCheckInBills = store.getBills().filter((b) => b.period > selectedPeriod);
       if (futureCheckInBills.length > 0) {
         const targetPeriod = futureCheckInBills[0].period;
         return `
@@ -789,6 +788,14 @@ export function openReceiptModal(billId, paymentResult = null) {
               <div class="tenant-field">
                 <span class="field-title">Metode Pembayaran</span>
                 <span class="field-data font-semibold">${escapeHtml(receiptData.paymentMethod)}</span>
+              </div>
+              <div class="tenant-field">
+                <span class="field-title">Periode Sewa</span>
+                <span class="field-data font-semibold text-emerald">${escapeHtml(periodText)}</span>
+              </div>
+              <div class="tenant-field">
+                <span class="field-title">Jatuh Tempo Tagihan</span>
+                <span class="field-data font-semibold">${formatDateIndo(bill.dueDate)}</span>
               </div>
             </div>
           </div>

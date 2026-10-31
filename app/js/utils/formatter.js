@@ -27,8 +27,62 @@ export const DAY_NAMES_ID = [
   'Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'
 ];
 
+export function normalizeDateString(dateStr) {
+  if (!dateStr) return '';
+  const str = String(dateStr).trim();
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(str)) {
+    const [y, m, d] = str.split('-');
+    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+  }
+  // DD/MM/YYYY or DD-MM-YYYY
+  const dmMatch = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (dmMatch) {
+    const d = dmMatch[1].padStart(2, '0');
+    const m = dmMatch[2].padStart(2, '0');
+    const y = dmMatch[3];
+    return `${y}-${m}-${d}`;
+  }
+  // Fallback Date
+  const parsed = new Date(str);
+  if (!isNaN(parsed.getTime())) {
+    const y = parsed.getFullYear();
+    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+    const d = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  return str;
+}
+
+export function normalizeYearMonth(val) {
+  if (!val) return '';
+  const normalized = normalizeDateString(val);
+  if (normalized && normalized.length >= 7) {
+    return normalized.substring(0, 7);
+  }
+  const str = String(val).trim();
+  if (/^\d{4}-\d{2}$/.test(str)) return str;
+  return str.substring(0, 7);
+}
+
 export function formatDateIndo(dateStr, includeDay = false) {
   if (!dateStr) return '-';
+  const normalized = normalizeDateString(dateStr);
+  if (normalized && /^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    const [yStr, mStr, dStr] = normalized.split('-');
+    const year = parseInt(yStr, 10);
+    const monthIdx = parseInt(mStr, 10) - 1;
+    const day = parseInt(dStr, 10);
+    const month = MONTH_NAMES_ID[monthIdx] || mStr;
+
+    if (includeDay) {
+      const date = new Date(year, monthIdx, day);
+      const dayName = DAY_NAMES_ID[date.getDay()];
+      return `${dayName}, ${day} ${month} ${year}`;
+    }
+    return `${day} ${month} ${year}`;
+  }
+
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return dateStr;
 

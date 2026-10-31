@@ -8,7 +8,8 @@ import {
   cleanWhatsAppNumber,
   formatDisplayPhone,
   escapeHtml,
-  getTodayDateString
+  getTodayDateString,
+  normalizeDateString
 } from '../utils/formatter.js';
 import { openModal, closeModal, showToast, showConfirmModal, bindCustomPicker } from '../utils/modal.js';
 
@@ -721,6 +722,22 @@ function setupTenantsEvents(container) {
   setupTenantCardEvents(container);
 
   // Submit Add/Edit Tenant Form
+  const checkinInput = container.querySelector('#tenant-checkin-date');
+  const dueDayInput = container.querySelector('#tenant-dueday');
+  if (checkinInput && dueDayInput) {
+    checkinInput.addEventListener('change', (e) => {
+      const val = e.target.value;
+      if (val) {
+        const normalized = normalizeDateString(val);
+        if (normalized) {
+          const parts = normalized.split('-');
+          if (parts.length >= 3) {
+            dueDayInput.value = parseInt(parts[2], 10) || 1;
+          }
+        }
+      }
+    });
+  }
   const tenantForm = container.querySelector('#tenant-form');
   if (tenantForm) {
     tenantForm.addEventListener('submit', (e) => {
@@ -985,7 +1002,7 @@ function openAddTenantModal(preselectedRoomId = null) {
   document.getElementById('tenant-id-number').value = '';
   document.getElementById('tenant-occupation').value = '';
   document.getElementById('tenant-checkin-date').value = getTodayDateString();
-  document.getElementById('tenant-dueday').value = new Date().getDate();
+  document.getElementById('tenant-dueday').value = parseInt(getTodayDateString().split('-')[2], 10) || 1;
   document.getElementById('tenant-deposit').value = '';
   document.getElementById('tenant-notes').value = '';
 
@@ -1050,8 +1067,12 @@ function saveTenantForm(container) {
   const originAddress = document.getElementById('tenant-origin-address').value.trim();
   const idNumber = document.getElementById('tenant-id-number').value.trim();
   const occupation = document.getElementById('tenant-occupation').value.trim();
-  const checkInDate = document.getElementById('tenant-checkin-date').value;
-  const dueDay = document.getElementById('tenant-dueday').value;
+  const rawCheckInVal = document.getElementById('tenant-checkin-date').value;
+  const checkInDate = normalizeDateString(rawCheckInVal) || getTodayDateString();
+  const dayFromCheckIn = parseInt(checkInDate.split('-')[2], 10) || 1;
+  const rawDueDay = document.getElementById('tenant-dueday').value;
+  const dueDay = parseInt(rawDueDay, 10) || dayFromCheckIn;
+
   const deposit = document.getElementById('tenant-deposit').value;
   const notes = document.getElementById('tenant-notes').value.trim();
   const roomId = document.getElementById('tenant-room-id').value || null;
@@ -1086,7 +1107,7 @@ function saveTenantForm(container) {
         occupation,
         roomId,
         checkInDate,
-        dueDay: parseInt(dueDay, 10) || new Date(checkInDate).getDate() || 1,
+        dueDay: dueDay,
         deposit,
         notes
       });
@@ -1112,7 +1133,7 @@ function saveTenantForm(container) {
         occupation,
         roomId,
         checkInDate,
-        dueDay: parseInt(dueDay, 10) || 1,
+        dueDay: dueDay,
         deposit,
         notes
       });

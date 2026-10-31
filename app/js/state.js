@@ -1,7 +1,7 @@
 /**
  * Juragankosan Reactive State Management & LocalStorage Sync
  */
-import { generateId, getCurrentYearMonth, getTodayDateString, cleanWhatsAppNumber, addMonthsToPeriod } from './utils/formatter.js';
+import { generateId, getCurrentYearMonth, getTodayDateString, cleanWhatsAppNumber, addMonthsToPeriod, normalizeDateString, normalizeYearMonth } from './utils/formatter.js';
 import { DEFAULT_WA_TEMPLATE } from './utils/whatsapp.js';
 import { saveLocalSnapshot } from './utils/autoBackup.js';
 import { queueCloudSync } from './utils/cloudBackup.js';
@@ -536,6 +536,13 @@ class Store {
     if (!Array.isArray(s.customExpenseCategories)) s.customExpenseCategories = [];
     if (!Array.isArray(s.customIncomeCategories)) s.customIncomeCategories = [];
 
+    // Auto-heal checkInDate format for tenants
+    safeData.tenants.forEach((t) => {
+      if (t.checkInDate) {
+        t.checkInDate = normalizeDateString(t.checkInDate) || t.checkInDate;
+      }
+    });
+
     // Bills normalization
     safeData.bills.forEach((b) => {
       if (b.status === 'lunas') {
@@ -560,6 +567,33 @@ class Store {
             notes: b.notes || 'Pelunasan sewa',
             type: 'full'
           });
+        }
+      }
+    });
+
+    // Auto-heal bills created before tenant check-in month (e.g. November check-in having October bill)
+    safeData.bills.forEach((b) => {
+      const tenant = safeData.tenants.find((t) => t.id === b.tenantId);
+      if (tenant && tenant.checkInDate) {
+        const cleanCheckIn = normalizeDateString(tenant.checkInDate);
+        const checkInYM = cleanCheckIn ? cleanCheckIn.substring(0, 7) : '';
+        if (checkInYM && b.period < checkInYM) {
+          const hasCheckInBill = safeData.bills.some(
+            (other) => other.tenantId === b.tenantId && other.period === checkInYM && other.id !== b.id
+          );
+          if (!hasCheckInBill && (b.status === 'lunas' || b.status === 'sebagian')) {
+            b.period = checkInYM;
+            const [y, m] = checkInYM.split('-');
+            const maxD = new Date(parseInt(y, 10), parseInt(m, 10), 0).getDate();
+            const d = Math.min(maxD, Math.max(1, tenant.dueDay || 1));
+            b.dueDate = `${y}-${m}-${String(d).padStart(2, '0')}`;
+            if (b.receiptNumber && b.receiptNumber.includes('KW/')) {
+              const cleanRoom = ((b.roomNumber || 'KMR').replace(/[^0-9a-zA-Z]/g, '') || 'KMR').toUpperCase();
+              const seqParts = b.receiptNumber.split('-');
+              const seq = seqParts.length > 1 ? seqParts[1] : Math.floor(100 + Math.random() * 900);
+              b.receiptNumber = `KW/${y}${m}/${cleanRoom}-${seq}`;
+            }
+          }
         }
       }
     });
@@ -884,9 +918,14 @@ class Store {
       }
     }
 
-    const checkInDate = tenantData.checkInDate || getTodayDateString();
-    const checkInDay = new Date(checkInDate).getDate() || 1;
+    const cleanCheckIn = normalizeDateString(tenantData.checkInDate) || getTodayDateString();
+    const cleanParts = cleanCheckIn.split('-');
+    const checkInDay = cleanParts.length >= 3 ? (parseInt(cleanParts[2], 10) || 1) : 1;
     const dueDay = tenantData.dueDay ? parseInt(tenantData.dueDay, 10) : checkInDay;
+
+    const checkInDate = cleanCheckIn;
+
+
 
     const newTenant = {
       id: generateId('tenant'),
@@ -920,7 +959,7 @@ class Store {
       // Auto-generate bill untuk bulan pertama masuk & bulan berjalan aktif
       const currentYM = getCurrentYearMonth();
       const rawCheckIn = newTenant.checkInDate || '';
-      const checkInYM = rawCheckIn ? String(rawCheckIn).trim().substring(0, 7) : '';
+      const checkInYM = rawCheckIn ? (normalizeDateString(rawCheckIn).substring(0, 7) || String(rawCheckIn).trim().substring(0, 7)) : '';
       if (checkInYM) {
         if (checkInYM <= currentYM) {
           let p = checkInYM;
@@ -969,7 +1008,49 @@ class Store {
       tenant.dueDay = parseInt(tenantData.dueDay, 10) || 1;
     }
     if (tenantData.checkInDate !== undefined) {
-      tenant.checkInDate = tenantData.checkInDate;
+      tenant.checkInDate = normalizeDateString(tenantData.checkInDate) || tenantData.checkInDate;
+    }
+
+    // Auto-sync bills when check-in date or due day is updated
+    const cleanCheckInYM = tenant.checkInDate ? (normalizeDateString(tenant.checkInDate).substring(0, 7) || tenant.checkInDate.substring(0, 7)) : '';
+    if (cleanCheckInYM) {
+      this.data.bills = this.data.bills.filter((b) => {
+        if (b.tenantId === id && b.period < cleanCheckInYM) {
+          return b.status === 'lunas' || b.status === 'sebagian';
+        }
+        return true;
+      });
+
+      const preBills = this.data.bills.filter((b) => b.tenantId === id && b.period < cleanCheckInYM && (b.status === 'lunas' || b.status === 'sebagian'));
+      preBills.forEach((pb) => {
+        const hasCheckInBill = this.data.bills.some((b) => b.tenantId === id && b.period === cleanCheckInYM && b.id !== pb.id);
+        if (!hasCheckInBill) {
+          pb.period = cleanCheckInYM;
+          const [y, m] = cleanCheckInYM.split('-');
+          const maxD = new Date(parseInt(y, 10), parseInt(m, 10), 0).getDate();
+          const d = Math.min(maxD, Math.max(1, tenant.dueDay || 1));
+          pb.dueDate = `${y}-${m}-${String(d).padStart(2, '0')}`;
+          if (pb.receiptNumber && pb.receiptNumber.includes('KW/')) {
+            const cleanRoom = ((pb.roomNumber || 'KMR').replace(/[^0-9a-zA-Z]/g, '') || 'KMR').toUpperCase();
+            const seqParts = pb.receiptNumber.split('-');
+            const seq = seqParts.length > 1 ? seqParts[1] : Math.floor(100 + Math.random() * 900);
+            pb.receiptNumber = `KW/${y}${m}/${cleanRoom}-${seq}`;
+          }
+        }
+      });
+    }
+
+    if (tenant.dueDay) {
+      this.data.bills.forEach((b) => {
+        if (b.tenantId === id && b.status === 'belum_bayar') {
+          const [y, m] = b.period.split('-');
+          if (y && m) {
+            const maxD = new Date(parseInt(y, 10), parseInt(m, 10), 0).getDate();
+            const d = Math.min(maxD, Math.max(1, tenant.dueDay));
+            b.dueDate = `${y}-${m}-${String(d).padStart(2, '0')}`;
+          }
+        }
+      });
     }
 
     // Room assignment / switching / unassigning
@@ -1002,7 +1083,7 @@ class Store {
           // Auto-generate bill for active period if no bill exists yet
           const currentYM = getCurrentYearMonth();
           const rawCheckIn = tenant.checkInDate || '';
-          const checkInYM = rawCheckIn ? String(rawCheckIn).trim().substring(0, 7) : '';
+          const checkInYM = rawCheckIn ? (normalizeDateString(rawCheckIn).substring(0, 7) || String(rawCheckIn).trim().substring(0, 7)) : '';
           const startYM = checkInYM && checkInYM <= currentYM ? checkInYM : currentYM;
           let p = startYM;
           while (p <= currentYM) {
@@ -1096,7 +1177,7 @@ class Store {
 
     // Aturan: Tagihan bulanan hanya boleh dibuat untuk bulan/periode yang sama dengan atau setelah bulan tanggal masuk penyewa
     const rawCheckIn = tenant.checkInDate || tenant.startDate || tenant.createdAt || '';
-    const checkInYM = rawCheckIn ? String(rawCheckIn).trim().substring(0, 7) : '';
+    const checkInYM = rawCheckIn ? (normalizeDateString(rawCheckIn).substring(0, 7) || String(rawCheckIn).trim().substring(0, 7)) : '';
     if (checkInYM && periodYM < checkInYM) {
       return null;
     }
@@ -1152,7 +1233,7 @@ class Store {
     activeTenants.forEach((tenant) => {
       // Pastikan periode tagihan sama dengan atau setelah bulan tanggal masuk penyewa
       const rawCheckIn = tenant.checkInDate || tenant.startDate || tenant.createdAt || '';
-      const checkInYM = rawCheckIn ? String(rawCheckIn).trim().substring(0, 7) : '';
+      const checkInYM = rawCheckIn ? (normalizeDateString(rawCheckIn).substring(0, 7) || String(rawCheckIn).trim().substring(0, 7)) : '';
       if (checkInYM && periodYM < checkInYM) {
         return;
       }
