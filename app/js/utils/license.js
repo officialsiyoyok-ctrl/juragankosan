@@ -10,6 +10,41 @@ import { formatRupiah } from './formatter.js';
 // ⚙️ KONFIGURASI PEMBAYARAN PEMILIK APLIKASI (DIRECT SELF-CHECKOUT)
 // Anda dapat mengubah nomor WhatsApp, harga, dan rekening bank di sini kapan saja
 // ============================================================================
+
+/**
+ * Dapatkan atau buat ID perangkat unik permanen untuk validasi batas 2 device
+ */
+export function getOrCreateDeviceId() {
+  try {
+    let id = localStorage.getItem('juragankos_device_id');
+    if (!id) {
+      const randomStr = Math.random().toString(36).substring(2, 10);
+      const timeStr = Date.now().toString(36);
+      id = 'dev_' + timeStr + '_' + randomStr;
+      localStorage.setItem('juragankos_device_id', id);
+    }
+    return id;
+  } catch (e) {
+    return 'dev_fallback_' + Date.now();
+  }
+}
+
+/**
+ * Deteksi nama perangkat sederhana (HP Android, iPhone, Windows PC, Mac)
+ */
+export function getDeviceDisplayName() {
+  try {
+    const ua = navigator.userAgent || '';
+    if (/android/i.test(ua)) return 'HP Android';
+    if (/iphone|ipad|ipod/i.test(ua)) return 'iPhone/iPad';
+    if (/windows/i.test(ua)) return 'Windows PC/Laptop';
+    if (/macintosh|mac os x/i.test(ua)) return 'Mac';
+    return 'Web Browser Device';
+  } catch (e) {
+    return 'Perangkat Web';
+  }
+}
+
 export const OWNER_PAYMENT_CONFIG = {
   whatsappAdmin: '6287776108132',
   priceBase: 149000,
@@ -825,7 +860,7 @@ Berikut saya lampirkan bukti transfernya. Mohon kirimkan Kode Lisensi PRO saya. 
     btn.addEventListener('click', () => {
       const targetSelector = btn.getAttribute('data-input-target');
       const inputEl = modal.querySelector(targetSelector);
-      doActivate(inputEl);
+      doActivate(inputEl, btn);
     });
   });
 
