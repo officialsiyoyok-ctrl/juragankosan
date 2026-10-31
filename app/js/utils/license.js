@@ -937,6 +937,45 @@ export function openAdminGeneratorModal() {
           </div>
         </div>
 
+        <!-- INSPEKSI & RESET STATUS DEVICE LISENSI -->
+        <div class="admin-device-inspector-card mb-3" style="background: rgba(16, 185, 129, 0.06); border: 1.5px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 14px 16px;">
+          <div class="flex-between align-center mb-1">
+            <span class="badge badge-emerald font-bold text-xs">📱 INSPEKSI &amp; CEK DEVICE LISENSI (MAKS. 2 DEVICE)</span>
+            <span class="text-xs text-muted">Cek status kuota perangkat pembeli</span>
+          </div>
+          <p class="text-xs text-secondary mb-2">
+            Masukkan kode lisensi pembeli untuk melihat berapa perangkat yang sudah terdaftar atau melakukan reset:
+          </p>
+          <div style="display: flex; gap: 8px;">
+            <input 
+              type="text" 
+              id="input-admin-check-code" 
+              class="form-control form-control-sm font-mono text-uppercase" 
+              placeholder="Contoh: JKPRO-JS5S-3NR5" 
+              style="font-weight: 700; letter-spacing: 0.05em;"
+            />
+            <button type="button" class="btn btn-primary btn-sm" id="btn-admin-check-code-status" style="white-space: nowrap;">
+              🔍 Cek Device
+            </button>
+          </div>
+
+          <!-- Box Hasil Inspeksi -->
+          <div id="admin-device-result-box" style="display: none; margin-top: 12px; background: var(--bg-card, #ffffff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 10px; padding: 12px;">
+            <div class="flex-between align-center mb-2">
+              <div>
+                <strong id="adm-res-code" class="font-mono text-sm" style="color: var(--primary);">JKPRO-XXXX</strong>
+                <span id="adm-res-badge" class="badge badge-emerald text-xs ml-2">1 / 2 Device</span>
+              </div>
+              <button type="button" class="btn btn-outline btn-xs text-danger" id="btn-admin-reset-license-devices">
+                🔄 Reset Semua Device
+              </button>
+            </div>
+            <div id="adm-res-device-list" class="text-xs text-secondary space-y-1">
+              <!-- Render via JS -->
+            </div>
+          </div>
+        </div>
+
         <!-- SIMULASI & KONTROL KUOTA HARGA DINAMIS -->
         <div class="admin-pricing-control-card">
           <div class="control-card-header">
@@ -1000,6 +1039,131 @@ export function openAdminGeneratorModal() {
       </div>
     </div>
   `;
+
+  // Device Inspector Listeners
+  const inputCheckCode = modal.querySelector('#input-admin-check-code');
+  const btnCheckCode = modal.querySelector('#btn-admin-check-code-status');
+  const resultBox = modal.querySelector('#admin-device-result-box');
+  const resCodeEl = modal.querySelector('#adm-res-code');
+  const resBadgeEl = modal.querySelector('#adm-res-badge');
+  const resDeviceList = modal.querySelector('#adm-res-device-list');
+  const btnResetDevices = modal.querySelector('#btn-admin-reset-license-devices');
+
+  const executeCheck = async (codeToInspect) => {
+    const code = (codeToInspect || '').trim().toUpperCase();
+    if (!code) {
+      showToast('Ketik atau paste kode lisensi yang ingin dicek!', 'warning');
+      return;
+    }
+
+    if (btnCheckCode) {
+      btnCheckCode.disabled = true;
+      btnCheckCode.textContent = '⏳ Memeriksa...';
+    }
+
+    try {
+      const res = await fetch('/api/license', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'check', code })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        showToast(data.message || 'Gagal memeriksa status kode lisensi.', 'error');
+        if (resultBox) resultBox.style.display = 'none';
+        return;
+      }
+
+      if (resultBox) resultBox.style.display = 'block';
+      if (resCodeEl) resCodeEl.textContent = data.code;
+
+      const count = data.deviceCount || 0;
+      const max = data.maxDevices || 2;
+
+      if (resBadgeEl) {
+        if (count === 0) {
+          resBadgeEl.className = 'badge badge-gray text-xs ml-2';
+          resBadgeEl.textContent = '0 / 2 Device (Belum Diaktivasi)';
+        } else if (count >= max) {
+          resBadgeEl.className = 'badge badge-danger text-xs ml-2 font-bold';
+          resBadgeEl.textContent = `${count} / ${max} Device Penuh`;
+        } else {
+          resBadgeEl.className = 'badge badge-emerald text-xs ml-2 font-bold';
+          resBadgeEl.textContent = `${count} / ${max} Device Terdaftar`;
+        }
+      }
+
+      if (resDeviceList) {
+        if (!data.devices || data.devices.length === 0) {
+          resDeviceList.innerHTML = '<div class="text-muted text-xs p-1">Belum ada perangkat yang mengaktifkan kode ini. (Kuota 2 perangkat masih utuh).</div>';
+        } else {
+          resDeviceList.innerHTML = data.devices.map((d, i) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding: 4px 6px; background: rgba(0,0,0,0.03); border-radius: 6px; margin-bottom: 4px;">
+              <div>
+                <strong>Perangkat ${i + 1}: ${d.name || 'Device'}</strong>
+                <div class="text-muted" style="font-size: 11px;">ID: ${d.id || '-'} &bull; Waktu: ${d.activatedAt ? new Date(d.activatedAt).toLocaleString('id-ID') : '-'}</div>
+              </div>
+              <span class="badge badge-blue text-xs">Aktif</span>
+            </div>
+          `).join('');
+        }
+      }
+
+      showToast(`Status kode ${data.code}: ${count} dari ${max} device terpakai.`, 'info', 3000);
+    } catch (e) {
+      showToast('Gagal menghubungi server verifikasi.', 'error');
+    } finally {
+      if (btnCheckCode) {
+        btnCheckCode.disabled = false;
+        btnCheckCode.textContent = '🔍 Cek Device';
+      }
+    }
+  };
+
+  if (btnCheckCode && inputCheckCode) {
+    btnCheckCode.addEventListener('click', () => executeCheck(inputCheckCode.value));
+    inputCheckCode.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        executeCheck(inputCheckCode.value);
+      }
+    });
+  }
+
+  if (btnResetDevices) {
+    btnResetDevices.addEventListener('click', async () => {
+      const code = inputCheckCode ? inputCheckCode.value.trim().toUpperCase() : '';
+      if (!code) return;
+
+      if (!confirm(`Yakin ingin mereset seluruh perangkat untuk lisensi ${code}? Pembeli dapat mendaftarkan 2 perangkat baru lagi.`)) {
+        return;
+      }
+
+      btnResetDevices.disabled = true;
+      btnResetDevices.textContent = '⏳ Mereset...';
+
+      try {
+        const res = await fetch('/api/license', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'reset_devices', code })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message || 'Perangkat berhasil di-reset!', 'success');
+          executeCheck(code);
+        } else {
+          showToast(data.message || 'Gagal mereset perangkat.', 'error');
+        }
+      } catch (err) {
+        showToast('Terjadi kesalahan saat mereset.', 'error');
+      } finally {
+        btnResetDevices.disabled = false;
+        btnResetDevices.textContent = '🔄 Reset Semua Device';
+      }
+    });
+  }
 
   // Quick 1 Code Generator Listener
   const btnQuick1 = modal.querySelector('#btn-admin-quick-1');

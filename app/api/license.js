@@ -4,7 +4,8 @@
  * Endpoints:
  * POST /api/license
  * Body: { action: 'activate', code: 'JKPRO-XXXX-XXXX', deviceId: '...', deviceName: '...' }
- *       { action: 'check', code: 'JKPRO-XXXX-XXXX', deviceId: '...' }
+ *       { action: 'check', code: 'JKPRO-XXXX-XXXX' }
+ *       { action: 'reset_devices', code: 'JKPRO-XXXX-XXXX' }
  *       { action: 'deactivate', code: 'JKPRO-XXXX-XXXX', deviceId: '...' }
  */
 
@@ -75,15 +76,22 @@ export default async function handler(req, res) {
       });
     }
 
-    if (!deviceId) {
-      return res.status(400).json({ success: false, message: 'Identitas perangkat (deviceId) tidak ditemukan.' });
-    }
-
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
-    // Jika Supabase belum dihubungkan di Vercel, izinkan aktivasi (graceful fallback)
+    // Jika Supabase belum dikonfigurasi di Vercel
     if (!SUPABASE_URL || !SUPABASE_KEY) {
+      if (action === 'check') {
+        return res.status(200).json({
+          success: true,
+          code: cleanCode,
+          isValidFormat: true,
+          devices: [],
+          deviceCount: 0,
+          maxDevices: MAX_DEVICES_PER_LICENSE,
+          message: 'Kode valid. Database Cloud belum terhubung di Vercel.'
+        });
+      }
       return res.status(200).json({
         success: true,
         status: 'PRO',
@@ -107,21 +115,62 @@ export default async function handler(req, res) {
     if (!getRes.ok) {
       const errTxt = await getRes.text();
       console.error('Supabase get error:', errTxt);
-      // Fallback izinkan jika ada kendala koneksi db
       return res.status(200).json({
         success: true,
-        status: 'PRO',
         code: cleanCode,
-        message: 'Lisensi berhasil diverifikasi.',
-        deviceSlotsUsed: 1,
-        maxDevices: MAX_DEVICES_PER_LICENSE
+        devices: [],
+        deviceCount: 0,
+        maxDevices: MAX_DEVICES_PER_LICENSE,
+        message: 'Gagal mengambil data dari cloud, gunakan verifikasi lokal.'
       });
     }
 
     const records = await getRes.json();
     let record = Array.isArray(records) && records.length > 0 ? records[0] : null;
 
-    // A. ACTION: DEACTIVATE (Lepas ikatan perangkat ini)
+    // A. ACTION: CHECK (Inspeksi status device dari Admin Modal)
+    if (action === 'check') {
+      const registeredDevices = record && Array.isArray(record.devices) ? record.devices : [];
+      return res.status(200).json({
+        success: true,
+        code: cleanCode,
+        isValidFormat: true,
+        isRegistered: Boolean(record),
+        devices: registeredDevices,
+        deviceCount: registeredDevices.length,
+        maxDevices: MAX_DEVICES_PER_LICENSE,
+        firstActivatedAt: record?.created_at || null,
+        lastUpdatedAt: record?.updated_at || null
+      });
+    }
+
+    // B. ACTION: RESET_DEVICES (Admin mereset seluruh device yang terdaftar untuk kode ini)
+    if (action === 'reset_devices') {
+      if (record) {
+        await fetch(`${SUPABASE_URL}/rest/v1/juragan_licenses?license_code=eq.${encodeURIComponent(cleanCode)}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            devices: [],
+            updated_at: new Date().toISOString()
+          })
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        code: cleanCode,
+        devices: [],
+        deviceCount: 0,
+        maxDevices: MAX_DEVICES_PER_LICENSE,
+        message: `✓ Seluruh perangkat untuk kode ${cleanCode} berhasil di-reset! Kuota 2 perangkat kini kosong kembali.`
+      });
+    }
+
+    // C. ACTION: DEACTIVATE (Lepas ikatan perangkat tertentu)
     if (action === 'deactivate') {
       if (record && Array.isArray(record.devices)) {
         const filtered = record.devices.filter(d => d.id !== deviceId);
@@ -141,7 +190,11 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, message: 'Perangkat berhasil dinonaktifkan dari lisensi ini.' });
     }
 
-    // B. ACTION: ACTIVATE / VERIFY (Kunci Maksimal 2 Perangkat)
+    // D. ACTION: ACTIVATE / VERIFY (Kunci Maksimal 2 Perangkat)
+    if (!deviceId) {
+      return res.status(400).json({ success: false, message: 'Identitas perangkat (deviceId) tidak ditemukan.' });
+    }
+
     const nowIso = new Date().toISOString();
 
     if (!record) {
