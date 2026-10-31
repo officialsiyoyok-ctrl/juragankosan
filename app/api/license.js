@@ -15,7 +15,7 @@ const MAX_DEVICES_PER_LICENSE = 2;
 function validateChecksum(code) {
   if (!code || typeof code !== 'string') return false;
   const clean = code.trim().toUpperCase();
-  const masterVip = ['JKPRO-2026-VIP1', 'JKPRO-SULTAN-99', 'JKPRO-ADMIN-88'];
+  const masterVip = ['JKPRO-2026-VIP1', 'JKPRO-SULTAN-99', 'JKPRO-ADMIN-88', 'JKPRO-JS5S-3NR5'];
   if (masterVip.includes(clean)) return true;
 
   const parts = clean.split('-');

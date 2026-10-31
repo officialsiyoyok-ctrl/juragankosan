@@ -200,7 +200,8 @@ export const LICENSE_STORAGE_KEY = 'juragankos_license';
 export const MASTER_VIP_CODES = [
   'JKPRO-2026-VIP1',
   'JKPRO-SULTAN-99',
-  'JKPRO-ADMIN-88'
+  'JKPRO-ADMIN-88',
+  'JKPRO-JS5S-3NR5'
 ];
 
 export const SECRET_ADMIN_TRIGGER = 'ADMIN-GENERATOR';
@@ -951,7 +952,7 @@ export function openAdminGeneratorModal() {
               type="text" 
               id="input-admin-check-code" 
               class="form-control form-control-sm font-mono text-uppercase" 
-              placeholder="Contoh: JKPRO-JS5S-3NR5" 
+              placeholder="Tempel / ketik kode lisensi pembeli..." 
               style="font-weight: 700; letter-spacing: 0.05em;"
             />
             <button type="button" class="btn btn-primary btn-sm" id="btn-admin-check-code-status" style="white-space: nowrap;">
