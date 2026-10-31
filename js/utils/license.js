@@ -347,6 +347,15 @@ export function activateLicense(inputCode) {
   };
 
   localStorage.setItem(LICENSE_STORAGE_KEY, JSON.stringify(licenseData));
+  try {
+    const devId = getOrCreateDeviceId();
+    const devName = getDeviceDisplayName();
+    fetch('/api/license', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'activate', code: clean, deviceId: devId, deviceName: devName })
+    }).catch(() => {});
+  } catch (e) {}
   window.dispatchEvent(new CustomEvent('juragankos_license_changed', { detail: licenseData }));
 
   return {
