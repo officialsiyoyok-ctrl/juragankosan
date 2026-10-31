@@ -5,7 +5,7 @@ import { store } from '../state.js';
 import { DEFAULT_WA_TEMPLATE } from '../utils/whatsapp.js';
 import { cleanWhatsAppNumber, escapeHtml, formatRupiah } from '../utils/formatter.js';
 import { showToast, showConfirmModal } from '../utils/modal.js';
-import { isPro, getLicense, deactivateLicense, openUpgradeModal, getCurrentPricingTier } from '../utils/license.js';
+import { isPro, getLicense, deactivateLicense, openUpgradeModal, openAdminGeneratorModal, getCurrentPricingTier } from '../utils/license.js';
 
 export function renderSettings(container) {
   const settings = store.getSettings();
@@ -247,6 +247,9 @@ export function renderSettings(container) {
                   ` : ''}
                 </div>
                 <div class="license-actions-row mt-3">
+                  <button type="button" class="btn btn-primary btn-sm text-xs font-bold" id="btn-settings-open-admin-vault" style="background: #0f172a; border-color: #334155;">
+                    ⚡ Buka Tool Pemilik (Generator &amp; Cek Device)
+                  </button>
                   <button type="button" class="btn btn-outline btn-sm text-xs" id="btn-settings-change-license">
                     🔑 Ganti / Masukkan Kode Lain
                   </button>
@@ -642,6 +645,11 @@ function setupSettingsEvents(container) {
   const btnActivateKey = container.querySelector('#btn-settings-activate-key');
   if (btnActivateKey) {
     btnActivateKey.addEventListener('click', () => openUpgradeModal());
+  }
+
+  const btnOpenAdminVault = container.querySelector('#btn-settings-open-admin-vault');
+  if (btnOpenAdminVault) {
+    btnOpenAdminVault.addEventListener('click', () => openAdminGeneratorModal());
   }
 
   const btnChangeLicense = container.querySelector('#btn-settings-change-license');
