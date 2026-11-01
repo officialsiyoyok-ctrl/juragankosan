@@ -95,10 +95,10 @@ export function renderSettings(container) {
                     <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 3px; color: var(--text-main, #0f172a);">Foto / Logo Identitas Kos</div>
                     <div class="text-xs text-muted" style="margin-bottom: 10px; line-height: 1.4;">Tampil otomatis di <strong>Kwitansi Resmi</strong>, Kop Cetak PDF, Header Sidebar &amp; Dashboard.</div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                      <label for="upload-kos-logo-input" class="btn btn-outline btn-sm" style="cursor: pointer; margin: 0; display: inline-flex; align-items: center; gap: 6px;">
-                        <span>📷</span> <span>${settings.kosLogo ? 'Ganti Logo' : 'Upload Logo'}</span>
-                      </label>
-                      <input type="file" id="upload-kos-logo-input" accept="image/png, image/jpeg, image/webp" style="display: none;" />
+                      <button type="button" class="btn btn-outline btn-sm" id="btn-trigger-upload-logo" style="display: inline-flex; align-items: center; gap: 6px;">
+                        <span>📷</span> <span id="btn-upload-logo-text">${settings.kosLogo ? 'Ganti Logo' : 'Upload Logo'}</span>
+                      </button>
+                      <input type="file" id="upload-kos-logo-input" accept="image/*" style="display: none;" />
                       <button type="button" class="btn btn-ghost btn-sm text-danger" id="btn-remove-kos-logo" style="${settings.kosLogo ? 'display: inline-flex;' : 'display: none;'}">
                         🗑️ Hapus Logo
                       </button>
@@ -606,16 +606,27 @@ function setupSettingsEvents(container) {
   }
 
   // Logo Upload & Remove Handlers
-  let currentKosLogo = settings.kosLogo || '';
+  const currentSettings = store.getSettings();
+  let currentKosLogo = currentSettings.kosLogo || '';
   const logoInput = container.querySelector('#upload-kos-logo-input');
+  const btnTriggerUpload = container.querySelector('#btn-trigger-upload-logo');
   const logoPreviewBox = container.querySelector('#kos-logo-preview-box');
   const btnRemoveLogo = container.querySelector('#btn-remove-kos-logo');
+
+  if (btnTriggerUpload && logoInput) {
+    btnTriggerUpload.addEventListener('click', (e) => {
+      e.preventDefault();
+      logoInput.click();
+    });
+  }
 
   if (logoInput) {
     logoInput.addEventListener('change', (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
-      if (!file.type.startsWith('image/')) {
+      const isImage = (file.type && file.type.startsWith('image/')) ||
+                      /\.(jpe?g|png|webp|gif|svg|bmp)$/i.test(file.name || '');
+      if (!isImage) {
         showToast('Pilih file gambar berformat PNG, JPG, atau WebP.', 'error');
         return;
       }
@@ -631,6 +642,8 @@ function setupSettingsEvents(container) {
         if (btnRemoveLogo) {
           btnRemoveLogo.style.display = 'inline-flex';
         }
+        const uploadText = container.querySelector('#btn-upload-logo-text');
+        if (uploadText) uploadText.textContent = 'Ganti Logo';
         showToast('Logo berhasil dipilih! Klik "Simpan Profil Kos" untuk menyimpan perubahan.', 'info');
       });
     });
@@ -644,6 +657,8 @@ function setupSettingsEvents(container) {
       }
       btnRemoveLogo.style.display = 'none';
       if (logoInput) logoInput.value = '';
+      const uploadText = container.querySelector('#btn-upload-logo-text');
+      if (uploadText) uploadText.textContent = 'Upload Logo';
       showToast('Logo dihapus. Klik "Simpan Profil Kos" untuk menyimpan.', 'info');
     });
   }
