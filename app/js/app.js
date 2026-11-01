@@ -207,6 +207,37 @@ class JuragankosanApp {
     if (brandNameEl) {
       brandNameEl.textContent = settings.kosName || 'Juragankosan';
     }
+
+    const brandLogoImg = document.getElementById('app-brand-logo-img');
+    if (brandLogoImg) {
+      if (settings.kosLogo) {
+        brandLogoImg.src = settings.kosLogo;
+        brandLogoImg.style.objectFit = 'contain';
+        brandLogoImg.style.borderRadius = '8px';
+      } else {
+        brandLogoImg.src = './assets/icons/favicon.svg';
+        brandLogoImg.style.objectFit = '';
+        brandLogoImg.style.borderRadius = '';
+      }
+    }
+
+    const mobileLogoImg = document.getElementById('topbar-brand-logo-img');
+    if (mobileLogoImg) {
+      if (settings.kosLogo) {
+        mobileLogoImg.src = settings.kosLogo;
+        mobileLogoImg.style.objectFit = 'contain';
+        mobileLogoImg.style.borderRadius = '6px';
+      } else {
+        mobileLogoImg.src = './assets/icons/favicon.svg';
+        mobileLogoImg.style.objectFit = '';
+        mobileLogoImg.style.borderRadius = '';
+      }
+    }
+
+    const topbarKosName = document.getElementById('topbar-breadcrumb-kos-name');
+    if (topbarKosName && settings.kosName) {
+      topbarKosName.textContent = settings.kosName;
+    }
   }
 
   updateBadges() {

@@ -60,6 +60,21 @@ export function showLockScreen() {
     card.classList.remove('lock-card-shake');
   }
 
+  // Update Lock screen branding if custom logo / name exists
+  try {
+    const settings = store.getSettings();
+    const logoBox = document.getElementById('app-lock-logo-box');
+    const brandTitle = document.getElementById('app-lock-brand-title');
+    if (brandTitle && settings.kosName) {
+      brandTitle.textContent = settings.kosName;
+    }
+    if (logoBox && settings.kosLogo) {
+      logoBox.innerHTML = `<img src="${settings.kosLogo}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;" />`;
+      logoBox.style.background = '#ffffff';
+      logoBox.style.padding = '4px';
+    }
+  } catch (err) {}
+
   if (errorEl) {
     errorEl.classList.add('hidden');
   }

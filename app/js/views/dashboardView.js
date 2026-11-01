@@ -63,10 +63,15 @@ export function renderDashboard(container) {
 
   container.innerHTML = `
     <div class="view-header">
-      <div class="view-header-title">
-        <div class="greeting-badge">👋 Selamat Datang</div>
-        <h1 class="page-title">${escapeHtml(settings.kosName || 'Juragankosan')}</h1>
-        <p class="page-subtitle">Ringkasan operasional kos &amp; kontrakan per <strong>${todayStr}</strong></p>
+      <div class="view-header-title" style="display: flex; align-items: center; gap: 14px;">
+        ${settings.kosLogo ? `
+          <img src="${settings.kosLogo}" alt="Logo ${escapeHtml(settings.kosName || 'Kos')}" class="dashboard-brand-logo" style="width: 52px; height: 52px; object-fit: contain; border-radius: 12px; border: 1.5px solid var(--border-color, #e2e8f0); background: var(--bg-surface, #ffffff); box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 4px; flex-shrink: 0;" />
+        ` : ''}
+        <div>
+          <div class="greeting-badge">👋 Selamat Datang</div>
+          <h1 class="page-title">${escapeHtml(settings.kosName || 'Juragankosan')}</h1>
+          <p class="page-subtitle">Ringkasan operasional kos &amp; kontrakan per <strong>${todayStr}</strong></p>
+        </div>
       </div>
       <div class="view-header-actions">
         <button class="btn btn-outline" id="btn-quick-expense">

@@ -1,3 +1,36 @@
+function resizeImageToDataUrl(file, maxWidth = 256, maxHeight = 256, callback) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+      if (width > height) {
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/png');
+      callback(null, dataUrl);
+    };
+    img.onerror = () => callback(new Error('Gagal memproses gambar'));
+    img.src = e.target.result;
+  };
+  reader.onerror = () => callback(new Error('Gagal membaca file gambar'));
+  reader.readAsDataURL(file);
+}
+
 /**
  * Juragankosan Settings & Backup View (Tab 6: Pengaturan & Data)
  */
@@ -47,6 +80,32 @@ export function renderSettings(container) {
             </div>
 
             <form id="settings-profile-form">
+              <!-- Upload Logo Usaha Kos -->
+              <div class="form-group mb-4">
+                <label class="form-label font-semibold">Logo Usaha Kos (Opsional)</label>
+                <div class="logo-upload-wrapper" style="display: flex; align-items: center; gap: 16px; padding: 14px; background: var(--bg-hover, #f8fafc); border: 1.5px dashed var(--border-color, #cbd5e1); border-radius: 12px;">
+                  <div id="kos-logo-preview-box" style="width: 68px; height: 68px; border-radius: 12px; background: var(--bg-surface, #ffffff); border: 1.5px solid var(--border-color, #e2e8f0); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.05); padding: 4px;">
+                    ${settings.kosLogo ? `
+                      <img src="${settings.kosLogo}" id="kos-logo-img-preview" alt="Logo Kos" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;" />
+                    ` : `
+                      <span id="kos-logo-placeholder" style="font-size: 28px;">🏠</span>
+                    `}
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 3px; color: var(--text-main, #0f172a);">Foto / Logo Identitas Kos</div>
+                    <div class="text-xs text-muted" style="margin-bottom: 10px; line-height: 1.4;">Tampil otomatis di <strong>Kwitansi Resmi</strong>, Kop Cetak PDF, Header Sidebar &amp; Dashboard.</div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                      <label for="upload-kos-logo-input" class="btn btn-outline btn-sm" style="cursor: pointer; margin: 0; display: inline-flex; align-items: center; gap: 6px;">
+                        <span>📷</span> <span>${settings.kosLogo ? 'Ganti Logo' : 'Upload Logo'}</span>
+                      </label>
+                      <input type="file" id="upload-kos-logo-input" accept="image/png, image/jpeg, image/webp" style="display: none;" />
+                      <button type="button" class="btn btn-ghost btn-sm text-danger" id="btn-remove-kos-logo" style="${settings.kosLogo ? 'display: inline-flex;' : 'display: none;'}">
+                        🗑️ Hapus Logo
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <!-- Baris 1: Nama Kos / Kontrakan (Full width) -->
               <div class="form-group">
                 <label for="set-kos-name" class="form-label">Nama Kos / Kontrakan <span class="text-danger">*</span></label>
@@ -546,6 +605,49 @@ function setupSettingsEvents(container) {
     });
   }
 
+  // Logo Upload & Remove Handlers
+  let currentKosLogo = settings.kosLogo || '';
+  const logoInput = container.querySelector('#upload-kos-logo-input');
+  const logoPreviewBox = container.querySelector('#kos-logo-preview-box');
+  const btnRemoveLogo = container.querySelector('#btn-remove-kos-logo');
+
+  if (logoInput) {
+    logoInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        showToast('Pilih file gambar berformat PNG, JPG, atau WebP.', 'error');
+        return;
+      }
+      resizeImageToDataUrl(file, 256, 256, (err, dataUrl) => {
+        if (err) {
+          showToast('Gagal memproses logo: ' + err.message, 'error');
+          return;
+        }
+        currentKosLogo = dataUrl;
+        if (logoPreviewBox) {
+          logoPreviewBox.innerHTML = `<img src="${dataUrl}" id="kos-logo-img-preview" alt="Logo Kos" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;" />`;
+        }
+        if (btnRemoveLogo) {
+          btnRemoveLogo.style.display = 'inline-flex';
+        }
+        showToast('Logo berhasil dipilih! Klik "Simpan Profil Kos" untuk menyimpan perubahan.', 'info');
+      });
+    });
+  }
+
+  if (btnRemoveLogo) {
+    btnRemoveLogo.addEventListener('click', () => {
+      currentKosLogo = '';
+      if (logoPreviewBox) {
+        logoPreviewBox.innerHTML = `<span id="kos-logo-placeholder" style="font-size: 28px;">🏠</span>`;
+      }
+      btnRemoveLogo.style.display = 'none';
+      if (logoInput) logoInput.value = '';
+      showToast('Logo dihapus. Klik "Simpan Profil Kos" untuk menyimpan.', 'info');
+    });
+  }
+
   // Save Profile Form
   const profileForm = container.querySelector('#settings-profile-form');
   if (profileForm) {
@@ -590,7 +692,8 @@ function setupSettingsEvents(container) {
         address,
         bankAccounts,
         acceptCash,
-        cashNote
+        cashNote,
+        kosLogo: currentKosLogo
       });
 
       showToast('Profil kos, multi-rekening, dan opsi pembayaran berhasil disimpan!', 'success');

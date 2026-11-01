@@ -428,6 +428,7 @@ export function getEmptyData() {
     incomes: [],
     settings: {
       kosName: 'Juragankosan',
+      kosLogo: '',
       ownerName: '',
       ownerPhone: '',
       address: '',
@@ -510,6 +511,7 @@ class Store {
     // Settings normalization
     const s = safeData.settings;
     if (!s.kosName) s.kosName = 'Juragankosan';
+    if (s.kosLogo === undefined) s.kosLogo = '';
     if (s.ownerName === undefined) s.ownerName = '';
     if (s.ownerPhone === undefined) s.ownerPhone = '';
     if (s.address === undefined) s.address = '';

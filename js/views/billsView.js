@@ -707,6 +707,7 @@ export function openReceiptModal(billId, paymentResult = null) {
   const receiptData = {
     receiptNumber: receiptNum,
     kosName: settings.kosName || 'Juragankosan',
+    kosLogo: settings.kosLogo || '',
     kosAddress: settings.address || 'Alamat Properti Belum Diisi',
     shortAddress: shortAddress,
     signLocation: signLocation,
@@ -750,10 +751,14 @@ export function openReceiptModal(billId, paymentResult = null) {
           <!-- 1. Kop Kwitansi: Nama Kos, Alamat Lengkap, Kontak & Nama Pengelola -->
           <div class="receipt-corp-header">
             <div class="receipt-corp-brand">
-              <div class="receipt-corp-logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="corp-logo-svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
+              <div class="receipt-corp-logo" style="${receiptData.kosLogo ? 'background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 4px; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px;' : ''}">
+                ${receiptData.kosLogo ? `
+                  <img src="${receiptData.kosLogo}" alt="Logo ${escapeHtml(receiptData.kosName)}" class="receipt-custom-logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 6px;" />
+                ` : `
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="corp-logo-svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                  </svg>
+                `}
               </div>
               <div class="receipt-corp-details">
                 <h2 class="receipt-corp-title">${escapeHtml(receiptData.kosName)}</h2>
