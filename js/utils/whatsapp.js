@@ -217,6 +217,23 @@ export function generateBillWhatsAppText(bill, settings = {}) {
     }
   }
 
+  let activeBillAmount = bill.amount || 0;
+  // If unpaid and not custom amount, verify against live room price if available
+  if (bill.roomId && !bill.isCustomAmount && bill.status === 'belum_bayar') {
+    let s = null;
+    if (typeof window !== 'undefined' && window.__juragankos_store) {
+      s = window.__juragankos_store;
+    } else if (typeof window !== 'undefined' && window.juraganApp && window.juraganApp.store) {
+      s = window.juraganApp.store;
+    }
+    if (s && typeof s.getRoomById === 'function') {
+      const room = s.getRoomById(bill.roomId);
+      if (room && typeof room.price === 'number' && room.price > 0) {
+        activeBillAmount = room.price;
+      }
+    }
+  }
+
   const daysOverdue = calculateDaysDiffFromToday(bill.dueDate);
   const templateToUse = bill.status === 'sebagian'
     ? DEFAULT_PARTIAL_REMINDER_WA_TEMPLATE
@@ -226,9 +243,9 @@ export function generateBillWhatsAppText(bill, settings = {}) {
     tenantName: tenantName || 'Penyewa',
     tenantPhone: tenantPhone || '',
     roomNumber: roomNumber || 'Kamar',
-    amount: bill.amount || 0,
+    amount: activeBillAmount,
     paidAmount: bill.paidAmount !== undefined ? bill.paidAmount : 0,
-    remainingAmount: bill.remainingAmount !== undefined ? bill.remainingAmount : (bill.amount || 0),
+    remainingAmount: bill.remainingAmount !== undefined ? bill.remainingAmount : activeBillAmount,
     period: bill.period,
     dueDate: bill.dueDate,
     daysOverdue: Math.max(0, daysOverdue),

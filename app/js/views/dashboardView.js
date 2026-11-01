@@ -288,6 +288,9 @@ export function renderDashboard(container) {
                             <button class="btn btn-warning btn-sm btn-action-pay" data-bill-id="${bill.id}">
                               + Bayar Sisa
                             </button>
+                              <button class="btn btn-outline btn-sm btn-action-edit-bill" data-bill-id="${bill.id}" title="Edit Nominal / Jatuh Tempo Tagihan">
+                                ✏️ Edit
+                              </button>
                             <button class="btn btn-outline btn-sm btn-action-receipt" data-bill-id="${bill.id}" title="Kwitansi Bukti Cicilan">
                               📄 Kwitansi
                             </button>
@@ -303,6 +306,9 @@ export function renderDashboard(container) {
                             <button class="btn btn-success btn-sm btn-action-pay" data-bill-id="${bill.id}">
                               ✓ Tandai Lunas
                             </button>
+                              <button class="btn btn-outline btn-sm btn-action-edit-bill" data-bill-id="${bill.id}" title="Edit Nominal / Jatuh Tempo Tagihan">
+                                ✏️ Edit
+                              </button>
                           `
                               : `
                             <button class="btn btn-outline btn-sm btn-action-receipt" data-bill-id="${bill.id}">
@@ -381,6 +387,17 @@ function setupDashboardEvents(container) {
       const settings = store.getSettings();
       const message = generateBillWhatsAppText(bill, settings);
       openWhatsAppLink(bill.tenantPhone, message);
+    });
+  });
+
+  // Quick Edit Bill Trigger
+  container.querySelectorAll('.btn-action-edit-bill').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const billId = btn.getAttribute('data-bill-id');
+      if (window.juraganApp && typeof window.juraganApp.openEditBillModal === 'function') {
+        window.juraganApp.openEditBillModal(billId);
+      }
     });
   });
 

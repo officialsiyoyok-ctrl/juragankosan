@@ -850,6 +850,94 @@ class JuragankosanApp {
     renderReceiptModal(billId, paymentResult);
   }
 
+  openEditBillModal(billId) {
+    const bill = store.getBillById(billId);
+    if (!bill) return;
+
+    let editBillModal = document.getElementById('edit-bill-modal');
+    if (!editBillModal) {
+      editBillModal = document.createElement('div');
+      editBillModal.id = 'edit-bill-modal';
+      editBillModal.className = 'modal-backdrop';
+      document.body.appendChild(editBillModal);
+    }
+
+    const room = store.getRoomById(bill.roomId);
+    const roomPrice = room ? room.price : bill.amount;
+
+    editBillModal.innerHTML = `
+      <div class="modal-dialog modal-sm">
+        <div class="modal-header">
+          <h3 class="modal-title">✏️ Edit Tagihan Sewa</h3>
+          <button class="modal-close" data-close-modal="edit-bill-modal">&times;</button>
+        </div>
+        <form id="edit-bill-form">
+          <div class="modal-body">
+            <div style="background: var(--bg-hover, #f8fafc); border-radius: 8px; padding: 12px; margin-bottom: 16px; border: 1px solid var(--border-color, #e2e8f0);">
+              <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 4px;">${escapeHtml(bill.roomNumber)} &bull; ${escapeHtml(bill.tenantName)}</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted, #64748b);">
+                Periode: <strong>${escapeHtml(formatMonthYear(bill.period))}</strong> | Tarif Standar Kamar: <strong>${formatRupiah(roomPrice)}</strong>
+              </div>
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="form-label" for="edit-bill-amount">Nominal Tagihan (Rp) *</label>
+              <input type="number" id="edit-bill-amount" class="form-input" value="${bill.amount}" min="10000" step="10000" required>
+              <span class="text-xs text-muted" style="display:block; margin-top:4px;">Ubah jika ada kesepakatan diskon khusus atau penyesuaian sewa bulan ini.</span>
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="form-label" for="edit-bill-due-date">Tanggal Jatuh Tempo *</label>
+              <input type="date" id="edit-bill-due-date" class="form-input" value="${bill.dueDate || ''}" required>
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="form-label" for="edit-bill-notes">Catatan Tagihan</label>
+              <input type="text" id="edit-bill-notes" class="form-input" value="${escapeHtml(bill.notes || '')}" placeholder="Contoh: Diskon bulan pertama / penyesuaian sewa">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-close-modal="edit-bill-modal">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    const closeBtns = editBillModal.querySelectorAll('[data-close-modal="edit-bill-modal"]');
+    closeBtns.forEach((btn) => btn.addEventListener('click', () => closeModal('edit-bill-modal')));
+
+    const form = editBillModal.querySelector('#edit-bill-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const amountVal = parseInt(document.getElementById('edit-bill-amount').value, 10);
+      const dueDateVal = document.getElementById('edit-bill-due-date').value;
+      const notesVal = document.getElementById('edit-bill-notes').value;
+
+      if (!amountVal || amountVal <= 0) {
+        showToast('Nominal tagihan harus lebih dari 0.', 'error');
+        return;
+      }
+      if (!dueDateVal) {
+        showToast('Tanggal jatuh tempo wajib diisi.', 'error');
+        return;
+      }
+
+      store.updateBill(bill.id, {
+        amount: amountVal,
+        dueDate: dueDateVal,
+        notes: notesVal
+      });
+
+      closeModal('edit-bill-modal');
+      showToast('Data tagihan berhasil diperbarui!', 'success');
+      this.switchTab(this.currentTab);
+      this.updateBadges();
+    });
+
+    openModal('edit-bill-modal');
+  }
+
   setupGlobalEvents() {
     // Mobile sidebar toggle if needed
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');

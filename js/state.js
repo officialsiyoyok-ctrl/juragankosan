@@ -571,6 +571,23 @@ class Store {
       }
     });
 
+    // Auto-heal unpaid/partial bills to match live room price (reconciles room price updates)
+    safeData.bills.forEach((b) => {
+      const room = safeData.rooms.find((r) => r.id === b.roomId);
+      if (room && typeof room.price === 'number' && room.price > 0) {
+        if (!b.isCustomAmount && (b.status === 'belum_bayar' || b.status === 'sebagian')) {
+          if (b.amount !== room.price) {
+            b.amount = room.price;
+            const paid = b.paidAmount || 0;
+            b.remainingAmount = Math.max(0, b.amount - paid);
+            if (b.remainingAmount === 0 && paid > 0) {
+              b.status = 'lunas';
+            }
+          }
+        }
+      }
+    });
+
     // Auto-heal bills created before tenant check-in month (e.g. November check-in having October bill)
     safeData.bills.forEach((b) => {
       const tenant = safeData.tenants.find((t) => t.id === b.tenantId);
@@ -873,6 +890,24 @@ class Store {
       });
     }
 
+    // If room price changed, synchronize all unpaid and partial bills for this room (unless marked as custom amount)
+    if (roomData.price !== undefined && price !== existing.price) {
+      this.data.bills.forEach((b) => {
+        if (b.roomId === id && !b.isCustomAmount) {
+          if (b.status === 'belum_bayar') {
+            b.amount = price;
+            b.remainingAmount = price;
+          } else if (b.status === 'sebagian') {
+            b.amount = price;
+            b.remainingAmount = Math.max(0, price - (b.paidAmount || 0));
+            if (b.remainingAmount === 0) {
+              b.status = 'lunas';
+            }
+          }
+        }
+      });
+    }
+
     this.save();
     return this.data.rooms[index];
   }
@@ -1091,11 +1126,23 @@ class Store {
             p = addMonthsToPeriod(p, 1);
           }
 
-          // Update room info in existing bills
+          // Update room info and bill amounts in existing bills
           this.data.bills.forEach((b) => {
             if (b.tenantId === id) {
               b.roomId = newRoom.id;
               b.roomNumber = newRoom.number;
+              if (!b.isCustomAmount) {
+                if (b.status === 'belum_bayar') {
+                  b.amount = newRoom.price;
+                  b.remainingAmount = newRoom.price;
+                } else if (b.status === 'sebagian') {
+                  b.amount = newRoom.price;
+                  b.remainingAmount = Math.max(0, newRoom.price - (b.paidAmount || 0));
+                  if (b.remainingAmount === 0) {
+                    b.status = 'lunas';
+                  }
+                }
+              }
             }
           });
         } else {
@@ -1517,6 +1564,40 @@ class Store {
         delete fb.advanceInfo;
         fb.notes = '';
       });
+    }
+
+    this.save();
+    return bill;
+  }
+
+  updateBill(id, billData = {}) {
+    const bill = this.getBillById(id);
+    if (!bill) return null;
+
+    if (billData.amount !== undefined) {
+      const parsedAmount = parseInt(billData.amount, 10);
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        throw new Error('Nominal tagihan harus berupa angka lebih dari 0.');
+      }
+      bill.amount = parsedAmount;
+      bill.isCustomAmount = true; // Mark as customized by owner
+      const paid = bill.paidAmount || 0;
+      bill.remainingAmount = Math.max(0, parsedAmount - paid);
+      if (bill.remainingAmount === 0 && paid > 0) {
+        bill.status = 'lunas';
+      } else if (paid > 0 && bill.remainingAmount > 0) {
+        bill.status = 'sebagian';
+      } else if (paid === 0) {
+        bill.status = 'belum_bayar';
+      }
+    }
+
+    if (billData.dueDate) {
+      bill.dueDate = normalizeDateString(billData.dueDate) || billData.dueDate;
+    }
+
+    if (billData.notes !== undefined) {
+      bill.notes = String(billData.notes).trim();
     }
 
     this.save();

@@ -333,6 +333,9 @@ function buildBillsListHtml(filteredBills, selectedPeriod, searchKeyword, curren
                       <button type="button" class="btn ${isPartial ? 'btn-warning' : 'btn-success'} btn-sm btn-mark-paid" data-bill-id="${bill.id}">
                         ${isPartial ? '+ Bayar Sisa' : '✓ Tandai Lunas'}
                       </button>
+                        <button type="button" class="btn btn-outline btn-sm btn-edit-bill" data-bill-id="${bill.id}" title="Edit Nominal atau Jatuh Tempo Tagihan">
+                          ✏️ Edit
+                        </button>
                       ${isPartial ? `
                         <button type="button" class="btn btn-outline btn-sm btn-show-receipt" data-bill-id="${bill.id}" title="Kwitansi Bukti Cicilan">
                           📄 Kwitansi
@@ -478,6 +481,17 @@ function setupBillCardEvents(container) {
       const settings = store.getSettings();
       const message = generateBillWhatsAppText(bill, settings);
       openWhatsAppLink(bill.tenantPhone, message);
+    });
+  });
+
+  // Edit Bill Modal Trigger
+  container.querySelectorAll('.btn-edit-bill').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const billId = btn.getAttribute('data-bill-id');
+      if (window.juraganApp && typeof window.juraganApp.openEditBillModal === 'function') {
+        window.juraganApp.openEditBillModal(billId);
+      }
     });
   });
 
