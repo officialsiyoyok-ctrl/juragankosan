@@ -908,7 +908,6 @@ function renderReportSubTab({ selectedPeriodYM, accountingBasis }) {
     entry.balance = runningBalance;
   });
 
-  const settings = store.getSettings();
 
   return `
     <!-- Report Print Header (Visible only when printed) -->
