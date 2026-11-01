@@ -250,6 +250,24 @@ export function renderSettings(container) {
                     placeholder="Contoh: Bayar langsung ke pengelola / penjaga kos di Pos Keamanan" 
                   />
                 </div>
+
+                <!-- Metode Pembukuan Keuangan -->
+                <div class="form-group mb-3 mt-3">
+                  <label for="set-accounting-basis" class="form-label font-semibold text-xs">
+                    Metode Pembukuan Laporan Keuangan
+                  </label>
+                  <select id="set-accounting-basis" class="form-control form-control-sm">
+                    <option value="period" ${(settings.accountingBasis || 'period') === 'period' ? 'selected' : ''}>
+                      🏢 Berdasarkan Periode Sewa (Standar Laba Rugi Akrual - Disarankan)
+                    </option>
+                    <option value="cash" ${settings.accountingBasis === 'cash' ? 'selected' : ''}>
+                      💵 Berdasarkan Tanggal Bayar (Arus Kas Riil / Cash Basis)
+                    </option>
+                  </select>
+                  <div class="form-text text-muted text-xs mt-1">
+                    Pilih bagaimana pendapatan sewa diakui di Pusat Keuangan: mengikuti bulan sewa kamar atau tepat di hari uang diterima.
+                  </div>
+                </div>
               </div>
 
               <div class="form-actions-right mt-3">
@@ -700,6 +718,9 @@ function setupSettingsEvents(container) {
       const cashNoteEl = document.getElementById('set-cash-note');
       const cashNote = cashNoteEl ? cashNoteEl.value.trim() : 'Bayar tunai langsung ke Pengelola Kos';
 
+      const accountingBasisEl = document.getElementById('set-accounting-basis');
+      const accountingBasis = accountingBasisEl ? accountingBasisEl.value : 'period';
+
       store.updateSettings({
         kosName,
         ownerName,
@@ -708,6 +729,7 @@ function setupSettingsEvents(container) {
         bankAccounts,
         acceptCash,
         cashNote,
+        accountingBasis,
         kosLogo: currentKosLogo
       });
 

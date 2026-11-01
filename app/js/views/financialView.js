@@ -63,10 +63,18 @@ export function renderFinances(container, options = {}) {
   // Query Data
   const allInflows = store.getAllInflows ? store.getAllInflows() : [];
   const allExpenses = store.getExpenses ? store.getExpenses() : [];
+  const currentSettings = store.getSettings ? store.getSettings() : {};
+  const accountingBasis = currentSettings.accountingBasis || 'period'; // 'period' (Standar Laba Rugi Akrual) | 'cash' (Kas Riil)
 
-  // Filter for current month view
+  // Filter for current month view based on accountingBasis
   const periodInflows = allInflows.filter((item) => {
-    return item.period === selectedPeriodYM || (item.date && item.date.startsWith(selectedPeriodYM));
+    if (accountingBasis === 'cash') {
+      return item.period === selectedPeriodYM || (item.date && item.date.startsWith(selectedPeriodYM));
+    } else {
+      // 'period': Match by room rental period (accrual / matching principle)
+      const effectivePeriod = (item.isRent && item.billPeriod) ? item.billPeriod : (item.period || (item.date ? item.date.substring(0, 7) : ''));
+      return effectivePeriod === selectedPeriodYM;
+    }
   });
 
   const periodExpenses = allExpenses.filter((item) => {
@@ -143,6 +151,31 @@ export function renderFinances(container, options = {}) {
         </div>
       </div>
 
+      <!-- Mode Pembukuan Switcher Bar -->
+      <div class="fin-accounting-mode-bar no-print mb-4">
+        <div class="fin-mode-label">
+          <div class="flex align-center gap-2">
+            <span class="fin-mode-badge-title">Metode Pembukuan:</span>
+            <span class="badge ${accountingBasis === 'period' ? 'badge-primary' : 'badge-emerald'} text-xs font-bold">
+              ${accountingBasis === 'period' ? '🏢 Periode Sewa (Laba Rugi)' : '💵 Tanggal Bayar (Kas Riil)'}
+            </span>
+          </div>
+          <span class="fin-mode-desc text-xs text-muted">
+            ${accountingBasis === 'period' 
+              ? 'Pendapatan sewa dihitung sesuai bulan sewa kamar agar laba bulanan seimbang (Standar Laba Rugi Akrual).' 
+              : 'Pendapatan sewa dihitung tepat pada tanggal uang masuk rekening/dompet (Standar Arus Kas Riil).'}
+          </span>
+        </div>
+        <div class="fin-mode-toggle-group">
+          <button type="button" class="btn btn-sm btn-toggle-accounting-basis ${accountingBasis === 'period' ? 'active' : ''}" data-basis="period" title="Rekomendasi: Laba seimbang sesuai periode sewa">
+            🏢 Periode Sewa (Laba Rugi)
+          </button>
+          <button type="button" class="btn btn-sm btn-toggle-accounting-basis ${accountingBasis === 'cash' ? 'active' : ''}" data-basis="cash" title="Pencatatan kas riil saat uang masuk">
+            💵 Tanggal Bayar (Kas Riil)
+          </button>
+        </div>
+      </div>
+
       <!-- Unified 3-Tabs Sub-navigation Bar -->
       <div class="fin-subnav-bar no-print">
         <button type="button" class="fin-subnav-btn ${currentSubTab === 'incomes' ? 'active' : ''}" data-subtab-target="incomes">
@@ -174,7 +207,8 @@ export function renderFinances(container, options = {}) {
           totalOtherIncome,
           totalMonthIncome,
           totalMonthExpense,
-          monthNetProfit
+          monthNetProfit,
+          accountingBasis
         })}
       </div>
     </div>
@@ -384,7 +418,7 @@ function renderCurrentSubTabContent(data) {
 // =============================================================================
 // TAB 1: PEMASUKAN VIEW
 // =============================================================================
-function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome, totalOtherIncome, totalMonthIncome }) {
+function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome, totalOtherIncome, totalMonthIncome, accountingBasis }) {
   // Apply Category Filter
   const filteredInflows = periodInflows.filter((item) => {
     if (incomeCategoryFilter === 'all') return true;
@@ -415,7 +449,9 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
         </div>
         <div class="fin-kpi-value text-blue">${formatRupiah(totalRentIncome)}</div>
         <div class="fin-kpi-meta">
-          Dari tagihan berstatus <strong>Lunas</strong> / <strong>Dicicil</strong>
+          ${accountingBasis === 'cash' 
+            ? 'Berdasarkan <strong>Tanggal Bayar</strong> riil' 
+            : 'Berdasarkan <strong>Periode Sewa</strong> kamar (Laba Rugi)'}
         </div>
       </div>
 
@@ -515,6 +551,12 @@ function renderIncomesSubTab({ selectedPeriodYM, periodInflows, totalRentIncome,
                     <td class="text-muted text-xs text-center">${idx + 1}</td>
                     <td class="text-xs whitespace-nowrap font-medium">
                       ${formatDateIndo(item.date)}
+                      ${accountingBasis === 'period' && item.isRent && item.billPeriod && item.billPeriod !== item.date.substring(0, 7) ? `
+                        <div class="text-xs font-semibold" style="font-size: 0.72rem; color: var(--primary-color, #0f766e);">Periode: ${formatMonthYear(item.billPeriod)}</div>
+                      ` : ''}
+                      ${accountingBasis === 'cash' && item.isRent && item.billPeriod && item.billPeriod !== item.date.substring(0, 7) ? `
+                        <div class="text-xs text-muted" style="font-size: 0.72rem;">Hak Sewa: ${formatMonthYear(item.billPeriod)}</div>
+                      ` : ''}
                     </td>
                     <td>
                       <div class="font-semibold text-main text-sm">
@@ -795,16 +837,24 @@ function renderExpensesSubTab({ selectedPeriodYM, periodExpenses, totalMonthExpe
 // =============================================================================
 // TAB 3: LAPORAN LABA BERSIH & ARUS KAS (CASH FLOW LEDGER)
 // =============================================================================
-function renderReportSubTab({ selectedPeriodYM }) {
+function renderReportSubTab({ selectedPeriodYM, accountingBasis }) {
   const allInflows = store.getAllInflows ? store.getAllInflows() : [];
   const allExpenses = store.getExpenses ? store.getExpenses() : [];
+  const settings = store.getSettings ? store.getSettings() : {};
+  const currentBasis = accountingBasis || settings.accountingBasis || 'period';
 
   // Determine active date range based on reportFilterType
   const { startDate, endDate, label } = getActiveReportRange(selectedPeriodYM);
 
-  // Filter transactions in range
+  // Filter transactions in range based on accountingBasis
   const rangeInflows = allInflows.filter((item) => {
-    return item.date >= startDate && item.date <= endDate;
+    if (currentBasis === 'cash') {
+      return item.date >= startDate && item.date <= endDate;
+    } else {
+      // Accrual / Periode Sewa: compare effectiveDate (billPeriod for rent) with range
+      const effectiveDate = (item.isRent && item.billPeriod) ? `${item.billPeriod}-01` : (item.date || getTodayDateString());
+      return effectiveDate >= startDate && effectiveDate <= endDate;
+    }
   });
 
   const rangeExpenses = allExpenses.filter((item) => {
@@ -1066,6 +1116,21 @@ function renderReportSubTab({ selectedPeriodYM }) {
 // EVENT LISTENERS & HANDLERS
 // =============================================================================
 function setupFinancialEventListeners(container) {
+  // 0. Accounting Basis Switcher Toggle
+  container.querySelectorAll('.btn-toggle-accounting-basis').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const newBasis = btn.getAttribute('data-basis');
+      store.updateSettings({ accountingBasis: newBasis });
+      if (typeof showToast === 'function') {
+        showToast(
+          `Mode pembukuan: ${newBasis === 'period' ? 'Periode Sewa (Laba Rugi)' : 'Tanggal Bayar (Kas Riil)'}`,
+          'info'
+        );
+      }
+      renderFinances(container, { subTab: currentSubTab, period: selectedPeriodYM });
+    });
+  });
   // 1. Sub-tab switcher
   container.querySelectorAll('[data-subtab-target]').forEach((btn) => {
     btn.addEventListener('click', (e) => {

@@ -403,7 +403,8 @@ export function getSampleData() {
     securityPin: '1234',
     theme: 'light',
     customExpenseCategories: [],
-    customIncomeCategories: []
+    customIncomeCategories: [],
+    accountingBasis: 'period'
   };
 
   return {
