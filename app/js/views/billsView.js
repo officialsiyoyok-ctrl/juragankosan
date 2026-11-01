@@ -102,7 +102,8 @@ export function renderBills(container, options = {}) {
         <!-- Month Navigator -->
         <div class="month-navigator">
           <button class="btn btn-outline btn-sm btn-nav-month" data-period="${prevPeriod}" title="Bulan Sebelumnya">
-            &larr; Bulan Lalu
+            <span class="nav-text-desktop">&larr; Bulan Lalu</span>
+            <span class="nav-text-mobile">&larr;</span>
           </button>
           <div class="current-month-display">
             <svg class="calendar-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -111,7 +112,8 @@ export function renderBills(container, options = {}) {
             <span><strong>${formatMonthYear(selectedPeriod)}</strong></span>
           </div>
           <button class="btn btn-outline btn-sm btn-nav-month" data-period="${nextPeriod}" title="Bulan Berikutnya">
-            Bulan Depan &rarr;
+            <span class="nav-text-desktop">Bulan Depan &rarr;</span>
+            <span class="nav-text-mobile">&rarr;</span>
           </button>
         </div>
       </div>

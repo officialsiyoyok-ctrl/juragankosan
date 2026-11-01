@@ -102,7 +102,8 @@ export function renderFinances(container, options = {}) {
           <!-- Month Navigator -->
           <div class="month-navigator">
             <button class="btn btn-outline btn-sm btn-nav-period" data-period="${prevPeriod}" title="Bulan Sebelumnya">
-              &larr; Bulan Lalu
+              <span class="nav-text-desktop">&larr; Bulan Lalu</span>
+              <span class="nav-text-mobile">&larr;</span>
             </button>
             <div class="current-month-display">
               <svg class="calendar-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -111,7 +112,8 @@ export function renderFinances(container, options = {}) {
               <span><strong>${formatMonthYear(selectedPeriodYM)}</strong></span>
             </div>
             <button class="btn btn-outline btn-sm btn-nav-period" data-period="${nextPeriod}" title="Bulan Berikutnya">
-              Bulan Depan &rarr;
+              <span class="nav-text-desktop">Bulan Depan &rarr;</span>
+              <span class="nav-text-mobile">&rarr;</span>
             </button>
           </div>
 
@@ -146,19 +148,19 @@ export function renderFinances(container, options = {}) {
         <button type="button" class="fin-subnav-btn ${currentSubTab === 'incomes' ? 'active' : ''}" data-subtab-target="incomes">
           <span class="fin-tab-icon">📥</span>
           <span class="fin-tab-title">Pemasukan</span>
-          <span class="fin-tab-pill pill-emerald">${periodInflows.length} Transaksi</span>
+          <span class="fin-tab-pill pill-emerald"><span class="pill-full">${periodInflows.length} Transaksi</span><span class="pill-short">${periodInflows.length}</span></span>
         </button>
 
         <button type="button" class="fin-subnav-btn ${currentSubTab === 'expenses' ? 'active' : ''}" data-subtab-target="expenses">
           <span class="fin-tab-icon">📤</span>
           <span class="fin-tab-title">Pengeluaran</span>
-          <span class="fin-tab-pill pill-rose">${periodExpenses.length} Transaksi</span>
+          <span class="fin-tab-pill pill-rose"><span class="pill-full">${periodExpenses.length} Transaksi</span><span class="pill-short">${periodExpenses.length}</span></span>
         </button>
 
         <button type="button" class="fin-subnav-btn ${currentSubTab === 'report' ? 'active' : ''}" data-subtab-target="report">
           <span class="fin-tab-icon">📊</span>
-          <span class="fin-tab-title">Laporan Laba Bersih</span>
-          <span class="fin-tab-pill pill-purple">Arus Kas</span>
+          <span class="fin-tab-title"><span class="title-full">Laporan Laba Bersih</span><span class="title-short">Laba Bersih</span></span>
+          <span class="fin-tab-pill pill-purple"><span class="pill-full">Arus Kas</span><span class="pill-short">Kas</span></span>
         </button>
       </div>
 

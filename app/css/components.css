@@ -858,6 +858,22 @@
 /* ==========================================================================
    Bills Summary & Table
    ========================================================================== */
+
+/* Desktop/Mobile Text Toggle Helpers */
+.nav-text-desktop {
+  display: inline;
+}
+.nav-text-mobile {
+  display: none;
+}
+.pill-full,
+.title-full {
+  display: inline;
+}
+.pill-short,
+.title-short {
+  display: none;
+}
 .month-navigator {
   display: flex;
   align-items: center;
@@ -6887,15 +6903,34 @@ html.app-unlocked .app-lock-overlay,
   }
 
   /* 4. Halaman 4: Tagihan & Sewa (billsView.js) */
+  /* Desktop/Mobile toggle in media query */
+  .nav-text-desktop {
+    display: none !important;
+  }
+  .nav-text-mobile {
+    display: inline !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+  }
+  .pill-full,
+  .title-full {
+    display: none !important;
+  }
+  .pill-short,
+  .title-short {
+    display: inline !important;
+  }
+
   .month-navigator {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
-    gap: 2px !important;
+    gap: 8px !important;
     background: var(--bg-surface-subtle) !important;
-    padding: 4px !important;
+    padding: 4px 8px !important;
     border-radius: var(--radius-md) !important;
     border: 1px solid var(--border-color) !important;
     box-sizing: border-box !important;
@@ -6903,31 +6938,37 @@ html.app-unlocked .app-lock-overlay,
 
   .month-navigator .btn-nav-month,
   .month-navigator .btn-nav-period {
-    padding: 4px 6px !important;
-    font-size: 0.72rem !important;
+    min-width: 36px !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
     flex-shrink: 0 !important;
     white-space: nowrap !important;
-    min-height: 30px !important;
     border-radius: var(--radius-sm) !important;
   }
 
   .month-navigator .current-month-display {
-    font-size: 0.78rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
     white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
     text-align: center !important;
-    flex: 1 !important;
+    flex: 1 1 auto !important;
     min-width: 0 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 4px !important;
+    gap: 6px !important;
   }
 
   .month-navigator .calendar-icon {
-    width: 13px !important;
-    height: 13px !important;
+    width: 15px !important;
+    height: 15px !important;
     flex-shrink: 0 !important;
   }
 
@@ -7156,25 +7197,30 @@ html.app-unlocked .app-lock-overlay,
   .fin-subnav-btn {
     flex: 1 1 0 !important;
     min-width: 0 !important;
-    padding: 6px 4px !important;
-    font-size: 0.72rem !important;
+    padding: 6px 2px !important;
+    font-size: 0.74rem !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 4px !important;
+    gap: 3px !important;
     text-align: center !important;
   }
 
+  .fin-subnav-btn .fin-tab-icon {
+    font-size: 0.95rem !important;
+    flex-shrink: 0 !important;
+  }
+
   .fin-subnav-btn .fin-tab-title {
-    font-size: 0.72rem !important;
+    font-size: 0.74rem !important;
     white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
     font-weight: 600 !important;
   }
 
   .fin-subnav-btn .fin-tab-pill {
-    font-size: 0.625rem !important;
+    font-size: 0.65rem !important;
     padding: 1px 5px !important;
     white-space: nowrap !important;
     flex-shrink: 0 !important;
